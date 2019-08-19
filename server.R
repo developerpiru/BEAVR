@@ -173,6 +173,11 @@ shinyServer(function(input, output, session) {
   #calculates LFC and FDR
   calc_res <- reactive({
     
+    #Update progress bar
+    totalSteps = 8
+    currentStep = 1
+    incProgress(currentStep/totalSteps, detail = paste("Initializing..."))
+    
     control_factor <- input$control_condslist
     treatment1_factor <- input$treatment1_condslist
     
@@ -181,8 +186,16 @@ shinyServer(function(input, output, session) {
     
     FDR_aplha <- (input$FDRvalue)/100
     
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps, detail = paste("Performing DESeq2 calculations..."))
+    
     #calcate dds values
     dds <<- calc_get_dds()
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps, detail = paste("Determing differential expression..."))
     
     #set the contrasts for comparisons
     res <<- results(dds, contrast=c("condition",control_factor, treatment1_factor))
@@ -190,8 +203,16 @@ shinyServer(function(input, output, session) {
     #Log fold change shrinkage for visualization and ranking
     #resultsNames(dds)
     
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps, detail = paste("Using 'apeglm' for LFC shrinkage..."))
+    
     #adjust conditions based on contrast setting above!!
     resLFC <<- lfcShrink(dds, coef=LFC_coef, type="apeglm")
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps, detail = paste("Ordering by p values..."))
     
     #order results by smallest p value
     resOrdered <<- res[order(res$pvalue),]
@@ -202,10 +223,18 @@ shinyServer(function(input, output, session) {
     #many adjusted p-values are less than 0.1
     #sum(res$padj < 0.1, na.rm=TRUE)
     
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps, detail = paste("Applying FDR correction..."))
+    
     #filter res based on FDR cut off (10% = alpha of 0.1)
     resFDR <<- results(dds, alpha=FDR_aplha)
     #summary(res10)
     #sum(res10$padj < FDR_aplha, na.rm=TRUE)
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps, detail = paste("Mapping ENSEMBL names to readable gene symbols..."))
     
     #map ensembl symbols to gene ids
     res$GeneID <<- mapIds(org.Hs.eg.db,keys=rownames(res),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
@@ -218,8 +247,12 @@ shinyServer(function(input, output, session) {
     listofgenes$ENSEMBL <<- rownames(listofgenes)
     
     #write files
-    write.csv(as.data.frame(resOrdered), file='resOrdered.csv')
-    write.csv(as.data.frame(resFDR), file='resFDR.csv')
+    #write.csv(as.data.frame(resOrdered), file='resOrdered.csv')
+    #write.csv(as.data.frame(resFDR), file='resFDR.csv')
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps, detail = paste("Preparing to display table..."))
     
     resFDR <<- resFDR[,c(7,1:6)]
     
@@ -229,7 +262,9 @@ shinyServer(function(input, output, session) {
   
   #output calculated dds + FDR table
   output$calc_res_values <- DT::renderDataTable({
-    as.data.frame(calc_res())
+    withProgress(message = 'Performing calculations...', value = 0, {
+      as.data.frame(calc_res())
+    })
   })
   
   #download all genes table
