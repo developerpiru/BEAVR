@@ -31,38 +31,38 @@ At the R command prompt or in RStudio, run these commands to install the depende
 
 	install.packages("scatterD3")
   
-  install.packages("ggplot2")
+  	install.packages("ggplot2")
   
-  install.packages("data.table")
+  	install.packages("data.table")
 
 	install.packages("DT")
   
-  BiocManager::install("DESeq2")
+	BiocManager::install("DESeq2")
   
-  BiocManager::install("vsn")
+	BiocManager::install("vsn")
   
-  BiocManager::install("apeglm")
+	BiocManager::install("apeglm")
   
-  BiocManager::install("org.Hs.eg.db")
+	BiocManager::install("org.Hs.eg.db")
   
 Note: if you don't have Bioconductor's BiocManager installed, you can install it with:
   
-  install.packages("BiocManager")
+	install.packages("BiocManager")
   
 # Run VisualRNAseq
 Load the required libraries:
 
 	library(shiny)
-  library(shinydashboard)
-  library(plotly)
-  library(scatterD3)
-  library(ggplot2)
-  library(data.table)
-  library(DT)
-  library("DESeq2")
-  library("vsn")
-  library('apeglm')
-  library('org.Hs.eg.db')
+	library(shinydashboard)
+ 	library(plotly)
+ 	library(scatterD3)
+ 	library(ggplot2)
+ 	library(data.table)
+	library(DT)
+	library("DESeq2")
+	library("vsn")
+	library('apeglm')
+	library('org.Hs.eg.db')
 
 Then run the latest version of VisualRNAseq using:
 
