@@ -247,7 +247,7 @@ shinyServer(function(input, output, session) {
     listofgenes$ENSEMBL <<- rownames(listofgenes)
     
     #write files
-    #write.csv(as.data.frame(resOrdered), file='resOrdered.csv')
+    write.csv(as.data.frame(resOrdered), file='resOrdered-all-genes.csv')
     #write.csv(as.data.frame(resFDR), file='resFDR.csv')
     
     #Update progress bar
