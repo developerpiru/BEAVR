@@ -256,7 +256,8 @@ shinyServer(function(input, output, session) {
     
     resFDR <<- resFDR[,c(7,1:6)]
     
-    return(resFDR)
+    #return(resFDR)
+    return(resOrdered)
     
   })
   
