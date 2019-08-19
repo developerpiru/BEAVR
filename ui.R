@@ -2,7 +2,7 @@
 #runApp("shinyapp", host = "0.0.0.0", port = 80)
 
 ui <- dashboardPage(
-  dashboardHeader(title = "RNAseq-GUI-R"),
+  dashboardHeader(title = "VisualRNAseq v0.5"),
   
   dashboardSidebar(
     
