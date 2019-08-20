@@ -73,8 +73,8 @@ If you are using R, a browser window should open automatically showing the app. 
 # Usage
 
 VisualRNAseq requires two file inputs:
-	1. Read counts file
-	2. Column data file
+1. Read counts file
+2. Column data file
 
 The read counts file contains all the reads for all samples in one file (TXT or CSV file). The format must be as follows:
 	1. The first column must contain ENSEMBL IDs for every gene. The heading name for this column must be '''gene_id'''.
