@@ -263,7 +263,7 @@ shinyServer(function(input, output, session) {
   
   #output calculated dds + FDR table
   output$calc_res_values <- DT::renderDataTable({
-    withProgress(message = 'Performing calculations...', value = 0, {
+    withProgress(message = 'Performing calculations...', value = 0, min = 0, max = 8, {
       as.data.frame(calc_res())
     })
   })
