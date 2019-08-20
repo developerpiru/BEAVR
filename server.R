@@ -35,7 +35,6 @@ shinyServer(function(input, output, session) {
     
     rownames(rawreadsdata) <- rawreadsdata$gene_id
     rawreadsdata <- rawreadsdata[,-1]
-    rawreadsdata <- rawreadsdata[,-1]
     
     return(rawreadsdata)
     
@@ -247,7 +246,7 @@ shinyServer(function(input, output, session) {
     listofgenes$ENSEMBL <<- rownames(listofgenes)
     
     #write files
-    write.csv(as.data.frame(resOrdered), file='resOrdered-all-genes.csv')
+    #write.csv(as.data.frame(resOrdered), file='resOrdered-all-genes.csv')
     #write.csv(as.data.frame(resFDR), file='resFDR.csv')
     
     #Update progress bar
