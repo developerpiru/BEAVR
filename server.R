@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.6
+# version: 0.61
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -334,8 +334,8 @@ shinyServer(function(input, output, session) {
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
     
-    p <- ggplot(d, aes(x=condition, y=count)) + 
-      geom_point(position=position_jitter(w=0.1,h=0)) + 
+    p <- ggplot(d, aes(x=condition, y=count, color=condition)) + 
+      geom_point(position=position_jitter(w=0.1,h=0)) +
       #scale_y_log10(breaks=c(25,100,400)) +
       ggtitle(genename) +
       xlab("") +
