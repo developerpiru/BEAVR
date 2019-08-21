@@ -1,8 +1,18 @@
-#setwd("D:/Google Drive/PhD Stuff/RNAseqGUI-R/RNAseqGUI_v5/")
-#runApp("shinyapp", host = "0.0.0.0", port = 80)
+# GUI to analyze RNAseq data using DESeq2
+# input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
+# version: 0.6
+
+# added:
+# +1 to all reads; avoid 0 read count errors
+# multiple comparisons
+# show >2 conditions on PCA plot
+# adjusdt results based on different conditions
+
+# bugs"
+# PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
 
 ui <- dashboardPage(
-  dashboardHeader(title = "VisualRNAseq v0.5"),
+  dashboardHeader(title = "VisualRNAseq v0.6"),
   
   dashboardSidebar(
     
@@ -52,9 +62,8 @@ ui <- dashboardPage(
       tabPanel("Select experiment settings", 
                uiOutput("control_condslist"),
                uiOutput("treatment1_condslist"),
-               #uiOutput("treatment2_condslist"),
-               #uiOutput("treatment3_condslist"),
-               uiOutput("FDR_value")
+               uiOutput("FDR_value"),
+               uiOutput("min_reads")
       ),
       
       tabPanel("Output - Differentially expressed gene table", fluidRow(
@@ -83,18 +92,7 @@ ui <- dashboardPage(
         textInput("padjcutoff", "Adjusted p value cutoff", value = "0.05", width = NULL,
                   placeholder = NULL),
         plotlyOutput("volcanoPlot", height = "800", width="100%")
-      )),
-      
-      tabPanel("raw reads", fluidRow(
-        tableOutput("rawreadstable")
-        
-      )),
-      
-      tabPanel("coldata", tableOutput("coldatatable")
-      ), 
-
-      tabPanel("conds list", tableOutput("condstable")
-      )
+      ))
     )
     
   ), #end dashboardBody

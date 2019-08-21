@@ -1,5 +1,15 @@
 # GUI to analyze RNAseq data using DESeq2
-# provide readcounts (from STAR alignment)
+# input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
+# version: 0.6
+
+# added:
+# +1 to all reads; avoid 0 read count errors
+# multiple comparisons
+# show >2 conditions on PCA plot
+# adjusdt results based on different conditions
+
+# bugs"
+# PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
 
 library(shiny)
 library(shinydashboard)
@@ -13,22 +23,18 @@ library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
 
+#increase max file size to 50MB
+options(shiny.maxRequestSize = 50*1024^2)
+
 shinyServer(function(input, output, session) {
   
-  #output rawreads table to the screen
-  output$rawreadstable <- renderTable({
-    head(cts())
-  }, rownames = TRUE, colnames = TRUE)
-  
-  #output coldata table to the screen
-  output$coldatatable <- renderTable({
-    coldata()
-  })
-  
   #reactive to get and store raw reads data
+  #upload read count file
   cts <- reactive({
+    
     req(input$rawreadsfile)
     
+    #store in rawreadsdata variable
     rawreadsdata <- read.csv(input$rawreadsfile$datapath,
                     header = input$header1,
                     sep = input$sep1)
@@ -36,15 +42,20 @@ shinyServer(function(input, output, session) {
     rownames(rawreadsdata) <- rawreadsdata$gene_id
     rawreadsdata <- rawreadsdata[,-1]
     
+    #increment all reads by 1 to avoid 0 read count errors
+    rawreadsdata <- rawreadsdata + 1
+    
     return(rawreadsdata)
     
   })
   
   #reactive to get and store coldata table
+  #upload column data file
   coldata <- reactive({
     
     req(input$coldatafile)
     
+    #store in coldata variable
     coldata <- read.csv(input$coldatafile$datapath,
                         header = input$header2,
                         sep = input$sep2)
@@ -67,35 +78,14 @@ shinyServer(function(input, output, session) {
     selectInput("treatment1_condslist", "Choose treatment condition", temp_condslist)
   })
   
-  output$treatment2_condslist <- renderUI({
-    temp_coldata <- coldata()
-    names(temp_coldata) <- cbind("1", "2", "3")
-    
-    ignore_list <- data.frame("Ignore", "Ignore", "Ignore")
-    names(ignore_list) <- cbind("1", "2", "3")
-    
-    temp_coldata <- rbind(temp_coldata, ignore_list)
-    temp_condslist <- unique(temp_coldata[,2])
-
-    selectInput("treatment2_condslist", "Choose treatment condition", temp_condslist)
-  })
-  
-  output$treatment3_condslist <- renderUI({
-    temp_coldata <- coldata()
-    names(temp_coldata) <- cbind("1", "2", "3")
-    
-    ignore_list <- data.frame("Ignore", "Ignore", "Ignore")
-    names(ignore_list) <- cbind("1", "2", "3")
-    
-    temp_coldata <- rbind(temp_coldata, ignore_list)
-    temp_condslist <- unique(temp_coldata[,2])
-    #temp_condslist <- temp_condslist[c(2,1),]
-
-    selectInput("treatment3_condslist", "Choose treatment condition", temp_condslist)
-  })
-  
+  #get false discovery rate from user
   output$FDR_value <- renderUI({
     numericInput("FDRvalue", "False Discovery Rate %",value = 10)
+  })
+  
+  #get minimum read count values to keep from user
+  output$min_reads <- renderUI({
+    numericInput("min_reads_value", "Drop genes with reads below:",value = 10)
   })
   
   conditionpicker <- reactive({
@@ -106,10 +96,6 @@ shinyServer(function(input, output, session) {
     
     return(condslist)
     
-  })
-  
-  output$condstable <- renderTable({
-    conditionpicker()
   })
   
   coldatacompare <- reactive({
@@ -130,13 +116,14 @@ shinyServer(function(input, output, session) {
     return(check3)
   })
   
+  #DEBUG - check coldata and read count tables for matching row\column names
   output$coldatachecker <- renderText({
     
     coldatacompare()
     
   })
   
-  #calculates dds
+  #create DESeq2 data set (dds)
   calc_get_dds <- reactive({
     
     #get values
@@ -152,12 +139,15 @@ shinyServer(function(input, output, session) {
     dds <- DESeqDataSetFromMatrix(countData = temp_cts, colData = temp_coldata, design = ~ condition)
     #dds
     
-    #pre-filter dds table to only keep genes that have at least 10 reads
-    keep <- rowSums(counts(dds)) >= 10
+    #pre-filter dds table to only keep genes that have at least min_reads_value reads set by user
+    keep <- rowSums(counts(dds)) > input$min_reads_value
     dds <- dds[keep,]
     
-    #Setting the factor level
-    dds$condition <- factor(dds$condition, levels = c(control_factor, treatment1_factor))
+    #OLD METHOD - Setting the factor level
+    #dds$condition <- factor(dds$condition, levels = c(control_factor, treatment1_factor))
+    
+    #NEW METHOD - Setting the factor level
+    dds$condition <- relevel(dds$condition, ref = control_factor)
     
     #Differential expression analysis
     dds <- DESeq(dds)
@@ -168,18 +158,19 @@ shinyServer(function(input, output, session) {
     
   })
   
-  #calls calc dds function
+  #calculate results from dds
   #calculates LFC and FDR
   calc_res <- reactive({
     
     #Update progress bar
-    totalSteps = 8
+    totalSteps = 8 + 3
     currentStep = 1
-    incProgress(currentStep/totalSteps, detail = paste("Initializing..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     control_factor <- input$control_condslist
     treatment1_factor <- input$treatment1_condslist
     
+    #build LFC argument based define experimental conditions
     LFC_coef <- paste("condition_", treatment1_factor, sep="")
     LFC_coef <- paste(LFC_coef, control_factor, sep="_vs_")
     
@@ -187,31 +178,34 @@ shinyServer(function(input, output, session) {
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps, detail = paste("Performing DESeq2 calculations..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Performing DESeq2 calculations..."))
     
     #calcate dds values
     dds <<- calc_get_dds()
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps, detail = paste("Determing differential expression..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Determing differential expression..."))
     
-    #set the contrasts for comparisons
-    res <<- results(dds, contrast=c("condition",control_factor, treatment1_factor))
+    #OLD WAY - set the contrasts for comparisons
+    #res <<- results(dds, contrast=c("condition",control_factor, treatment1_factor))
+    
+    #new way to set multifactor comparisons - log2FC[final/initial]
+    res <<- results(dds, contrast=c("condition", treatment1_factor, control_factor))
     
     #Log fold change shrinkage for visualization and ranking
     #resultsNames(dds)
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps, detail = paste("Using 'apeglm' for LFC shrinkage..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Using 'apeglm' for LFC shrinkage..."))
     
-    #adjust conditions based on contrast setting above!!
+    #adjust conditions based on contrast
     resLFC <<- lfcShrink(dds, coef=LFC_coef, type="apeglm")
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps, detail = paste("Ordering by p values..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Ordering by p values..."))
     
     #order results by smallest p value
     resOrdered <<- res[order(res$pvalue),]
@@ -224,7 +218,7 @@ shinyServer(function(input, output, session) {
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps, detail = paste("Applying FDR correction..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Applying FDR correction..."))
     
     #filter res based on FDR cut off (10% = alpha of 0.1)
     resFDR <<- results(dds, alpha=FDR_aplha)
@@ -233,7 +227,7 @@ shinyServer(function(input, output, session) {
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps, detail = paste("Mapping ENSEMBL names to readable gene symbols..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Mapping ENSEMBL names to readable gene symbols..."))
     
     #map ensembl symbols to gene ids
     res$GeneID <<- mapIds(org.Hs.eg.db,keys=rownames(res),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
@@ -251,7 +245,7 @@ shinyServer(function(input, output, session) {
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps, detail = paste("Preparing to display table..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Preparing to display table..."))
     
     resFDR <<- resFDR[,c(7,1:6)]
     
@@ -262,7 +256,7 @@ shinyServer(function(input, output, session) {
   
   #output calculated dds + FDR table
   output$calc_res_values <- DT::renderDataTable({
-    withProgress(message = 'Performing calculations...', value = 0, min = 0, max = 8, {
+    withProgress(message = 'Performing calculations...', value = 1, min = 1, max = 100, {
       as.data.frame(calc_res())
     })
   })
@@ -277,32 +271,70 @@ shinyServer(function(input, output, session) {
     }
   )
   
-  
   #PCA plot
   output$PCA_plot = renderPlot({
+    withProgress(message = 'Generating PCA plot...', value = 1, min = 1, max = 100, {
+      do_PCA_plot()
+    })
+  })
+  
+  #function to draw PCA plot
+  do_PCA_plot <- reactive({
     
-    #New PCA plot function
+    #Update progress bar
+    totalSteps = 3 + 3
+    currentStep = 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     vsd <<- vst(dds, blind=FALSE)
     
-    pcaData <- plotPCA(vsd, intgroup=c("condition", "type"), returnData=TRUE)
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Calculating..."))
+    
+    pcaData <- plotPCA(vsd, intgroup=c("condition", "replicate"), returnData=TRUE)
     percentVar <- round(100 * attr(pcaData, "percentVar"))
-    ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    
+    p <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=replicate)) +
       geom_point(size=3) +
       xlab(paste0("PC1: ",percentVar[1],"% variance")) +
       ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
       coord_fixed()
-
+    
+    print(p)
+    
   })
   
   #gene count plot
   output$genecount_plot = renderPlot({
+    withProgress(message = 'Generating read count plot...', value = 1, min = 1, max = 100, {
+      do_genecount_plot()
+    })
+  })
+  
+  #function to plot gene counts for user defined genes
+  do_genecount_plot <- reactive({
     
-    genename = input$gene_name
-
+    #Update progress bar
+    totalSteps = 2 + 3
+    currentStep = 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
+    
+    #get gene name from user
+    genename = toupper(input$gene_name)
+    
+    #get data for selected gene from dds data matrix
     d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==genename),2], intgroup="condition", returnData=TRUE)
     
-    ggplot(d, aes(x=condition, y=count)) + 
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    
+    p <- ggplot(d, aes(x=condition, y=count)) + 
       geom_point(position=position_jitter(w=0.1,h=0)) + 
       #scale_y_log10(breaks=c(25,100,400)) +
       ggtitle(genename) +
@@ -315,6 +347,8 @@ shinyServer(function(input, output, session) {
             axis.title.y = element_text(colour="grey20",size=14,angle=90,hjust=.5,vjust=.5,face="plain"),
             plot.title = element_text(colour="grey20",size=14,angle=0,hjust=.5,vjust=.5,face="plain"))
     
+    #return the plot
+    print(p)
   })
   
   output$volcanoPlot = renderPlotly({
@@ -365,7 +399,7 @@ shinyServer(function(input, output, session) {
     }
     
     x <- list(
-      title = "Fold change"
+      title = "Log2 Fold change"
     )
     y <- list(
       title = "FDR"
