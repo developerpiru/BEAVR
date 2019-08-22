@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.62
+# version: 0.63
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -8,6 +8,7 @@
 # show >2 conditions on PCA plot
 # adjust results based on different conditions
 # options for plots to show labels
+# select either sample names or replicate names for labels
 # boxplot or jitter plot option for read count plot
 # use ggrepel for plot labels so labels don't overlap
 # automatically install required packages if not already installed
@@ -336,10 +337,23 @@ shinyServer(function(input, output, session) {
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
     
-    #show labels using ggrepel for all points if checkbox is selected by user
-    if (input$PCAplot_show_labels == TRUE){
-      p <- p + geom_text_repel(nudge_x=0.3, nudge_y=0.3, segment.color=NA, aes(label=replicate))
+    #show labels for points as determined by user
+    if (input$PCAplot_labels == 1){
+      # no labels
+      p <- p
+    } else if (input$PCAplot_labels == 2){
+      #sample names as labels
+      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d)))
+      aes(shape=rownames(d))
+    } else if (input$PCAplot_labels == 3){
+      #replicate names as labels
+      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
     }
+    
+    #show labels using ggrepel for all points if checkbox is selected by user
+    #if (input$PCAplot_show_labels == TRUE){
+    #  p <- p + geom_text_repel(nudge_x=0.3, nudge_y=0.3, segment.color=NA, aes(label=replicate))
+    #}
     
     #return the plot
     print(p)
@@ -395,11 +409,19 @@ shinyServer(function(input, output, session) {
         aes(shape=replicate)
     }
     
-    #show labels using ggrepel for all points if checkbox is selected by user
-    if (input$readcountplot_show_labels == TRUE){
+    #show labels for points as determined by user
+    if (input$readcountplot_labels == 1){
+      # no labels
+      p <- p
+    } else if (input$readcountplot_labels == 2){
+      #sample names as labels
+      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d)))
+        aes(shape=rownames(d))
+    } else if (input$readcountplot_labels == 3){
+      #replicate names as labels
       p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
     }
-    
+
     #return the plot
     print(p)
   })
