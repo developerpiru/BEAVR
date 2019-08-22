@@ -1,13 +1,16 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.61
+# version: 0.62
 
 # added:
 # +1 to all reads; avoid 0 read count errors
 # multiple comparisons
 # show >2 conditions on PCA plot
-# adjusdt results based on different conditions
-# labels for read count plot
+# adjust results based on different conditions
+# options for plots to show labels
+# boxplot or jitter plot option for read count plot
+# use ggrepel for plot labels so labels don't overlap
+# automatically install required packages if not already installed
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -74,12 +77,17 @@ ui <- dashboardPage(
       )),
       
       tabPanel("PCA Plot", fluidRow(
+        checkboxInput("PCAplot_show_labels", "Show labels", TRUE),
         plotOutput("PCA_plot", height = "500", width="500")
-        
+    
       )),
       
-      tabPanel("Gene counts", fluidRow(
+      tabPanel("Gene read counts", fluidRow(
         textInput("gene_name", "Enter Gene name", value = "KRAS"),
+        radioButtons("readcountplot_type", label = "Type of plot",
+                     choices = list("Boxplot" = 1, "Jitter plot" = 2), 
+                     selected = 1),
+        checkboxInput("readcountplot_show_labels", "Show labels", TRUE),
         plotOutput("genecount_plot", height = "500", width="500")
         
       )),

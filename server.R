@@ -1,22 +1,51 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.61
+# version: 0.62
 
 # added:
 # +1 to all reads; avoid 0 read count errors
 # multiple comparisons
 # show >2 conditions on PCA plot
-# adjusdt results based on different conditions
-# labels for read count plot
+# adjust results based on different conditions
+# options for plots to show labels
+# boxplot or jitter plot option for read count plot
+# use ggrepel for plot labels so labels don't overlap
+# automatically install required packages if not already installed
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
 
+#function to check for required packages and install them if not already installed
+installReqs <- function(package_name, bioc){
+  if (requireNamespace(package_name, quietly = TRUE) == FALSE) {
+    if (bioc == FALSE)
+      install.packages(package_name)
+    else if (bioc == TRUE) #install using Bioconductor package manager
+      BiocManager::install(package_name)
+  }
+}
+
+#check if required libraries are installed, and install them if needed
+installReqs("shiny", bioc = FALSE)
+installReqs("shinydashboard", bioc = FALSE)
+installReqs("plotly", bioc = FALSE)
+installReqs("scatterD3", bioc = FALSE)
+installReqs("ggplot2", bioc = FALSE)
+installReqs("ggrepel", bioc = FALSE)
+installReqs("data.table", bioc = FALSE)
+installReqs("DT", bioc = FALSE)
+installReqs("DESeq2", bioc = TRUE)
+installReqs("vsn", bioc = TRUE)
+installReqs('apeglm', bioc = TRUE)
+installReqs('org.Hs.eg.db', bioc = TRUE)
+
+#load required libraries
 library(shiny)
 library(shinydashboard)
 library(plotly)
 library(scatterD3)
 library(ggplot2)
+library(ggrepel)
 library(data.table)
 library(DT)
 library("DESeq2")
@@ -24,8 +53,8 @@ library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
 
-#increase max file size to 50MB
-options(shiny.maxRequestSize = 50*1024^2)
+#increase max file size to 100MB
+options(shiny.maxRequestSize = 100*1024^2)
 
 shinyServer(function(input, output, session) {
   
@@ -291,21 +320,28 @@ shinyServer(function(input, output, session) {
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Calculating..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
     
     pcaData <- plotPCA(vsd, intgroup=c("condition", "replicate"), returnData=TRUE)
     percentVar <- round(100 * attr(pcaData, "percentVar"))
-    
-    #Update progress bar
-    currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
-    
+
+    #generate the plot
     p <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=replicate)) +
       geom_point(size=3) +
       xlab(paste0("PC1: ",percentVar[1],"% variance")) +
       ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
       coord_fixed()
     
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    
+    #show labels using ggrepel for all points if checkbox is selected by user
+    if (input$PCAplot_show_labels == TRUE){
+      p <- p + geom_text_repel(nudge_x=0.3, nudge_y=0.3, segment.color=NA, aes(label=replicate))
+    }
+    
+    #return the plot
     print(p)
     
   })
@@ -321,7 +357,7 @@ shinyServer(function(input, output, session) {
   do_genecount_plot <- reactive({
     
     #Update progress bar
-    totalSteps = 2 + 3
+    totalSteps = 3 + 3
     currentStep = 1
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
@@ -333,12 +369,10 @@ shinyServer(function(input, output, session) {
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
     
-    p <- ggplot(d, aes(x=condition, y=count, color=condition, shape=replicate)) + 
-      geom_point(size=3, position=position_jitter(w=0.2,h=0)) +
-      geom_text(aes(label = replicate), position = position_nudge(y = -10)) +
-      #scale_y_log10(breaks=c(25,100,400)) +
+    #generate the plot
+    p <- ggplot(d, aes(x=condition, y=count, color=condition)) +
       ggtitle(genename) +
       xlab("") +
       ylab("Normalized count") +
@@ -348,6 +382,23 @@ shinyServer(function(input, output, session) {
             axis.title.x = element_text(colour="grey20",size=12,angle=0,hjust=.5,vjust=0,face="plain"),
             axis.title.y = element_text(colour="grey20",size=14,angle=90,hjust=.5,vjust=.5,face="plain"),
             plot.title = element_text(colour="grey20",size=14,angle=0,hjust=.5,vjust=.5,face="plain"))
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    
+    #show boxplot or jitter plot as determined by user
+    if (input$readcountplot_type == 1){
+      p <- p + geom_boxplot()
+    } else {
+      p <- p + geom_jitter(size=3, width=0, height=0) +
+        aes(shape=replicate)
+    }
+    
+    #show labels using ggrepel for all points if checkbox is selected by user
+    if (input$readcountplot_show_labels == TRUE){
+      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
+    }
     
     #return the plot
     print(p)
