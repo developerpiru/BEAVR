@@ -17,7 +17,7 @@
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
 
 ui <- dashboardPage(
-  dashboardHeader(title = "VisualRNAseq v0.61"),
+  dashboardHeader(title = "VisualRNAseq v0.63"),
   
   dashboardSidebar(
     
