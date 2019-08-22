@@ -12,6 +12,7 @@
 # boxplot or jitter plot option for read count plot
 # use ggrepel for plot labels so labels don't overlap
 # automatically install required packages if not already installed
+# toggle for biocmanager packages
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
