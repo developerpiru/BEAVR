@@ -26,18 +26,18 @@ installReqs <- function(package_name, bioc){
 }
 
 #check if required libraries are installed, and install them if needed
-#installReqs("shiny", bioc = FALSE)
-#installReqs("shinydashboard", bioc = FALSE)
-#installReqs("plotly", bioc = FALSE)
-#installReqs("scatterD3", bioc = FALSE)
-#installReqs("ggplot2", bioc = FALSE)
-#installReqs("ggrepel", bioc = FALSE)
-#installReqs("data.table", bioc = FALSE)
-#installReqs("DT", bioc = FALSE)
-#installReqs("DESeq2", bioc = TRUE)
-#installReqs("vsn", bioc = TRUE)
-#installReqs('apeglm', bioc = TRUE)
-#installReqs('org.Hs.eg.db', bioc = TRUE)
+installReqs("shiny", bioc = FALSE)
+installReqs("shinydashboard", bioc = FALSE)
+installReqs("plotly", bioc = FALSE)
+installReqs("scatterD3", bioc = FALSE)
+installReqs("ggplot2", bioc = FALSE)
+installReqs("ggrepel", bioc = FALSE)
+installReqs("data.table", bioc = FALSE)
+installReqs("DT", bioc = FALSE)
+installReqs("DESeq2", bioc = TRUE)
+installReqs("vsn", bioc = TRUE)
+installReqs('apeglm', bioc = TRUE)
+installReqs('org.Hs.eg.db', bioc = TRUE)
 
 #load required libraries
 library(shiny)
