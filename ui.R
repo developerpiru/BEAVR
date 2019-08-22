@@ -7,6 +7,7 @@
 # multiple comparisons
 # show >2 conditions on PCA plot
 # adjusdt results based on different conditions
+# labels for read count plot
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level

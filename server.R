@@ -7,6 +7,7 @@
 # multiple comparisons
 # show >2 conditions on PCA plot
 # adjusdt results based on different conditions
+# labels for read count plot
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -328,14 +329,15 @@ shinyServer(function(input, output, session) {
     genename = toupper(input$gene_name)
     
     #get data for selected gene from dds data matrix
-    d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==genename),2], intgroup="condition", returnData=TRUE)
+    d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==genename),2], intgroup=c("condition", "replicate"), returnData=TRUE)
     
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
     
-    p <- ggplot(d, aes(x=condition, y=count, color=condition)) + 
-      geom_point(position=position_jitter(w=0.1,h=0)) +
+    p <- ggplot(d, aes(x=condition, y=count, color=condition, shape=replicate)) + 
+      geom_point(size=3, position=position_jitter(w=0.2,h=0)) +
+      geom_text(aes(label = replicate), position = position_nudge(y = -10)) +
       #scale_y_log10(breaks=c(25,100,400)) +
       ggtitle(genename) +
       xlab("") +
