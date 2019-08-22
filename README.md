@@ -1,7 +1,7 @@
 # VisualRNAseq
 
 # Introduction
-A graphic tool to automate analysis of large RNAseq datasets
+A graphical tool to automate analysis of large RNAseq datasetss
 
 # Requirements
 You must have the following components installed in order to run VisualizeTRACS:
