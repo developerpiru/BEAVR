@@ -59,6 +59,7 @@ Load the required libraries and run the latest version of VisualRNAseq using:
  	library(plotly)
  	library(scatterD3)
  	library(ggplot2)
+	library(ggrepel)
  	library(data.table)
 	library(DT)
 	library("DESeq2")
