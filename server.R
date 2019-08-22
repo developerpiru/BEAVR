@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.63
+# version: 0.64
 
 # added:
 # +1 to all reads; avoid 0 read count errors
