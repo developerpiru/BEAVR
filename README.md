@@ -32,6 +32,8 @@ At the R command prompt or in RStudio, run these commands to install the depende
 	install.packages("scatterD3")
   
   	install.packages("ggplot2")
+	
+	install.packages("ggrepel")
   
   	install.packages("data.table")
 
@@ -50,7 +52,7 @@ Note: if you don't have Bioconductor's BiocManager installed, you can install it
 	install.packages("BiocManager")
   
 # Run VisualRNAseq
-Load the required libraries:
+Load the required libraries and run the latest version of VisualRNAseq using:
 
 	library(shiny)
 	library(shinydashboard)
@@ -63,9 +65,6 @@ Load the required libraries:
 	library("vsn")
 	library('apeglm')
 	library('org.Hs.eg.db')
-
-Then run the latest version of VisualRNAseq using:
-
 	runGitHub( "VisualRNAseq", "developerpiru")
 
 If you are using R, a browser window should open automatically showing the app. If you are using RStudio, click "Open in browser" in the window that opens.
