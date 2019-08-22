@@ -87,7 +87,7 @@ ui <- dashboardPage(
         radioButtons("readcountplot_type", label = "Type of plot",
                      choices = list("Boxplot" = 1, "Jitter plot" = 2), 
                      selected = 1),
-        checkboxInput("readcountplot_show_labels", "Show labels", TRUE),
+        checkboxInput("readcountplot_show_labels", "Show labels", FALSE),
         plotOutput("genecount_plot", height = "500", width="500")
         
       )),
