@@ -341,7 +341,7 @@ shinyServer(function(input, output, session) {
     
     #show labels for points as determined by user
     if (input$PCAplot_labels == 1){
-      # no labels
+      #no labels
       p <- p
     } else if (input$PCAplot_labels == 2){
       #sample names as labels
@@ -351,12 +351,7 @@ shinyServer(function(input, output, session) {
       #replicate names as labels
       p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
     }
-    
-    #show labels using ggrepel for all points if checkbox is selected by user
-    #if (input$PCAplot_show_labels == TRUE){
-    #  p <- p + geom_text_repel(nudge_x=0.3, nudge_y=0.3, segment.color=NA, aes(label=replicate))
-    #}
-    
+
     #return the plot
     print(p)
     
@@ -413,7 +408,7 @@ shinyServer(function(input, output, session) {
     
     #show labels for points as determined by user
     if (input$readcountplot_labels == 1){
-      # no labels
+      #no labels
       p <- p
     } else if (input$readcountplot_labels == 2){
       #sample names as labels
@@ -428,40 +423,35 @@ shinyServer(function(input, output, session) {
     print(p)
   })
   
+  #make volcano plot highlight genes that have an FDR cutoff and Log2FC cutoff as determined by the user (input$padjcutoff and input$FCcutoff)
   output$volcanoPlot = renderPlotly({
     
     #get RNAseq data
     RNAseqdatatoplot <- as.data.frame(resFDR)
     
-    # add a grouping column; default value is "not significant"
+    #add a grouping column used for FDR & Log2FC classification; default value is "not significant"
     RNAseqdatatoplot["group"] <- "NotSignificant"
     
-    # for our plot, we want to highlight 
-    # FDR cutoff from text input padjcutoff (input$padjcutoff)
-    # Fold Change cutoff from input slider FCcutoff (input$FCcutoff)
-    
-    # change the grouping for the entries with significance but not a large enough Fold change
+    #change the grouping for the entries with significance but not a large enough fold change
     RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] < input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) < input$FCcutoff ),"group"] <- "Significant"
     
-    # change the grouping for the entries a large enough Fold change but not a low enough p value
-    RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] > input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) > input$FCcutoff ),"group"] <- "FoldChange"
+    #change the grouping for the entries a large enough fold change but not a low enough p value
+    RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] >= input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) >= input$FCcutoff ),"group"] <- "FoldChange"
     
-    # change the grouping for the entries with both significance and large enough fold change
-    RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] < input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) > input$FCcutoff ),"group"] <- "Significant&FoldChange"
+    #change the grouping for the entries with both significance and large enough fold change
+    RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] < input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) >= input$FCcutoff ),"group"] <- "Significant&FoldChange"
     
-    # make gene names a URL to genecards.com
+    #make gene names a URL to genecards.com
     RNAseqdatatoplot$GENEurl <- paste0("<a href='http://www.genecards.org/cgi-bin/carddisp.pl?gene=", RNAseqdatatoplot$GeneID, "'>", RNAseqdatatoplot$GeneID, "</a>")
     
-    # Find and label the top peaks..
-    top_peaks <- RNAseqdatatoplot[with(RNAseqdatatoplot, order(log2FoldChange, padj)),][1:10,]
-    top_peaks <- rbind(top_peaks, RNAseqdatatoplot[with(RNAseqdatatoplot, order(-log2FoldChange, padj)),][1:10,])
+    #Find the top genes to label
+    top_genes <- RNAseqdatatoplot[with(RNAseqdatatoplot, order(log2FoldChange, padj)),][1:15,]
+    top_genes <- rbind(top_genes, RNAseqdatatoplot[with(RNAseqdatatoplot, order(-log2FoldChange, padj)),][1:15,])
     
-    # Add gene labels for all of the top genes we found 
-    # here we are creating an empty list, and filling it with entries for each row in the dataframe
-    # each list entry is another list with named items that will be used by Plot.ly
+    #Build list of annotations for plotly
     a <- list()
-    for (i in seq_len(nrow(top_peaks))) {
-      m <- top_peaks[i, ]
+    for (i in seq_len(nrow(top_genes))) {
+      m <- top_genes[i, ]
       a[[i]] <- list(
         x = m[["log2FoldChange"]],
         y = -log10(m[["padj"]]),
@@ -479,7 +469,7 @@ shinyServer(function(input, output, session) {
       title = "Log2 Fold change"
     )
     y <- list(
-      title = "FDR"
+      title = "Adjusted p value"
     )
     
     p <- plot_ly(data = RNAseqdatatoplot, 
@@ -489,6 +479,7 @@ shinyServer(function(input, output, session) {
                  mode = "markers", 
                  color = RNAseqdatatoplot$group) %>% 
       layout(title ="Volcano Plot", xaxis = x, yaxis = y) %>%
+      #load the annotations list with layout properties
       layout(annotations = a)
 
     
