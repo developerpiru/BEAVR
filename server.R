@@ -345,7 +345,7 @@ shinyServer(function(input, output, session) {
       p <- p
     } else if (input$PCAplot_labels == 2){
       #sample names as labels
-      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d)))
+      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(pcaData)))
       aes(shape=rownames(d))
     } else if (input$PCAplot_labels == 3){
       #replicate names as labels
