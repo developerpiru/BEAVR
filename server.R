@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.64
+# version: 0.65
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -13,6 +13,7 @@
 # use ggrepel for plot labels so labels don't overlap
 # automatically install required packages if not already installed
 # toggle for biocmanager packages
+# fixed volcano plot
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -41,6 +42,7 @@ installReqs("DESeq2", bioc = TRUE)
 installReqs("vsn", bioc = TRUE)
 installReqs('apeglm', bioc = TRUE)
 installReqs('org.Hs.eg.db', bioc = TRUE)
+installReqs('EnhancedVolcano', bioc = TRUE)
 
 #load required libraries
 library(shiny)
@@ -55,6 +57,7 @@ library("DESeq2")
 library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
+library('EnhancedVolcano')
 
 #increase max file size to 100MB
 options(shiny.maxRequestSize = 100*1024^2)
@@ -424,65 +427,39 @@ shinyServer(function(input, output, session) {
   })
   
   #make volcano plot highlight genes that have an FDR cutoff and Log2FC cutoff as determined by the user (input$padjcutoff and input$FCcutoff)
-  output$volcanoPlot = renderPlotly({
+  output$volcanoPlot = renderPlot({
+    withProgress(message = 'Generating volcano plot...', value = 1, min = 1, max = 100, {
+      do_volcano_plot()
+    })
+  })
+  
+  #function to plot gene counts for user defined genes
+  do_volcano_plot <- reactive({
+    
+    #Update progress bar
+    totalSteps = 2 + 3
+    currentStep = 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     #get RNAseq data
-    RNAseqdatatoplot <- as.data.frame(resFDR)
+    RNAseqdatatoplot <<- as.data.frame(resFDR)
     
-    #add a grouping column used for FDR & Log2FC classification; default value is "not significant"
-    RNAseqdatatoplot["group"] <- "NotSignificant"
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
     
-    #change the grouping for the entries with significance but not a large enough fold change
-    RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] < input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) < input$FCcutoff ),"group"] <- "Significant"
+    #plot
+    p <- EnhancedVolcano(RNAseqdatatoplot,
+                    lab = RNAseqdatatoplot$GeneID,
+                    x = "log2FoldChange",
+                    y = "padj",
+                    pCutoff = as.numeric(input$padjcutoff),
+                    FCcutoff = as.numeric(input$FCcutoff),
+                    transcriptPointSize = 1.5,
+                    transcriptLabSize = 3.0)
     
-    #change the grouping for the entries a large enough fold change but not a low enough p value
-    RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] >= input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) >= input$FCcutoff ),"group"] <- "FoldChange"
-    
-    #change the grouping for the entries with both significance and large enough fold change
-    RNAseqdatatoplot[which(RNAseqdatatoplot['padj'] < input$padjcutoff & abs(RNAseqdatatoplot['log2FoldChange']) >= input$FCcutoff ),"group"] <- "Significant&FoldChange"
-    
-    #make gene names a URL to genecards.com
-    RNAseqdatatoplot$GENEurl <- paste0("<a href='http://www.genecards.org/cgi-bin/carddisp.pl?gene=", RNAseqdatatoplot$GeneID, "'>", RNAseqdatatoplot$GeneID, "</a>")
-    
-    #Find the top genes to label
-    top_genes <- RNAseqdatatoplot[with(RNAseqdatatoplot, order(log2FoldChange, padj)),][1:15,]
-    top_genes <- rbind(top_genes, RNAseqdatatoplot[with(RNAseqdatatoplot, order(-log2FoldChange, padj)),][1:15,])
-    
-    #Build list of annotations for plotly
-    a <- list()
-    for (i in seq_len(nrow(top_genes))) {
-      m <- top_genes[i, ]
-      a[[i]] <- list(
-        x = m[["log2FoldChange"]],
-        y = -log10(m[["padj"]]),
-        text = m[["GeneID"]],
-        xref = "x",
-        yref = "y",
-        showarrow = TRUE,
-        arrowhead = 0.5,
-        ax = 20,
-        ay = -40
-      )
-    }
-    
-    x <- list(
-      title = "Log2 Fold change"
-    )
-    y <- list(
-      title = "Adjusted p value"
-    )
-    
-    p <- plot_ly(data = RNAseqdatatoplot, 
-                 x = RNAseqdatatoplot$log2FoldChange, 
-                 y = -log10(RNAseqdatatoplot$padj), 
-                 text = RNAseqdatatoplot$GENEurl, 
-                 mode = "markers", 
-                 color = RNAseqdatatoplot$group) %>% 
-      layout(title ="Volcano Plot", xaxis = x, yaxis = y) %>%
-      #load the annotations list with layout properties
-      layout(annotations = a)
-
-    
+    #return the plot
+    print(p)
   })
 
 })

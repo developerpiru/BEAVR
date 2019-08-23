@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.64
+# version: 0.65
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -13,6 +13,7 @@
 # use ggrepel for plot labels so labels don't overlap
 # automatically install required packages if not already installed
 # toggle for biocmanager packages
+# fixed volcano plot
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -106,7 +107,7 @@ ui <- dashboardPage(
                     value = c(2)),
         textInput("padjcutoff", "Adjusted p value cutoff", value = "0.05", width = NULL,
                   placeholder = NULL),
-        plotlyOutput("volcanoPlot", height = "800", width="100%")
+        plotOutput("volcanoPlot", height = "800", width="100%")
       ))
     )
     
