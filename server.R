@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.66
+app_version = 0.67
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -14,7 +14,7 @@
 # automatically install required packages if not already installed
 # toggle for biocmanager packages
 # fixed volcano plot
-# added font size customization to pca, gene count, and volcano plots + point size customization to volcano plot
+# added ability to customize font sizes and point sizes for all graphs/plots
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -131,6 +131,7 @@ shinyServer(function(input, output, session) {
     numericInput("min_reads_value", "Drop genes with reads below:",value = 10)
   })
   
+  #deprecated function!!
   conditionpicker <- reactive({
     
     temp_coldata <- coldata()
@@ -346,17 +347,19 @@ shinyServer(function(input, output, session) {
 
     #generate the plot
     p <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=replicate)) +
-      geom_point(size=3) +
+      geom_point(size = input$pcaPointSize) +
+      labs(shape="Replicate", colour="Condition") +
       xlab(paste0("PC1: ",percentVar[1],"% variance")) +
       ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-      coord_fixed() +
-      theme(axis.text.x = element_text(colour="grey20",size=input$pcaFontSize_x_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-            axis.text.y = element_text(colour="grey20",size=input$pcaFontSize_y_axis,angle=0,hjust=1,vjust=0,face="plain"),  
-            axis.title.x = element_text(colour="grey20",size=input$pcaFontSize_x_title,angle=0,hjust=.5,vjust=0,face="plain"),
-            axis.title.y = element_text(colour="grey20",size=input$pcaFontSize_y_title,angle=90,hjust=.5,vjust=.5,face="plain"),
-            legend.title = element_text(colour="grey20",size=input$pcaFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text =  element_text(colour="grey20",size=input$pcaFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text.align = 0)
+      theme_classic() +
+      theme(axis.text.x = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+            axis.text.y = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+            axis.title.x = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+            axis.title.y = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+            legend.title = element_text(colour="black",size=input$pcaFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text =  element_text(colour="black",size=input$pcaFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text.align = 0,
+            text = element_text(size=input$pcaFontSize_x_axis))
       
       
       #theme(text = element_text(size=input$pcaFontSize))
@@ -371,11 +374,11 @@ shinyServer(function(input, output, session) {
       p <- p
     } else if (input$PCAplot_labels == 2){
       #sample names as labels
-      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(pcaData)))
+      p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(pcaData)))
       aes(shape=rownames(d))
     } else if (input$PCAplot_labels == 3){
       #replicate names as labels
-      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
+      p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
     }
 
     #return the plot
@@ -408,18 +411,21 @@ shinyServer(function(input, output, session) {
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
     
-    #generate the plot
+    #generate the gene count plot
     p <- ggplot(d, aes(x=condition, y=count, color=condition)) +
       ggtitle(genename) +
+      geom_point(size = input$genecountPointSize) +
+      labs(shape="Replicate", colour="Condition") +
       xlab("") +
-      ylab("Normalized count") +
-      theme_bw() +
-      theme(axis.text.x = element_text(colour="grey20",size=input$genecountFontSize_x_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-            axis.text.y = element_text(colour="grey20",size=input$genecountFontSize_y_axis,angle=0,hjust=1,vjust=0,face="plain"),  
-            axis.title.x = element_text(colour="grey20",size=input$genecountFontSize_x_title,angle=0,hjust=.5,vjust=0,face="plain"),
-            axis.title.y = element_text(colour="grey20",size=input$genecountFontSize_y_title,angle=90,hjust=.5,vjust=.5,face="plain"),
-            legend.title = element_text(colour="grey20",size=input$genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text =  element_text(colour="grey20",size=input$genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+      ylab("Normalized read count") +
+      theme_classic() +
+      theme(axis.text.x = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+            axis.text.y = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+            axis.title.x = element_text(colour="black",size=0),
+            axis.title.y = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+            plot.title = element_text(colour="black",size=input$genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.title = element_text(colour="black",size=input$genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text =  element_text(colour="black",size=input$genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
             legend.text.align = 0)
     
     #Update progress bar
@@ -428,23 +434,27 @@ shinyServer(function(input, output, session) {
     
     #show boxplot or jitter plot as determined by user
     if (input$readcountplot_type == 1){
-      p <- p + geom_boxplot()
+      p <- p + geom_boxplot() +
+        #hide points
+        geom_point(size = -1)
     } else {
-      p <- p + geom_jitter(size=3, width=0, height=0) +
+      p <- p + geom_jitter(size=input$genecountPointSize, width=0, height=0) +
         aes(shape=replicate)
     }
     
     #show labels for points as determined by user
     if (input$readcountplot_labels == 1){
       #no labels
-      p <- p
+      p <- p + labs(shape="Replicate", colour="Condition")
     } else if (input$readcountplot_labels == 2){
       #sample names as labels
-      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d)))
-        aes(shape=rownames(d))
+      p <- p + geom_text_repel(size=input$genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
+        labs(shape="Replicate", colour="Condition")
+        #aes(shape=rownames(d))
     } else if (input$readcountplot_labels == 3){
       #replicate names as labels
-      p <- p + geom_text_repel(nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
+      p <- p + geom_text_repel(size=input$genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
+        labs(shape="Replicate", colour="Condition")
     }
 
     #return the plot
@@ -473,15 +483,53 @@ shinyServer(function(input, output, session) {
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
     
-    #plot
-    p <- EnhancedVolcano(RNAseqdatatoplot,
-                    lab = RNAseqdatatoplot$GeneID,
-                    x = "log2FoldChange",
-                    y = "padj",
-                    pCutoff = as.numeric(input$padjcutoff),
-                    FCcutoff = as.numeric(input$FCcutoff),
-                    pointSize = input$volcanoPointSize,
-                    labSize = input$volcanoFontSize)
+    if (input$volcanoCutoffLines == TRUE){
+      p <- EnhancedVolcano(RNAseqdatatoplot,
+                           title = paste(input$control_condslist, input$treatment1_condslist, sep = " vs. "),
+                           subtitle = "",
+                           lab = RNAseqdatatoplot$GeneID,
+                           x = "log2FoldChange",
+                           y = "padj",
+                           pCutoff = as.numeric(input$padjcutoff),
+                           FCcutoff = as.numeric(input$FCcutoff),
+                           titleLabSize = input$volcanoFontSize_plot_title,
+                           axisLabSize = input$volcanoFontSize_xy_axis,
+                           pointSize = input$volcanoPointSize,
+                           labSize  = input$volcanoFontSize_label,
+                           legendLabSize = input$volcanoFontSize_legend_title,
+                           gridlines.major = FALSE,
+                           gridlines.minor = FALSE,
+                           legendPosition = "bottom",
+                           legendLabels = c('Not Significant', expression(Log[2]~FC~only), "p-value only", expression(p-value~and~log[2]~FC)),
+                           cutoffLineType = "longdash",
+                           cutoffLineCol = 'black',
+                           labCol = 'black',
+                           caption = ""
+      )
+
+    } else {
+      p <- EnhancedVolcano(RNAseqdatatoplot,
+                           title = paste(input$control_condslist, input$treatment1_condslist, sep = " vs. "),
+                           subtitle = "",
+                           lab = RNAseqdatatoplot$GeneID,
+                           x = "log2FoldChange",
+                           y = "padj",
+                           pCutoff = as.numeric(input$padjcutoff),
+                           FCcutoff = as.numeric(input$FCcutoff),
+                           titleLabSize = input$volcanoFontSize_plot_title,
+                           axisLabSize = input$volcanoFontSize_xy_axis,
+                           pointSize = input$volcanoPointSize,
+                           labSize  = input$volcanoFontSize_label,
+                           legendLabSize = input$volcanoFontSize_legend_title,
+                           gridlines.major = FALSE,
+                           gridlines.minor = FALSE,
+                           legendPosition = "bottom",
+                           cutoffLineType = "blank",
+                           labCol = 'black',
+                           caption = ""
+      )
+    }
+    
     
     #return the plot
     print(p)

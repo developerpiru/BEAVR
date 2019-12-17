@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.66
+app_version = 0.67
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -14,48 +14,95 @@
 # automatically install required packages if not already installed
 # toggle for biocmanager packages
 # fixed volcano plot
-# added font size customization to pca, gene count, and volcano plots + point size customization to volcano plot
+# added ability to customize font sizes and point sizes for all graphs/plots
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
 
 ui <- dashboardPage(
-  dashboardHeader(title = "VisualRNAseq v0.64"),
+  dashboardHeader(title = paste("VisualRNAseq", app_version, sep = " ")),
   
   dashboardSidebar(
     
     #Conditional Panels to show tab-specific settings in sidebar
     
+    conditionalPanel("input.navigationTabs == 'loadDataTab'",
+                     div(id = 'loadDataTab_sidebar' 
+                         
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'expSettingsTab'",
+                     div(id = 'expSettingsTab_sidebar' 
+                         
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'geneTableTab'",
+                     div(id = 'geneTableTab_sidebar',
+                         h4("Download Table"),
+                         downloadButton("downloadDEGeneTable", "")
+                     )),
+    
     conditionalPanel("input.navigationTabs == 'pcaPlotTab'",
                     div(id = 'pcaPlotTab_sidebar', 
                         h4("PCA plot"),
+                        
+                        h5("Appearance"),
+                        radioButtons("PCAplot_labels", label = "Label type", 
+                                     choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), selected = 1),
+                        numericInput("pcaPointSize", label = "Point size", value = 3),
+                        
                         h5("Font sizes"),
-                        numericInput("pcaFontSize_x_axis", label = "x-axis labels", value = 15),
-                        numericInput("pcaFontSize_y_axis", label = "y-axis labels", value = 15),
-                        numericInput("pcaFontSize_x_title", label = "x-axis title", value = 15),
-                        numericInput("pcaFontSize_y_title", label = "y-axis title", value = 15),
-                        numericInput("pcaFontSize_legend_title", label = "Legend title", value = 15),
-                        numericInput("pcaFontSize_legend_text", label = "Legend text", value = 15)
+                        numericInput("pcaLabelFontSize", label = "Point labels", value = 5),
+                        numericInput("pcaFontSize_xy_axis", label = "Axis labels", value = 18),
+                        numericInput("pcaFontSize_legend_title", label = "Legend title", value = 16),
+                        numericInput("pcaFontSize_legend_text", label = "Legend labels", value = 15)
                     )),
     
     conditionalPanel("input.navigationTabs == 'genecountPlotTab'",
                     div(id = 'genecountPlotTab_sidebar',
                         h4("Gene count plot"),
+                        
+                        textInput("gene_name", "Enter gene name", value = "KRAS"),
+                        
+                        h5("Appearance"),
+                        radioButtons("readcountplot_type", label = "Plot type",
+                                     choices = list("Boxplot" = 1, "Jitter plot" = 2), 
+                                     selected = 1),
+                        numericInput("genecountPointSize", label = "Jitter point size", value = 3),
+                        radioButtons("readcountplot_labels", label = "Label type",
+                                     choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
+                                     selected = 1),
+                        
                         h5("Font sizes"),
-                        numericInput("genecountFontSize_x_axis", label = "x-axis labels", value = 15),
-                        numericInput("genecountFontSize_y_axis", label = "y-axis labels", value = 15),
-                        numericInput("genecountFontSize_x_title", label = "x-axis title", value = 15),
-                        numericInput("genecountFontSize_y_title", label = "y-axis title", value = 15),
-                        numericInput("genecountFontSize_legend_title", label = "Legend title", value = 15),
-                        numericInput("genecountFontSize_legend_text", label = "Legend text", value = 15)
+                        numericInput("genecountFontSize_plot_title", label = "Plot title", value = 20),
+                        numericInput("genecountLabelFontSize", label = "Point labels", value = 5),
+                        numericInput("genecountFontSize_xy_axis", label = "Axis labels", value = 18),
+                        numericInput("genecountFontSize_legend_title", label = "Legend title", value = 16),
+                        numericInput("genecountFontSize_legend_text", label = "Legend labels", value = 15)
                     )),
+    
     conditionalPanel("input.navigationTabs == 'volcanoPlotTab'",
                     div(id = 'volcanoPlotTab_sidebar',
                         h4("Volcano plot"),
-                        h5("Font sizes"),
-                        numericInput("volcanoFontSize", label = "Labels", value = 8),
+                        
+                        sliderInput("FCcutoff", 
+                                    "Log2 fold change cutoff", 
+                                    min = 0,
+                                    max = 10, 
+                                    value = c(2)),
+                        textInput("padjcutoff", "Adjusted p value cutoff", value = "0.05", width = NULL,
+                                  placeholder = NULL),
+                        
                         h5("Appearance"),
-                        numericInput("volcanoPointSize", label = "Point size", value = 3)
+                        numericInput("volcanoPointSize", label = "Point size", value = 3),
+                        checkboxInput("volcanoCutoffLines", label = "Show cutoff lines", value = TRUE),
+                        
+                        h5("Font sizes"),
+                        numericInput("volcanoFontSize_plot_title", label = "Plot title", value = 15),
+                        numericInput("volcanoFontSize_label", label = "Point labels", value = 5),
+                        numericInput("volcanoFontSize_xy_axis", label = "Axis labels", value = 15),
+                        numericInput("volcanoFontSize_legend_title", label = "Legend labels", value = 15)
+                        
                     ))
     
     
@@ -115,41 +162,24 @@ ui <- dashboardPage(
       
       #DE gane table tab
       tabPanel("Output - Differentially expressed gene table", id = "geneTableTab", value= "geneTableTab",  fluidRow(
-        downloadButton("downloadDEGeneTable", "Download Table"),
         DT::dataTableOutput("calc_res_values")
         
       )),
       
       #PCA plot tab
       tabPanel("PCA Plot", id = "pcaPlot", value= "pcaPlotTab", fluidRow(
-        radioButtons("PCAplot_labels", label = "Labels",
-                     choices = list("No labels" = 1, "Sample names" = 2, "Replicates" = 3), 
-                     selected = 1),
-        plotOutput("PCA_plot", height = "500", width="500")
+        plotOutput("PCA_plot", height = "800", width="800")
     
       )),
       
       tabPanel("Gene read counts", id = "genecountPlotTab", value= "genecountPlotTab", fluidRow(
-        textInput("gene_name", "Enter gene name", value = "KRAS"),
-        radioButtons("readcountplot_type", label = "Type of plot",
-                     choices = list("Boxplot" = 1, "Jitter plot" = 2), 
-                     selected = 1),
-        radioButtons("readcountplot_labels", label = "Labels",
-                     choices = list("No labels" = 1, "Sample names" = 2, "Replicates" = 3), 
-                     selected = 1),
-        plotOutput("genecount_plot", height = "500", width="500")
+        plotOutput("genecount_plot", height = "800", width="800")
         
       )),
       
       tabPanel("Volcano Plot", id = "volcanoPlotTab", value= "volcanoPlotTab", fluidRow(
-        sliderInput("FCcutoff", 
-                    "Log2 fold change cutoff", 
-                    min = 0,
-                    max = 10, 
-                    value = c(2)),
-        textInput("padjcutoff", "Adjusted p value cutoff", value = "0.05", width = NULL,
-                  placeholder = NULL),
         plotOutput("volcanoPlot", height = "800", width="100%")
+        
       ))
     )
     
