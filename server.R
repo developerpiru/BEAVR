@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# version: 0.65
+# version: 0.66
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -14,6 +14,7 @@
 # automatically install required packages if not already installed
 # toggle for biocmanager packages
 # fixed volcano plot
+# added font size customization to pca, gene count, and volcano plots + point size customization to volcano plot
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -64,6 +65,8 @@ options(shiny.maxRequestSize = 100*1024^2)
 
 shinyServer(function(input, output, session) {
   
+  #---BEGIN DATA INPUT---#
+  
   #reactive to get and store raw reads data
   #upload read count file
   cts <- reactive({
@@ -100,6 +103,9 @@ shinyServer(function(input, output, session) {
     
   })
   
+  #---END DATA INPUT---#
+  
+  #get control condition from list
   output$control_condslist <- renderUI({
     temp_coldata <- coldata()
     temp_condslist <- unique(temp_coldata[,2])
@@ -107,6 +113,7 @@ shinyServer(function(input, output, session) {
     selectInput("control_condslist", "Choose control condition", temp_condslist)
   })
   
+  #get treatment condition from list
   output$treatment1_condslist <- renderUI({
     temp_coldata <- coldata()
     temp_condslist <- unique(temp_coldata[,2])
@@ -134,6 +141,7 @@ shinyServer(function(input, output, session) {
     
   })
   
+  #DEBUG - function to check coldata against read count table column names
   coldatacompare <- reactive({
     
     #cts <- output$rawreadstable
@@ -158,6 +166,8 @@ shinyServer(function(input, output, session) {
     coldatacompare()
     
   })
+  
+  #---BEGIN CALCULATIONS---#
   
   #create DESeq2 data set (dds)
   calc_get_dds <- reactive({
@@ -290,14 +300,17 @@ shinyServer(function(input, output, session) {
     
   })
   
+  #---END CALCULATIONS---#
+  
   #output calculated dds + FDR table
+  #function to show table
   output$calc_res_values <- DT::renderDataTable({
     withProgress(message = 'Performing calculations...', value = 1, min = 1, max = 100, {
       as.data.frame(calc_res())
     })
   })
   
-  #download all genes table
+  #download DE gene table
   output$downloadDEGeneTable <- downloadHandler(
     filename = function() {
       paste("Differentially Expressed Genes.csv")
@@ -307,7 +320,7 @@ shinyServer(function(input, output, session) {
     }
   )
   
-  #PCA plot
+  #call function to show PCA plot
   output$PCA_plot = renderPlot({
     withProgress(message = 'Generating PCA plot...', value = 1, min = 1, max = 100, {
       do_PCA_plot()
@@ -336,7 +349,17 @@ shinyServer(function(input, output, session) {
       geom_point(size=3) +
       xlab(paste0("PC1: ",percentVar[1],"% variance")) +
       ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-      coord_fixed()
+      coord_fixed() +
+      theme(axis.text.x = element_text(colour="grey20",size=input$pcaFontSize_x_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+            axis.text.y = element_text(colour="grey20",size=input$pcaFontSize_y_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+            axis.title.x = element_text(colour="grey20",size=input$pcaFontSize_x_title,angle=0,hjust=.5,vjust=0,face="plain"),
+            axis.title.y = element_text(colour="grey20",size=input$pcaFontSize_y_title,angle=90,hjust=.5,vjust=.5,face="plain"),
+            legend.title = element_text(colour="grey20",size=input$pcaFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text =  element_text(colour="grey20",size=input$pcaFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text.align = 0)
+      
+      
+      #theme(text = element_text(size=input$pcaFontSize))
     
     #Update progress bar
     currentStep = currentStep + 1
@@ -391,11 +414,13 @@ shinyServer(function(input, output, session) {
       xlab("") +
       ylab("Normalized count") +
       theme_bw() +
-      theme(axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=.5,vjust=.5,face="plain"),
-            axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=1,vjust=0,face="plain"),  
-            axis.title.x = element_text(colour="grey20",size=12,angle=0,hjust=.5,vjust=0,face="plain"),
-            axis.title.y = element_text(colour="grey20",size=14,angle=90,hjust=.5,vjust=.5,face="plain"),
-            plot.title = element_text(colour="grey20",size=14,angle=0,hjust=.5,vjust=.5,face="plain"))
+      theme(axis.text.x = element_text(colour="grey20",size=input$genecountFontSize_x_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+            axis.text.y = element_text(colour="grey20",size=input$genecountFontSize_y_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+            axis.title.x = element_text(colour="grey20",size=input$genecountFontSize_x_title,angle=0,hjust=.5,vjust=0,face="plain"),
+            axis.title.y = element_text(colour="grey20",size=input$genecountFontSize_y_title,angle=90,hjust=.5,vjust=.5,face="plain"),
+            legend.title = element_text(colour="grey20",size=input$genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text =  element_text(colour="grey20",size=input$genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text.align = 0)
     
     #Update progress bar
     currentStep = currentStep + 1
@@ -455,8 +480,8 @@ shinyServer(function(input, output, session) {
                     y = "padj",
                     pCutoff = as.numeric(input$padjcutoff),
                     FCcutoff = as.numeric(input$FCcutoff),
-                    transcriptPointSize = 1.5,
-                    transcriptLabSize = 3.0)
+                    pointSize = input$volcanoPointSize,
+                    labSize = input$volcanoFontSize)
     
     #return the plot
     print(p)
