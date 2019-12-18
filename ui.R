@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-app_version = 0.67
+app_version = 0.68
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -15,6 +15,7 @@ app_version = 0.67
 # toggle for biocmanager packages
 # fixed volcano plot
 # added ability to customize font sizes and point sizes for all graphs/plots
+# added ability to plot multiple gene read count plots at once
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -103,7 +104,30 @@ ui <- dashboardPage(
                         numericInput("volcanoFontSize_xy_axis", label = "Axis labels", value = 15),
                         numericInput("volcanoFontSize_legend_title", label = "Legend labels", value = 15)
                         
-                    ))
+                    )),
+    
+    conditionalPanel("input.navigationTabs == 'multigenecountPlotTab'",
+                     div(id = 'multigenecountPlotTab_sidebar',
+                         h4("Gene count plot"),
+                         
+                         textInput("multi_gene_name", "Enter gene names separated by commas", value = "KRAS"),
+                         
+                         h5("Appearance"),
+                         radioButtons("multi_readcountplot_type", label = "Plot type",
+                                      choices = list("Boxplot" = 1, "Jitter plot" = 2), 
+                                      selected = 1),
+                         numericInput("multi_genecountPointSize", label = "Jitter point size", value = 3),
+                         radioButtons("multi_readcountplot_labels", label = "Label type",
+                                      choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
+                                      selected = 1),
+                         
+                         h5("Font sizes"),
+                         numericInput("multi_genecountFontSize_plot_title", label = "Plot title", value = 15),
+                         numericInput("multi_genecountLabelFontSize", label = "Point labels", value = 5),
+                         numericInput("multi_genecountFontSize_xy_axis", label = "Axis labels", value = 10),
+                         numericInput("multi_genecountFontSize_legend_title", label = "Legend title", value = 10),
+                         numericInput("multi_genecountFontSize_legend_text", label = "Legend labels", value = 10)
+                     ))
     
     
   ), #end dashboard Sidebar
@@ -180,6 +204,10 @@ ui <- dashboardPage(
       tabPanel("Volcano Plot", id = "volcanoPlotTab", value= "volcanoPlotTab", fluidRow(
         plotOutput("volcanoPlot", height = "800", width="100%")
         
+      )),
+      
+      tabPanel("Multi Gene read counts", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
+        plotOutput("multi_genecount_plot1", height = "1000", width="1000")
       ))
     )
     

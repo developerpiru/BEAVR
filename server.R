@@ -1,6 +1,6 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-app_version = 0.67
+app_version = 0.68
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -15,6 +15,7 @@ app_version = 0.67
 # toggle for biocmanager packages
 # fixed volcano plot
 # added ability to customize font sizes and point sizes for all graphs/plots
+# added ability to plot multiple gene read count plots at once
 
 # bugs"
 # PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
@@ -59,6 +60,7 @@ library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
 library('EnhancedVolcano')
+library(gridExtra)
 
 #increase max file size to 100MB
 options(shiny.maxRequestSize = 100*1024^2)
@@ -533,6 +535,127 @@ shinyServer(function(input, output, session) {
     
     #return the plot
     print(p)
+  })
+  
+  #gene count plot
+  output$multi_genecount_plot1 = renderPlot({
+    withProgress(message = 'Generating read count plot...', value = 1, min = 1, max = 100, {
+     do_multi_genecount_plot()
+    })
+  })
+  
+  #function to plot gene counts for user defined genes
+  do_multi_genecount_plot <- reactive({
+    
+    #Update progress bar
+    totalSteps = 3 + 3
+    currentStep = 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
+    
+    #get gene name from user
+    #genename = toupper(input$multi_gene_name)
+    
+    #multi gene names
+    #multi_gene_names <- c("KRAS", "MYC", "DYRK1A", "ACTB", "PIK3CA")
+    multi_gene_names <- unlist(strsplit(toupper(input$multi_gene_name), ","))
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
+
+    #initialize variables to run through and generate all the gene count plots
+    p = list()
+    i = 0
+    
+    #loop through and generate the plots for gene names entered
+    for (val in multi_gene_names){
+      
+      i = i+1
+      
+      #get data for selected gene from dds data matrix
+      d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==toupper(val)),2], intgroup=c("condition", "replicate"), returnData=TRUE)
+      
+      #generate each plot
+      p[[i]] <- ggplot(d, aes(x=condition, y=count, color=condition)) +
+        ggtitle(toupper(val)) +
+        geom_point(size = input$genecountPointSize) +
+        labs(shape="Replicate", colour="Condition") +
+        xlab("") +
+        ylab("Normalized read count") +
+        theme_classic() +
+        theme(axis.text.x = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+              axis.text.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+              axis.title.x = element_text(colour="black",size=0),
+              axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+              plot.title = element_text(colour="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+              legend.title = element_text(colour="black",size=input$multi_genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+              legend.text =  element_text(colour="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+              legend.text.align = 0)
+      
+      #change plot type to boxplot or jitter plot based on user selection
+      if (input$multi_readcountplot_type == 1){
+        p[[i]] <- p[[i]] + geom_boxplot() +
+          #hide points
+          geom_point(size = -1)
+      } else {
+        p[[i]] <- p[[i]] + geom_jitter(size=input$multi_genecountPointSize, width=0, height=0) +
+          aes(shape=replicate)
+      }
+      
+      #show labels for points as determined by user
+      if (input$multi_readcountplot_labels == 1){
+        #no labels
+        p[[i]] <- p[[i]] + labs(shape="Replicate", colour="Condition")
+      } else if (input$multi_readcountplot_labels == 2){
+        #sample names as labels
+        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
+          labs(shape="Replicate", colour="Condition")
+        #aes(shape=rownames(d))
+      } else if (input$multi_readcountplot_labels == 3){
+        #replicate names as labels
+        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
+          labs(shape="Replicate", colour="Condition")
+      }
+      
+    }
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    
+    i = 0
+    for (val in multi_gene_names){
+      
+      i = i+1
+      #change plot type to boxplot or jitter plot based on user selection
+      if (input$multi_readcountplot_type == 1){
+        p[[i]] <- p[[i]] + geom_boxplot() +
+          #hide points
+          geom_point(size = -1)
+      } else {
+        p[[i]] <- p[[i]] + geom_jitter(size=input$multi_genecountPointSize, width=0, height=0) +
+          aes(shape=replicate)
+      }
+      
+      #show labels for points as determined by user
+      if (input$multi_readcountplot_labels == 1){
+        #no labels
+        p[[i]] <- p[[i]] + labs(shape="Replicate", colour="Condition")
+      } else if (input$multi_readcountplot_labels == 2){
+        #sample names as labels
+        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
+          labs(shape="Replicate", colour="Condition")
+        #aes(shape=rownames(d))
+      } else if (input$multi_readcountplot_labels == 3){
+        #replicate names as labels
+        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
+          labs(shape="Replicate", colour="Condition")
+      }
+    }
+    
+    #return the plot
+    do.call(grid.arrange,p)
+    #print(p[1])
   })
 
 })
