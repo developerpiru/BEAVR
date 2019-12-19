@@ -49,6 +49,7 @@ installReqs("vsn", bioc = TRUE)
 installReqs('apeglm', bioc = TRUE)
 installReqs('org.Hs.eg.db', bioc = TRUE)
 installReqs('EnhancedVolcano', bioc = TRUE)
+installReqs('ggpubr', bioc = FALSE)
 
 #load required libraries
 library("shiny")
@@ -245,15 +246,18 @@ ui <- dashboardPage(
     
       )),
       
+      #Single gene read count plot
       tabPanel("Single read count plot", id = "genecountPlotTab", value= "genecountPlotTab", fluidRow(
         plotOutput("genecount_plot", height = "800", width = "800")
         
       )),
       
+      #Multiple gene read count plots
       tabPanel("Multiple read count plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
         plotOutput("multi_genecount_plot1", height = "1000", width="1000")
       )),
-
+      
+      #Volcano plot
       tabPanel("Volcano plot", id = "volcanoPlotTab", value= "volcanoPlotTab", fluidRow(
         plotOutput("volcanoPlot", height = "800", width="100%")
         
