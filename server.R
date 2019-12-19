@@ -1,6 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-app_version = 0.68
+# See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
+app_version = 0.69
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -15,10 +16,13 @@ app_version = 0.68
 # toggle for biocmanager packages
 # fixed volcano plot
 # added ability to customize font sizes and point sizes for all graphs/plots
-# added ability to plot multiple gene read count plots at once
+# added ability to plot multiple read count plots at once
+# customize legend positions on multiple read count plots
 
 # bugs"
-# PCA, gene count, volcano plots don't auto-update to new dds after changing treatment condition factor level
+#### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
+#### legend symbols show letter 'a' below symbol on jitter plots
+#### alignment of legend is not centered on plots but on canvas
 
 #function to check for required packages and install them if not already installed
 installReqs <- function(package_name, bioc){
@@ -47,20 +51,21 @@ installReqs('org.Hs.eg.db', bioc = TRUE)
 installReqs('EnhancedVolcano', bioc = TRUE)
 
 #load required libraries
-library(shiny)
-library(shinydashboard)
-library(plotly)
-library(scatterD3)
-library(ggplot2)
-library(ggrepel)
-library(data.table)
-library(DT)
+library("shiny")
+library("shinydashboard")
+library("plotly")
+library("scatterD3")
+library("ggplot2")
+library("ggrepel")
+library("data.table")
+library("DT")
 library("DESeq2")
 library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
 library('EnhancedVolcano')
-library(gridExtra)
+library("gridExtra")
+library("ggpubr")
 
 #increase max file size to 100MB
 options(shiny.maxRequestSize = 100*1024^2)
@@ -539,7 +544,7 @@ shinyServer(function(input, output, session) {
   
   #gene count plot
   output$multi_genecount_plot1 = renderPlot({
-    withProgress(message = 'Generating read count plot...', value = 1, min = 1, max = 100, {
+    withProgress(message = 'Generating read count plots...', value = 1, min = 1, max = 100, {
      do_multi_genecount_plot()
     })
   })
@@ -548,15 +553,11 @@ shinyServer(function(input, output, session) {
   do_multi_genecount_plot <- reactive({
     
     #Update progress bar
-    totalSteps = 3 + 3
+    totalSteps = 3
     currentStep = 1
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
-    #get gene name from user
-    #genename = toupper(input$multi_gene_name)
-    
-    #multi gene names
-    #multi_gene_names <- c("KRAS", "MYC", "DYRK1A", "ACTB", "PIK3CA")
+    #get multi gene names from user input
     multi_gene_names <- unlist(strsplit(toupper(input$multi_gene_name), ","))
     
     #Update progress bar
@@ -569,7 +570,7 @@ shinyServer(function(input, output, session) {
     
     #loop through and generate the plots for gene names entered
     for (val in multi_gene_names){
-      
+
       i = i+1
       
       #get data for selected gene from dds data matrix
@@ -588,7 +589,8 @@ shinyServer(function(input, output, session) {
               axis.title.x = element_text(colour="black",size=0),
               axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
               plot.title = element_text(colour="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-              legend.title = element_text(colour="black",size=input$multi_genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+              #legend.title = element_text(colour="black",size=input$multi_genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+              legend.title = element_blank(),
               legend.text =  element_text(colour="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
               legend.text.align = 0)
       
@@ -617,45 +619,30 @@ shinyServer(function(input, output, session) {
           labs(shape="Replicate", colour="Condition")
       }
       
+      #adjust legend based on user selection
+      if (input$multi_genecountShowLegends == 1){ # hide legend on all plots
+        p[[i]] <- p[[i]] + theme(legend.position = "none")
+      } else if (input$multi_genecountShowLegends == 2 | input$multi_genecountShowLegends == 3){ # show legend on all plots or show one common legend
+        p[[i]] <- p[[i]] + theme(legend.position = paste(input$multi_genecountLegendPosition))
+      } else if (input$multi_genecountShowLegends == 3){ # show one common legend
+        
+      }
+
     }
     
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
     
-    i = 0
-    for (val in multi_gene_names){
-      
-      i = i+1
-      #change plot type to boxplot or jitter plot based on user selection
-      if (input$multi_readcountplot_type == 1){
-        p[[i]] <- p[[i]] + geom_boxplot() +
-          #hide points
-          geom_point(size = -1)
-      } else {
-        p[[i]] <- p[[i]] + geom_jitter(size=input$multi_genecountPointSize, width=0, height=0) +
-          aes(shape=replicate)
-      }
-      
-      #show labels for points as determined by user
-      if (input$multi_readcountplot_labels == 1){
-        #no labels
-        p[[i]] <- p[[i]] + labs(shape="Replicate", colour="Condition")
-      } else if (input$multi_readcountplot_labels == 2){
-        #sample names as labels
-        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
-          labs(shape="Replicate", colour="Condition")
-        #aes(shape=rownames(d))
-      } else if (input$multi_readcountplot_labels == 3){
-        #replicate names as labels
-        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
-          labs(shape="Replicate", colour="Condition")
-      }
-    }
-    
     #return the plot
-    do.call(grid.arrange,p)
-    #print(p[1])
+    if (input$multi_genecountShowLegends == 1){
+      do.call(ggarrange, c(p, nrow=input$multi_genecountGridRows, ncol=input$multi_genecountGridColumns, common.legend = FALSE, legend="none"))
+    } else if (input$multi_genecountShowLegends == 3){
+      do.call(ggarrange, c(p, nrow=input$multi_genecountGridRows, ncol=input$multi_genecountGridColumns, common.legend = TRUE, legend=paste(input$multi_genecountLegendPosition)))
+    } else {
+      do.call(ggarrange, c(p, nrow=input$multi_genecountGridRows, ncol=input$multi_genecountGridColumns, common.legend = FALSE, legend=paste(input$multi_genecountLegendPosition)))
+    }
+
   })
 
 })
