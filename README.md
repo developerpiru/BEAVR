@@ -19,6 +19,8 @@ You must have the following components installed in order to run VisualizeTRACS:
 - library('apeglm')
 - library('org.Hs.eg.db')
 - library('EnhancedVolcano')
+- library("gridExtra")
+- library("ggpubr")
 
 # Installation
 As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching VisualRNAseq.
