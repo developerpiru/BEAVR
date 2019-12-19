@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = 0.69
+app_version = 0.70
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -18,6 +18,7 @@ app_version = 0.69
 # added ability to customize font sizes and point sizes for all graphs/plots
 # added ability to plot multiple read count plots at once
 # customize legend positions on multiple read count plots
+# drag to customize the area of all plots
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -49,6 +50,8 @@ installReqs("vsn", bioc = TRUE)
 installReqs('apeglm', bioc = TRUE)
 installReqs('org.Hs.eg.db', bioc = TRUE)
 installReqs('EnhancedVolcano', bioc = TRUE)
+installReqs('ggpubr', bioc = FALSE)
+installReqs('shinyjqui', bioc = FALSE)
 
 #load required libraries
 library("shiny")
@@ -66,6 +69,7 @@ library('org.Hs.eg.db')
 library('EnhancedVolcano')
 library("gridExtra")
 library("ggpubr")
+library("shinyjqui")
 
 #increase max file size to 100MB
 options(shiny.maxRequestSize = 100*1024^2)

@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = 0.69
+app_version = 0.70
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -18,6 +18,7 @@ app_version = 0.69
 # added ability to customize font sizes and point sizes for all graphs/plots
 # added ability to plot multiple read count plots at once
 # customize legend positions on multiple read count plots
+# drag to customize the area of all plots
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -50,6 +51,7 @@ installReqs('apeglm', bioc = TRUE)
 installReqs('org.Hs.eg.db', bioc = TRUE)
 installReqs('EnhancedVolcano', bioc = TRUE)
 installReqs('ggpubr', bioc = FALSE)
+installReqs('shinyjqui', bioc = FALSE)
 
 #load required libraries
 library("shiny")
@@ -67,6 +69,7 @@ library('org.Hs.eg.db')
 library('EnhancedVolcano')
 library("gridExtra")
 library("ggpubr")
+library("shinyjqui")
 
 ui <- dashboardPage(
   dashboardHeader(title = paste("VisualRNAseq", app_version, sep = " ")),
@@ -76,8 +79,10 @@ ui <- dashboardPage(
     #Conditional Panels to show tab-specific settings in sidebar
     
     conditionalPanel("input.navigationTabs == 'loadDataTab'",
-                     div(id = 'loadDataTab_sidebar' 
-                         
+                     div(id = 'loadDataTab_sidebar', 
+                         h4("Welcome to VisualRNAseq!"),
+                         #h3("Please see the GitHub page for help & info."),
+                         tags$a(href="https://github.com/developerpiru/VisualRNAseq",target="_blank","Check GitHub for help & info")
                      )),
     
     conditionalPanel("input.navigationTabs == 'expSettingsTab'",
@@ -242,25 +247,30 @@ ui <- dashboardPage(
       
       #PCA plot tab
       tabPanel("PCA plot", id = "pcaPlot", value= "pcaPlotTab", fluidRow(
-        plotOutput("PCA_plot", height = "800", width = "800")
-    
+        jqui_resizable( #jqui resizable canvas
+          plotOutput("PCA_plot", height = "800", width = "800")
+        )
       )),
       
       #Single gene read count plot
       tabPanel("Single read count plot", id = "genecountPlotTab", value= "genecountPlotTab", fluidRow(
-        plotOutput("genecount_plot", height = "800", width = "800")
-        
+        jqui_resizable( #jqui resizable canvas
+          plotOutput("genecount_plot", height = "800", width = "800")
+        )
       )),
       
       #Multiple gene read count plots
       tabPanel("Multiple read count plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
-        plotOutput("multi_genecount_plot1", height = "1000", width="1000")
+        jqui_resizable( #jqui resizable canvas
+          plotOutput("multi_genecount_plot1", height = "800", width="800")
+          )
       )),
       
       #Volcano plot
       tabPanel("Volcano plot", id = "volcanoPlotTab", value= "volcanoPlotTab", fluidRow(
-        plotOutput("volcanoPlot", height = "800", width="100%")
-        
+        jqui_resizable( #jqui resizable canvas
+          plotOutput("volcanoPlot", height = "800", width="800")
+        )
       ))
       
     )
