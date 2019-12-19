@@ -21,6 +21,7 @@ You must have the following components installed in order to run VisualizeTRACS:
 - library('EnhancedVolcano')
 - library("gridExtra")
 - library("ggpubr")
+- library("shinyjqui")
 
 # Installation
 As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching VisualRNAseq.
