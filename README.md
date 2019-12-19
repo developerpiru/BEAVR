@@ -56,4 +56,5 @@ The data table can be downloaded and saved using the ```Download Table``` button
 
 # Known Bugs
 PCA plot, gene read count plot, and volcano plot won't auto-update after changing the treatment condition. The results table will update correctly. 
-	**Fix:** Just refresh the page and change the treatment condition.
+
+**Fix:** Just refresh the page and change the treatment condition.
