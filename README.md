@@ -28,7 +28,6 @@ Load the required for launch and run the latest version of VisualRNAseq using:
 
 	library(shiny)
 	library(shinydashboard)
- 	library(plotly)
 	runGitHub( "VisualRNAseq", "developerpiru")
 
 If you are using R, a browser window should open automatically showing the app. If you are using RStudio, click "Open in browser" in the window that opens.
