@@ -643,6 +643,13 @@ shinyServer(function(input, output, session) {
       } else {
         p[[i]] <- p[[i]] + theme(axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
       }
+      
+      #set y-axis to log scale depending on user selection
+      if (input$multi_log10scale == TRUE){
+        p[[i]] <- p[[i]] + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                                         labels = trans_format("log10", math_format(10^.x)))
+      }
+        
 
     }
     

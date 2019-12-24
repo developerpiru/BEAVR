@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = "0.71.1"
+app_version = "0.71.2"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -20,6 +20,8 @@ app_version = "0.71.1"
 # customize legend positions on multiple read count plots
 # drag to customize the area of all plots
 # option to show y-axis title only on first plot per row
+# option to show log10 scale y-axis
+# dropped single read plot feature - use multi version with 1x1 grid for a single plot
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -151,7 +153,7 @@ ui <- dashboardPage(
                                      choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
                                      selected = 1),
                          checkboxInput("multi_genecountSharedYAxis", label = "Label y-axis on first plot per row", value = TRUE),
-                         
+                         checkboxInput("multi_log10scale", label = "Log10 scale y-axis", value = FALSE),
                          selectInput("multi_genecountShowLegends", label = "Show legends", 
                                      choices = list("Hide legends" = 1, "Show legends on all plots" = 2, "Show one common legend" = 3), 
                                      selected = 3),
@@ -256,15 +258,15 @@ ui <- dashboardPage(
         )
       )),
       
-      #Single gene read count plot
-      tabPanel("Single read count plot", id = "genecountPlotTab", value= "genecountPlotTab", fluidRow(
-        jqui_resizable( #jqui resizable canvas
-          plotOutput("genecount_plot", height = "800", width = "800")
-        )
-      )),
+      # #Single gene read count plot
+      # tabPanel("Single read count plot", id = "genecountPlotTab", value= "genecountPlotTab", fluidRow(
+      #   jqui_resizable( #jqui resizable canvas
+      #     plotOutput("genecount_plot", height = "800", width = "800")
+      #   )
+      # )),
       
       #Multiple gene read count plots
-      tabPanel("Multiple read count plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
+      tabPanel("Read count plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
         jqui_resizable( #jqui resizable canvas
           plotOutput("multi_genecount_plot1", height = "800", width="800")
           )
