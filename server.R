@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = "0.71.2"
+app_version = "0.71.3"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -22,6 +22,8 @@ app_version = "0.71.2"
 # option to show y-axis title only on first plot per row
 # option to show log10 scale y-axis
 # dropped single read plot feature - use multi version with 1x1 grid for a single plot
+# filter data table
+# use filtered data table for volcano plot
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -317,11 +319,31 @@ shinyServer(function(input, output, session) {
   
   #---END CALCULATIONS---#
   
+  #function to process filtering of dds table
+  filterTable <- reactive({
+    
+    filteredDDSTable <<- as.data.frame(calc_res())
+    
+    if (input$tableFilterONOFF == TRUE){
+      filteredDDSTable <<- subset(filteredDDSTable, 
+                                  filteredDDSTable$log2FoldChange >= input$tableMinLog2FC &
+                                    filteredDDSTable$log2FoldChange <= input$tableMaxLog2FC &
+                                    filteredDDSTable$pvalue >= input$tableMinPvalue &
+                                    filteredDDSTable$pvalue <= input$tableMaxPvalue &
+                                    filteredDDSTable$padj >= input$tableMinPadj &
+                                    filteredDDSTable$padj <= input$tableMaxPadj)
+    }
+    
+    
+    return(filteredDDSTable)
+  })
+  
   #output calculated dds + FDR table
   #function to show table
   output$calc_res_values <- DT::renderDataTable({
     withProgress(message = 'Performing calculations...', value = 1, min = 1, max = 100, {
-      as.data.frame(calc_res())
+      #as.data.frame(calc_res())
+      filterTable()
     })
   })
   
@@ -331,7 +353,8 @@ shinyServer(function(input, output, session) {
       paste("Differentially Expressed Genes.csv")
     },
     content = function(file) {
-      write.csv(as.data.frame(calc_res()), file, row.names = FALSE)
+      #write.csv(as.data.frame(calc_res()), file, row.names = FALSE)
+      write.csv(as.data.frame(filteredDDSTable), file, row.names = FALSE)
     }
   )
   
@@ -400,81 +423,6 @@ shinyServer(function(input, output, session) {
     
   })
   
-  #gene count plot
-  output$genecount_plot = renderPlot({
-    withProgress(message = 'Generating read count plot...', value = 1, min = 1, max = 100, {
-      do_genecount_plot()
-    })
-  })
-  
-  #function to plot gene counts for user defined genes
-  do_genecount_plot <- reactive({
-    
-    #Update progress bar
-    totalSteps = 3 + 3
-    currentStep = 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
-    
-    #get gene name from user
-    genename = toupper(input$gene_name)
-    
-    #get data for selected gene from dds data matrix
-    d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==genename),2], intgroup=c("condition", "replicate"), returnData=TRUE)
-    
-    #Update progress bar
-    currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
-    
-    #generate the gene count plot
-    p <- ggplot(d, aes(x=condition, y=count, color=condition)) +
-      ggtitle(genename) +
-      geom_point(size = input$genecountPointSize) +
-      labs(shape="Replicate", colour="Condition") +
-      xlab("") +
-      ylab("Normalized read count") +
-      theme_classic() +
-      theme(axis.text.x = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-            axis.text.y = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
-            axis.title.x = element_text(colour="black",size=0),
-            axis.title.y = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
-            plot.title = element_text(colour="black",size=input$genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.title = element_text(colour="black",size=input$genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text =  element_text(colour="black",size=input$genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text.align = 0)
-    
-    #Update progress bar
-    currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
-    
-    #show boxplot or jitter plot as determined by user
-    if (input$readcountplot_type == 1){
-      p <- p + geom_boxplot() +
-        #hide points
-        geom_point(size = -1)
-    } else {
-      p <- p + geom_jitter(size=input$genecountPointSize, width=0, height=0) +
-        aes(shape=replicate)
-    }
-    
-    #show labels for points as determined by user
-    if (input$readcountplot_labels == 1){
-      #no labels
-      p <- p + labs(shape="Replicate", colour="Condition")
-    } else if (input$readcountplot_labels == 2){
-      #sample names as labels
-      p <- p + geom_text_repel(size=input$genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
-        labs(shape="Replicate", colour="Condition")
-        #aes(shape=rownames(d))
-    } else if (input$readcountplot_labels == 3){
-      #replicate names as labels
-      p <- p + geom_text_repel(size=input$genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
-        labs(shape="Replicate", colour="Condition")
-    }
-
-    #return the plot
-    print(p)
-  })
-  
   #make volcano plot highlight genes that have an FDR cutoff and Log2FC cutoff as determined by the user (input$padjcutoff and input$FCcutoff)
   output$volcanoPlot = renderPlot({
     withProgress(message = 'Generating volcano plot...', value = 1, min = 1, max = 100, {
@@ -482,7 +430,7 @@ shinyServer(function(input, output, session) {
     })
   })
   
-  #function to plot gene counts for user defined genes
+  #function to plot multiple gene read counts for user defined genes
   do_volcano_plot <- reactive({
     
     #Update progress bar
@@ -491,7 +439,17 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     #get RNAseq data
-    RNAseqdatatoplot <<- as.data.frame(resFDR)
+    if (input$volcanoFilterONOFF == TRUE){
+      RNAseqdatatoplot <<- as.data.frame(filteredDDSTable)
+    } else {
+      RNAseqdatatoplot <<- as.data.frame(resFDR)
+    }
+    
+    if (input$volcanoPvalueType == TRUE){
+      pvaluetype = input$padjcutoff
+    } else {
+      pvaluetype = input$pvalue
+    }
     
     #Update progress bar
     currentStep = currentStep + 1
@@ -504,7 +462,8 @@ shinyServer(function(input, output, session) {
                            lab = RNAseqdatatoplot$GeneID,
                            x = "log2FoldChange",
                            y = "padj",
-                           pCutoff = as.numeric(input$padjcutoff),
+                           pCutoff = as.numeric(paste(pvaluetype)),
+                           #pCutoff = as.numeric(input$padjcutoff),
                            FCcutoff = as.numeric(input$FCcutoff),
                            titleLabSize = input$volcanoFontSize_plot_title,
                            axisLabSize = input$volcanoFontSize_xy_axis,

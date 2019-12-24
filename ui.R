@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = "0.71.2"
+app_version = "0.71.3"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -22,6 +22,8 @@ app_version = "0.71.2"
 # option to show y-axis title only on first plot per row
 # option to show log10 scale y-axis
 # dropped single read plot feature - use multi version with 1x1 grid for a single plot
+# filter data table
+# use filtered data table for volcano plot
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -97,7 +99,16 @@ ui <- dashboardPage(
     conditionalPanel("input.navigationTabs == 'geneTableTab'",
                      div(id = 'geneTableTab_sidebar',
                          h4("Download Table"),
-                         downloadButton("downloadDEGeneTable", "")
+                         downloadButton("downloadDEGeneTable", ""),
+                         
+                         h4("Filter options"),
+                         checkboxInput("tableFilterONOFF", label = "Filter data table", value = FALSE),
+                         numericInput("tableMinLog2FC", label = "Min Log2FC", value = -10),
+                         numericInput("tableMaxLog2FC", label = "Max Log2FC", value = 10),
+                         numericInput("tableMinPvalue", label = "Min p value", value = 0.001),
+                         numericInput("tableMaxPvalue", label = "Max p value", value = 0.05),
+                         numericInput("tableMinPadj", label = "Min p adjusted", value = 0.001),
+                         numericInput("tableMaxPadj", label = "Max p adjusted", value = 0.05)
                      )),
     
     conditionalPanel("input.navigationTabs == 'pcaPlotTab'",
@@ -114,27 +125,6 @@ ui <- dashboardPage(
                         numericInput("pcaFontSize_xy_axis", label = "Axis labels", value = 18),
                         numericInput("pcaFontSize_legend_title", label = "Legend title", value = 16),
                         numericInput("pcaFontSize_legend_text", label = "Legend labels", value = 15)
-                    )),
-    
-    conditionalPanel("input.navigationTabs == 'genecountPlotTab'",
-                    div(id = 'genecountPlotTab_sidebar',
-
-                                                textInput("gene_name", "Enter gene name", value = "KRAS"),
-                        
-                        h4("Appearance"),
-                        selectInput("readcountplot_type", label = "Plot type",
-                                     choices = list("Boxplot" = 1, "Jitter plot" = 2), 
-                                     selected = 1),
-                        numericInput("genecountPointSize", label = "Jitter point size", value = 3),
-                        selectInput("readcountplot_labels", label = "Sample labels",
-                                     choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
-                                     selected = 1),
-                        h4("Font sizes"),
-                        numericInput("genecountFontSize_plot_title", label = "Gene name", value = 20),
-                        numericInput("genecountLabelFontSize", label = "Sample labels", value = 5),
-                        numericInput("genecountFontSize_xy_axis", label = "Axis labels", value = 18),
-                        numericInput("genecountFontSize_legend_title", label = "Legend title", value = 16),
-                        numericInput("genecountFontSize_legend_text", label = "Legend labels", value = 15)
                     )),
     
     conditionalPanel("input.navigationTabs == 'multigenecountPlotTab'",
@@ -170,14 +160,17 @@ ui <- dashboardPage(
     
     conditionalPanel("input.navigationTabs == 'volcanoPlotTab'",
                     div(id = 'volcanoPlotTab_sidebar',
+                        h4("Data"),
+                        checkboxInput("volcanoFilterONOFF", label = "Use filered data", value = FALSE),
 
                         sliderInput("FCcutoff", 
                                     "Log2 fold change cutoff", 
                                     min = 0,
                                     max = 10, 
                                     value = c(2)),
-                        textInput("padjcutoff", "Adjusted p value cutoff", value = "0.05", width = NULL,
+                        textInput("padjcutoff", "P value cutoff", value = "0.05", width = NULL,
                                   placeholder = NULL),
+                        checkboxInput("volcanoPvalueType", label = "Use Adjusted P value", value = TRUE),
                         
                         h4("Appearance"),
                         numericInput("volcanoPointSize", label = "Point size", value = 3),
@@ -257,13 +250,6 @@ ui <- dashboardPage(
           plotOutput("PCA_plot", height = "800", width = "800")
         )
       )),
-      
-      # #Single gene read count plot
-      # tabPanel("Single read count plot", id = "genecountPlotTab", value= "genecountPlotTab", fluidRow(
-      #   jqui_resizable( #jqui resizable canvas
-      #     plotOutput("genecount_plot", height = "800", width = "800")
-      #   )
-      # )),
       
       #Multiple gene read count plots
       tabPanel("Read count plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
