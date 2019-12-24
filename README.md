@@ -24,7 +24,7 @@ You must have the following components installed in order to run VisualizeTRACS:
 - library("shinyjqui")
 
 # Installation
-As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching VisualRNAseq.
+As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching VisualRNAseq using the commands below.
     
 # Run VisualRNAseq
 Load the required for launch and run the latest version of VisualRNAseq using:
