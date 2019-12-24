@@ -1,7 +1,7 @@
 # VisualRNAseq
 
 # Introduction
-A graphical tool to automate analysis of large RNAseq datasetss
+A browser-based graphical tool to automate analysis and exploration of large RNAseq datasets using DESeq2
 
 # Requirements
 You must have the following components installed in order to run VisualizeTRACS:
