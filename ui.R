@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = 0.71
+app_version = "0.71.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -102,12 +102,13 @@ ui <- dashboardPage(
                     div(id = 'pcaPlotTab_sidebar', 
 
                         h4("Appearance"),
-                        radioButtons("PCAplot_labels", label = "Label type", 
-                                     choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), selected = 1),
+                        selectInput("PCAplot_labels", label = "Sample labels",
+                                    choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3),
+                                    selected = 1),
                         numericInput("pcaPointSize", label = "Point size", value = 3),
                         
                         h4("Font sizes"),
-                        numericInput("pcaLabelFontSize", label = "Point labels", value = 5),
+                        numericInput("pcaLabelFontSize", label = "Sample labels", value = 5),
                         numericInput("pcaFontSize_xy_axis", label = "Axis labels", value = 18),
                         numericInput("pcaFontSize_legend_title", label = "Legend title", value = 16),
                         numericInput("pcaFontSize_legend_text", label = "Legend labels", value = 15)
@@ -119,17 +120,16 @@ ui <- dashboardPage(
                                                 textInput("gene_name", "Enter gene name", value = "KRAS"),
                         
                         h4("Appearance"),
-                        radioButtons("readcountplot_type", label = "Plot type",
+                        selectInput("readcountplot_type", label = "Plot type",
                                      choices = list("Boxplot" = 1, "Jitter plot" = 2), 
                                      selected = 1),
                         numericInput("genecountPointSize", label = "Jitter point size", value = 3),
-                        radioButtons("readcountplot_labels", label = "Label type",
+                        selectInput("readcountplot_labels", label = "Sample labels",
                                      choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
                                      selected = 1),
-                        
                         h4("Font sizes"),
-                        numericInput("genecountFontSize_plot_title", label = "Plot title", value = 20),
-                        numericInput("genecountLabelFontSize", label = "Point labels", value = 5),
+                        numericInput("genecountFontSize_plot_title", label = "Gene name", value = 20),
+                        numericInput("genecountLabelFontSize", label = "Sample labels", value = 5),
                         numericInput("genecountFontSize_xy_axis", label = "Axis labels", value = 18),
                         numericInput("genecountFontSize_legend_title", label = "Legend title", value = 16),
                         numericInput("genecountFontSize_legend_text", label = "Legend labels", value = 15)
@@ -141,16 +141,15 @@ ui <- dashboardPage(
                          textInput("multi_gene_name", "Enter gene names separated by a comma", value = "HRAS,KRAS,NRAS"),
                          
                          h4("Appearance"),
-                         numericInput("multi_genecountGridRows", label = "Grid rows", value = 6),
-                         numericInput("multi_genecountGridColumns", label = "Grid columns", value = 5),
-                         radioButtons("multi_readcountplot_type", label = "Plot type",
-                                      choices = list("Boxplot" = 1, "Jitter plot" = 2), 
-                                      selected = 1),
+                         numericInput("multi_genecountGridRows", label = "Grid rows", value = 2),
+                         numericInput("multi_genecountGridColumns", label = "Grid columns", value = 3),
+                         selectInput("multi_readcountplot_type", label = "Plot type",
+                                     choices = list("Boxplot" = 1, "Jitter plot" = 2),
+                                     selected = 1),
                          numericInput("multi_genecountPointSize", label = "Jitter point size", value = 3),
-                         radioButtons("multi_readcountplot_labels", label = "Point labels",
-                                      choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
-                                      selected = 1),
-                         
+                         selectInput("multi_readcountplot_labels", label = "Sample labels",
+                                     choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
+                                     selected = 1),
                          checkboxInput("multi_genecountSharedYAxis", label = "Label y-axis on first plot per row", value = TRUE),
                          
                          selectInput("multi_genecountShowLegends", label = "Show legends", 
@@ -161,10 +160,10 @@ ui <- dashboardPage(
                                      selected = "Top"),
 
                          h4("Font sizes"),
-                         numericInput("multi_genecountFontSize_plot_title", label = "Plot title", value = 15),
-                         numericInput("multi_genecountLabelFontSize", label = "Point labels", value = 5),
-                         numericInput("multi_genecountFontSize_xy_axis", label = "Axis labels", value = 10),
-                         numericInput("multi_genecountFontSize_legend_text", label = "Legend labels", value = 10)
+                         numericInput("multi_genecountFontSize_plot_title", label = "Gene name", value = 15),
+                         numericInput("multi_genecountLabelFontSize", label = "Sample labels", value = 5),
+                         numericInput("multi_genecountFontSize_xy_axis", label = "Axis labels", value = 12),
+                         numericInput("multi_genecountFontSize_legend_text", label = "Legend labels", value = 12)
                      )),
     
     conditionalPanel("input.navigationTabs == 'volcanoPlotTab'",
