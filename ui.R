@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = 0.70
+app_version = 0.71
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -19,6 +19,7 @@ app_version = 0.70
 # added ability to plot multiple read count plots at once
 # customize legend positions on multiple read count plots
 # drag to customize the area of all plots
+# option to show y-axis title only on first plot per row
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -70,6 +71,7 @@ library('EnhancedVolcano')
 library("gridExtra")
 library("ggpubr")
 library("shinyjqui")
+library("scales")
 
 ui <- dashboardPage(
   dashboardHeader(title = paste("VisualRNAseq", app_version, sep = " ")),
@@ -145,9 +147,12 @@ ui <- dashboardPage(
                                       choices = list("Boxplot" = 1, "Jitter plot" = 2), 
                                       selected = 1),
                          numericInput("multi_genecountPointSize", label = "Jitter point size", value = 3),
-                         radioButtons("multi_readcountplot_labels", label = "Label type",
+                         radioButtons("multi_readcountplot_labels", label = "Point labels",
                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
                                       selected = 1),
+                         
+                         checkboxInput("multi_genecountSharedYAxis", label = "Label y-axis on first plot per row", value = TRUE),
+                         
                          selectInput("multi_genecountShowLegends", label = "Show legends", 
                                      choices = list("Hide legends" = 1, "Show legends on all plots" = 2, "Show one common legend" = 3), 
                                      selected = 3),

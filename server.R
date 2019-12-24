@@ -1,7 +1,7 @@
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = 0.70
+app_version = 0.71
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -19,6 +19,7 @@ app_version = 0.70
 # added ability to plot multiple read count plots at once
 # customize legend positions on multiple read count plots
 # drag to customize the area of all plots
+# option to show y-axis title only on first plot per row
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -546,7 +547,7 @@ shinyServer(function(input, output, session) {
     print(p)
   })
   
-  #gene count plot
+  #multi gene count plot
   output$multi_genecount_plot1 = renderPlot({
     withProgress(message = 'Generating read count plots...', value = 1, min = 1, max = 100, {
      do_multi_genecount_plot()
@@ -630,6 +631,17 @@ shinyServer(function(input, output, session) {
         p[[i]] <- p[[i]] + theme(legend.position = paste(input$multi_genecountLegendPosition))
       } else if (input$multi_genecountShowLegends == 3){ # show one common legend
         
+      }
+      
+      #turn off y-axis unless the plot is the first one in a row, based on user selection
+      if (input$multi_genecountSharedYAxis == TRUE){
+        if ((i-1)%%input$multi_genecountGridColumns == 0 | i==1){
+          p[[i]] <- p[[i]] + theme(axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
+        } else {
+          p[[i]] <- p[[i]] + theme(axis.title.y = element_blank())
+        }
+      } else {
+        p[[i]] <- p[[i]] + theme(axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
       }
 
     }
