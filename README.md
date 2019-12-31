@@ -4,7 +4,7 @@
 BEAVR: Browser-based Exploration And Visualization of RNAseq. A browser-based graphical tool to automate analysis and exploration of large RNAseq datasets using DESeq2.
 
 # Requirements
-You must have the following components installed in order to run VisualizeTRACS:
+You must have the following components installed in order to run BEAVR:
 - R 3.5+	
 - library(shiny)
 - library(shinydashboard)
