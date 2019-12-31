@@ -1,7 +1,7 @@
-# VisualRNAseq
+# BEAVR
 
 # Introduction
-A browser-based graphical tool to automate analysis and exploration of large RNAseq datasets using DESeq2
+BEAVR: Browser-based Exploration And Visualization of RNAseq. A browser-based graphical tool to automate analysis and exploration of large RNAseq datasets using DESeq2.
 
 # Requirements
 You must have the following components installed in order to run VisualizeTRACS:
@@ -24,20 +24,20 @@ You must have the following components installed in order to run VisualizeTRACS:
 - library("shinyjqui")
 
 # Installation
-As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching VisualRNAseq using the commands below.
+As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching BEAVR using the commands below.
     
-# Run VisualRNAseq
-Load the required for launch and run the latest version of VisualRNAseq using:
+# Run BEAVR
+Load the required for launch and run the latest version of BEAVR using:
 
 	library(shiny)
 	library(shinydashboard)
-	runGitHub( "VisualRNAseq", "developerpiru")
+	runGitHub( "BEAVR", "developerpiru")
 
 If you are using R, a browser window should open automatically showing the app. If you are using RStudio, click "Open in browser" in the window that opens.
 
 # Usage
 
-VisualRNAseq requires two file inputs:
+BEAVR requires two file inputs:
 1. Read counts file
 2. Column data file
 
@@ -45,7 +45,7 @@ The **read counts file** contains all the reads for all samples in one file (.tx
 1. The first column must contain ENSEMBL IDs for every gene. The heading name for this column must be ```gene_id```.
 2. The next ```n``` columns must contain the raw read counts for each ```n``` samples. Label the heading name for each column with a unique sample\replicate identifier.
 
-The **column data file** tells VisualRNAseq which columns in the read count file belong to which treatment groups (ie. Untreated and Treated). The format for this must be as follows:
+The **column data file** tells BEAVR which columns in the read count file belong to which treatment groups (ie. Untreated and Treated). The format for this must be as follows:
 1. The first column must list the sample\replicate identifiers of each sample you have in your read counts file. For example, for ```n``` samples in the read counts file, you must have ```n``` rows in the column data file. Each row is a unique sample. The heading name for this column can be left blank (it is not used).
 	- **Note:** it is critical that the order of the samples here (each row) is in the same order as the samples (each column) in the read counts file.
 2. The second column identifies which treatment condition\group the samples belong to. The heading name for this column must be ```condition```. For example, in each row of this column, identify that respective sample as belonging to ```Untreated``` or ```Treated```.
