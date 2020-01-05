@@ -59,11 +59,5 @@ The data table can be downloaded and saved using the ```Download Table``` button
 # Known Bugs & Error messages
  Issue | Solution
 ---------|---------
-**Bug:** PCA plot, gene read count plot, and volcano plot won't auto-update after changing the treatment condition. The results table will update correctly. | **Fix:** Just refresh the page and change the treatment condition.
-
-
-**Error message:**```ncol(countData) == nrow(colData) is not TRUE```
-
-**Cause:** The samples (columns) in your read count table file do not match the samples (rows) in your sample treatment matrix file.
-
-**Fix:** Please check to make sure sample names match and that you've selected the correct files (and formats) to load into BEAVR.
+**Bug:** PCA plot, gene read count plot, and volcano plot won't auto-update after changing the treatment condition. The results table will update correctly. | Edit the parameters in the sidebar for PCA/read count/volcano plots.
+**Error message:**```ncol(countData) == nrow(colData) is not TRUE``` | The samples (columns) in your read count table file do not match the samples (rows) in your sample treatment matrix file. Please check to make sure sample names match and that you've selected the correct files (and formats: .csv or .txt) to load into BEAVR.
