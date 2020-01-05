@@ -62,6 +62,9 @@ PCA plot, gene read count plot, and volcano plot won't auto-update after changin
 
 **Fix:** Just refresh the page and change the treatment condition.
 
+
 **Error message:**```ncol(countData) == nrow(colData) is not TRUE```
+
 **Cause:** The samples (columns) in your read count table file do not match the samples (rows) in your sample treatment matrix file.
+
 **Fix:** Please check to make sure sample names match and that you've selected the correct files (and formats) to load into BEAVR.
