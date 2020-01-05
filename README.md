@@ -57,7 +57,7 @@ Once complete, you can view the resulting data table, PCA plot, read count plots
 The data table can be downloaded and saved using the ```Download Table``` button above the table. You can save the PCA plot or read count plots by right clicking and selecting "save image as...". To save the volcano plot, hover over the plot to display the toolbar in the top-right of the plot. Then click the camera icon to save the current view.
 
 # Known Bugs & Error messages
- | 
+ Issue | Solution
 ---------|---------
 **Bug:** PCA plot, gene read count plot, and volcano plot won't auto-update after changing the treatment condition. The results table will update correctly. | **Fix:** Just refresh the page and change the treatment condition.
 
