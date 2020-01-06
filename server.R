@@ -1,7 +1,9 @@
+# BEAVR: A Browser-based tool for the Exploration And Visualization of RNA-seq data
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = "0.71.2"
+# See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
+
+app_version = "0.72.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -22,11 +24,17 @@ app_version = "0.71.2"
 # option to show y-axis title only on first plot per row
 # option to show log10 scale y-axis
 # dropped single read plot feature - use multi version with 1x1 grid for a single plot
+# added ability to pick human or mouse reference genomes to map ENSEMBL IDs
+# added ability to filter results table based on any/all columns
+# added ability to turn filtering on/off
+# added ability to download filtered results table
+# volcano plot now shows filtered results if filtering is enabled
+# updated UI colours and other aesthetics
+# fixed legend positions for multi read count plots
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
 #### legend symbols show letter 'a' below symbol on jitter plots
-#### alignment of legend is not centered on plots but on canvas
 
 #function to check for required packages and install them if not already installed
 installReqs <- function(package_name, bioc){
@@ -42,7 +50,6 @@ installReqs <- function(package_name, bioc){
 installReqs("shiny", bioc = FALSE)
 installReqs("shinydashboard", bioc = FALSE)
 installReqs("plotly", bioc = FALSE)
-installReqs("scatterD3", bioc = FALSE)
 installReqs("ggplot2", bioc = FALSE)
 installReqs("ggrepel", bioc = FALSE)
 installReqs("data.table", bioc = FALSE)
@@ -52,6 +59,7 @@ installReqs("DESeq2", bioc = TRUE)
 installReqs("vsn", bioc = TRUE)
 installReqs('apeglm', bioc = TRUE)
 installReqs('org.Hs.eg.db', bioc = TRUE)
+installReqs('org.Mm.eg.db', bioc = TRUE)
 installReqs('EnhancedVolcano', bioc = TRUE)
 installReqs('ggpubr', bioc = FALSE)
 installReqs('shinyjqui', bioc = FALSE)
@@ -60,22 +68,21 @@ installReqs('shinyjqui', bioc = FALSE)
 library("shiny")
 library("shinydashboard")
 library("plotly")
-library("scatterD3")
 library("ggplot2")
 library("ggrepel")
 library("data.table")
 library("DT")
 library("DESeq2")
-library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
+library('org.Mm.eg.db')
 library('EnhancedVolcano')
 library("gridExtra")
 library("ggpubr")
 library("shinyjqui")
 
-#increase max file size to 100MB
-options(shiny.maxRequestSize = 100*1024^2)
+#increase max file size to 1000MB
+options(shiny.maxRequestSize = 1000*1024^2)
 
 shinyServer(function(input, output, session) {
   
@@ -119,6 +126,8 @@ shinyServer(function(input, output, session) {
   
   #---END DATA INPUT---#
   
+  #---START DYNAMIC EXPERIMENT SETTINGS---#
+  
   #get control condition from list
   output$control_condslist <- renderUI({
     temp_coldata <- coldata()
@@ -145,16 +154,71 @@ shinyServer(function(input, output, session) {
     numericInput("min_reads_value", "Drop genes with reads below:",value = 10)
   })
   
-  #deprecated function!!
-  conditionpicker <- reactive({
-    
-    temp_coldata <- coldata()
-    
-    condslist <- unique(temp_coldata[,2])
-    
-    return(condslist)
-    
+  #---END DYNAMIC EXPERIMENT SETTINGS---#
+  
+  #---START DYNAMIC FILTERING SETTINGS---#
+  
+  #get baseMean min value from DESeq2 results
+  output$baseMean_min <- renderUI({
+    numericInput("baseMean_min", label = "Min", value = min(resFDR$baseMean, na.rm=T))
   })
+  
+  #get baseMean max value from DESeq2 results
+  output$baseMean_max <- renderUI({
+    numericInput("baseMean_max", label = "Max", value = max(resFDR$baseMean, na.rm=T))
+  })
+  
+  #get log2FC_min value from DESeq2 results
+  output$log2FC_min <- renderUI({
+    numericInput("log2FC_min", label = "Min", value = min(resFDR$log2FoldChange, na.rm=T))
+  })
+  
+  #get log2FC_max value from DESeq2 results
+  output$log2FC_max <- renderUI({
+    numericInput("log2FC_max", label = "Max", value = max(resFDR$log2FoldChange, na.rm=T))
+  })
+  
+  #get lfcSE_min value from DESeq2 results
+  output$lfcSE_min <- renderUI({
+    numericInput("lfcSE_min", label = "Min", value = min(resFDR$lfcSE, na.rm=T))
+  })
+  
+  #get lfcSE_max value from DESeq2 results
+  output$lfcSE_max <- renderUI({
+    numericInput("lfcSE_max", label = "Max", value = max(resFDR$lfcSE, na.rm=T))
+  })
+  
+  #get stat_min value from DESeq2 results
+  output$stat_min <- renderUI({
+    numericInput("stat_min", label = "Min", value = min(resFDR$stat, na.rm=T))
+  })
+  
+  #get stat_max value from DESeq2 results
+  output$stat_max <- renderUI({
+    numericInput("stat_max", label = "Max", value = max(resFDR$stat, na.rm=T))
+  })
+  
+  #get pvalue_min value from DESeq2 results
+  output$pvalue_min <- renderUI({
+    numericInput("pvalue_min", label = "Min", value = min(resFDR$pvalue, na.rm=T))
+  })
+  
+  #get pvalue_max value from DESeq2 results
+  output$pvalue_max <- renderUI({
+    numericInput("pvalue_max", label = "Max", value = max(resFDR$pvalue, na.rm=T))
+  })
+  
+  #get padj_min value from DESeq2 results
+  output$padj_min <- renderUI({
+    numericInput("padj_min", label = "Min", value = min(resFDR$padj, na.rm=T))
+  })
+  
+  #get padj_max value from DESeq2 results
+  output$padj_max <- renderUI({
+    numericInput("padj_max", label = "Max", value = max(resFDR$padj, na.rm=T))
+  })
+  
+  #---END DYNAMIC FILTERING SETTINGS---#
   
   #DEBUG - function to check coldata against read count table column names
   coldatacompare <- reactive({
@@ -203,10 +267,7 @@ shinyServer(function(input, output, session) {
     #pre-filter dds table to only keep genes that have at least min_reads_value reads set by user
     keep <- rowSums(counts(dds)) > input$min_reads_value
     dds <- dds[keep,]
-    
-    #OLD METHOD - Setting the factor level
-    #dds$condition <- factor(dds$condition, levels = c(control_factor, treatment1_factor))
-    
+
     #NEW METHOD - Setting the factor level
     dds$condition <- relevel(dds$condition, ref = control_factor)
     
@@ -247,16 +308,12 @@ shinyServer(function(input, output, session) {
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Determing differential expression..."))
-    
-    #OLD WAY - set the contrasts for comparisons
-    #res <<- results(dds, contrast=c("condition",control_factor, treatment1_factor))
-    
+
     #new way to set multifactor comparisons - log2FC[final/initial]
     res <<- results(dds, contrast=c("condition", treatment1_factor, control_factor))
     
     #Log fold change shrinkage for visualization and ranking
-    #resultsNames(dds)
-    
+
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Using 'apeglm' for LFC shrinkage..."))
@@ -267,9 +324,6 @@ shinyServer(function(input, output, session) {
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Ordering by p values..."))
-    
-    #order results by smallest p value
-    resOrdered <<- res[order(res$pvalue),]
     
     #get some basic tallies using the summary function.
     #summary(res)
@@ -291,17 +345,24 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Mapping ENSEMBL names to readable gene symbols..."))
     
     #map ensembl symbols to gene ids
-    res$GeneID <<- mapIds(org.Hs.eg.db,keys=rownames(res),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
-    resFDR$GeneID <<- mapIds(org.Hs.eg.db,keys=rownames(resFDR),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
-    resOrdered$GeneID <<- mapIds(org.Hs.eg.db,keys=rownames(resOrdered),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
-    
-    #make a separate table ensembl symbols and gene ids
+    #check which reference genome was selected by the user and translate ENSEMBL IDs using the correct one
+    if (input$ref_genome_organism == 1){
+      # 1 = human
+      res$GeneID <<- mapIds(org.Hs.eg.db,keys=rownames(res),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
+      resFDR$GeneID <<- mapIds(org.Hs.eg.db,keys=rownames(resFDR),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
+    } else if (input$ref_genome_organism == 2){
+      # 2 = mouse
+      res$GeneID <<- mapIds(org.Mm.eg.db,keys=rownames(res),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
+      resFDR$GeneID <<- mapIds(org.Mm.eg.db,keys=rownames(resFDR),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
+    }
+
+    #make a separate table of ensembl symbols and gene ids
+    #required for gene read counts plot function
     listofgenes <<- as.data.frame(res)
     listofgenes <<- subset(listofgenes, select = c(GeneID))
     listofgenes$ENSEMBL <<- rownames(listofgenes)
     
     #write files
-    #write.csv(as.data.frame(resOrdered), file='resOrdered-all-genes.csv')
     #write.csv(as.data.frame(resFDR), file='resFDR.csv')
     
     #Update progress bar
@@ -311,7 +372,6 @@ shinyServer(function(input, output, session) {
     resFDR <<- resFDR[,c(7,1:6)]
     
     return(resFDR)
-    #return(resOrdered)
     
   })
   
@@ -321,8 +381,35 @@ shinyServer(function(input, output, session) {
   #function to show table
   output$calc_res_values <- DT::renderDataTable({
     withProgress(message = 'Performing calculations...', value = 1, min = 1, max = 100, {
-      as.data.frame(calc_res())
+      unfilteredTable <<- as.data.frame(calc_res())
+      
+      #check if the Enable filtering checkbox is checked; if so, enable filtering as below
+      #save filtered table to filteredTable global variable
+      #if not, save the unfiltered table to filteredTable global variable
+      #that way, functions can be simplified and the same variable (filteredTable) can carry both table types
+      if (input$filterTableEnabled == TRUE){
+        filteredTable <<- subset(unfilteredTable, 
+                                 baseMean >= input$baseMean_min &
+                                   baseMean <= input$baseMean_max &
+                                   log2FoldChange >= input$log2FC_min &
+                                   log2FoldChange <= input$log2FC_max &
+                                   lfcSE >= input$lfcSE_min &
+                                   lfcSE <= input$lfcSE_max &
+                                   stat >= input$stat_min &
+                                   stat <= input$stat_max &
+                                   pvalue >= input$pvalue_min &
+                                   pvalue <= input$pvalue_max &
+                                   padj >= input$padj_min &
+                                   padj <= input$padj_max
+        )
+      } else {
+        filteredTable = unfilteredTable
+      }
+      
+      #show table
+      filteredTable
     })
+    
   })
   
   #download DE gene table
@@ -331,7 +418,8 @@ shinyServer(function(input, output, session) {
       paste("Differentially Expressed Genes.csv")
     },
     content = function(file) {
-      write.csv(as.data.frame(calc_res()), file, row.names = FALSE)
+      #write.csv(as.data.frame(calc_res()), file, row.names = FALSE)
+      write.csv(as.data.frame(filteredTable), file, row.names = FALSE)
     }
   )
   
@@ -400,81 +488,6 @@ shinyServer(function(input, output, session) {
     
   })
   
-  #gene count plot
-  output$genecount_plot = renderPlot({
-    withProgress(message = 'Generating read count plot...', value = 1, min = 1, max = 100, {
-      do_genecount_plot()
-    })
-  })
-  
-  #function to plot gene counts for user defined genes
-  do_genecount_plot <- reactive({
-    
-    #Update progress bar
-    totalSteps = 3 + 3
-    currentStep = 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
-    
-    #get gene name from user
-    genename = toupper(input$gene_name)
-    
-    #get data for selected gene from dds data matrix
-    d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==genename),2], intgroup=c("condition", "replicate"), returnData=TRUE)
-    
-    #Update progress bar
-    currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
-    
-    #generate the gene count plot
-    p <- ggplot(d, aes(x=condition, y=count, color=condition)) +
-      ggtitle(genename) +
-      geom_point(size = input$genecountPointSize) +
-      labs(shape="Replicate", colour="Condition") +
-      xlab("") +
-      ylab("Normalized read count") +
-      theme_classic() +
-      theme(axis.text.x = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-            axis.text.y = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
-            axis.title.x = element_text(colour="black",size=0),
-            axis.title.y = element_text(colour="black",size=input$genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
-            plot.title = element_text(colour="black",size=input$genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.title = element_text(colour="black",size=input$genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text =  element_text(colour="black",size=input$genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text.align = 0)
-    
-    #Update progress bar
-    currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
-    
-    #show boxplot or jitter plot as determined by user
-    if (input$readcountplot_type == 1){
-      p <- p + geom_boxplot() +
-        #hide points
-        geom_point(size = -1)
-    } else {
-      p <- p + geom_jitter(size=input$genecountPointSize, width=0, height=0) +
-        aes(shape=replicate)
-    }
-    
-    #show labels for points as determined by user
-    if (input$readcountplot_labels == 1){
-      #no labels
-      p <- p + labs(shape="Replicate", colour="Condition")
-    } else if (input$readcountplot_labels == 2){
-      #sample names as labels
-      p <- p + geom_text_repel(size=input$genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
-        labs(shape="Replicate", colour="Condition")
-      #aes(shape=rownames(d))
-    } else if (input$readcountplot_labels == 3){
-      #replicate names as labels
-      p <- p + geom_text_repel(size=input$genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
-        labs(shape="Replicate", colour="Condition")
-    }
-    
-    #return the plot
-    print(p)
-  })
-  
   #make volcano plot highlight genes that have an FDR cutoff and Log2FC cutoff as determined by the user (input$padjcutoff and input$FCcutoff)
   output$volcanoPlot = renderPlot({
     withProgress(message = 'Generating volcano plot...', value = 1, min = 1, max = 100, {
@@ -491,8 +504,14 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     #get RNAseq data
-    RNAseqdatatoplot <<- as.data.frame(resFDR)
-    
+    #if filtering is enabled, use filtered data
+    if (input$filterTableEnabled == TRUE){
+      RNAseqdatatoplot <<- as.data.frame(filteredTable)
+    } else {
+      #otherwise, use unfiltered data
+      RNAseqdatatoplot <<- as.data.frame(unfilteredTable)
+    }
+
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
@@ -565,7 +584,14 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     #get multi gene names from user input
-    multi_gene_names <- unlist(strsplit(toupper(input$multi_gene_name), ","))
+    #need to check which genome is selected and do upper case or lower case based on that
+    if (input$ref_genome_organism == 1){
+      # 1 = human
+      multi_gene_names <- unlist(strsplit(toupper(input$multi_gene_name), ","))
+    } else if (input$ref_genome_organism == 2) {
+      # 2 = mouse
+      multi_gene_names <- unlist(strsplit(input$multi_gene_name, ","))
+    }
     
     #Update progress bar
     currentStep = currentStep + 1
@@ -580,12 +606,18 @@ shinyServer(function(input, output, session) {
       
       i = i+1
       
-      #get data for selected gene from dds data matrix
-      d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==toupper(val)),2], intgroup=c("condition", "replicate"), returnData=TRUE)
+      #check which genome was selected
+      #if human is selected, make sure gene names are upper case
+      if (input$ref_genome_organism == 1){
+        # 1 = human
+        val = toupper(val)
+      }
+      
+      d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==val),2], intgroup=c("condition", "replicate"), returnData=TRUE)
       
       #generate each plot
       p[[i]] <- ggplot(d, aes(x=condition, y=count, color=condition)) +
-        ggtitle(toupper(val)) +
+        ggtitle(val) +
         geom_point(size = input$genecountPointSize) +
         labs(shape="Replicate", colour="Condition") +
         xlab("") +
