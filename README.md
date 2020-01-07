@@ -5,22 +5,26 @@ BEAVR: A **B**rowser-based tool for the **E**xploration **A**nd **V**isualizatio
 # Requirements
 You must have the following components installed in order to run BEAVR:
 - R 3.5+	
-- library(shiny)
-- library(shinydashboard)
-- library(plotly)
-- library(scatterD3)
-- library(ggplot2)
-- library(ggrepel)
-- library(data.table)
-- library(DT)
+- library("BiocManager")
+- library("shiny")
+- library("shinydashboard")
+- library("plotly")
+- library("ggplot2")
+- library("ggrepel")
+- library("data.table")
+- library("DT")
 - library("DESeq2")
 - library("vsn")
 - library('apeglm')
 - library('org.Hs.eg.db')
+- library('org.Mm.eg.db')
 - library('EnhancedVolcano')
 - library("gridExtra")
 - library("ggpubr")
 - library("shinyjqui")
+- library("scales")
+- library("RColorBrewer")
+- library("pheatmap")
 
 # Installation
 As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching BEAVR using the commands below.
