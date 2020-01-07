@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.72.1"
+app_version = "0.73.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -17,20 +17,22 @@ app_version = "0.72.1"
 # automatically install required packages if not already installed
 # toggle for biocmanager packages
 # fixed volcano plot
-# added ability to customize font sizes and point sizes for all graphs/plots
-# added ability to plot multiple read count plots at once
+# ability to customize font sizes and point sizes for all graphs/plots
+# ability to plot multiple read count plots at once
 # customize legend positions on multiple read count plots
 # drag to customize the area of all plots
 # option to show y-axis title only on first plot per row
 # option to show log10 scale y-axis
 # dropped single read plot feature - use multi version with 1x1 grid for a single plot
-# added ability to pick human or mouse reference genomes to map ENSEMBL IDs
-# added ability to filter results table based on any/all columns
-# added ability to turn filtering on/off
-# added ability to download filtered results table
+# ability to pick human or mouse reference genomes to map ENSEMBL IDs
+# ability to filter results table based on any/all columns
+# ability to turn filtering on/off
+# ability to download filtered results table
 # volcano plot now shows filtered results if filtering is enabled
 # updated UI colours and other aesthetics
 # fixed legend positions for multi read count plots
+# sample clustering plot (pearson correlation, euclidean, etc)
+# count matrix heatmap to show most significant genes with highest variance between condition and treatment groups
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -47,6 +49,7 @@ installReqs <- function(package_name, bioc){
 }
 
 #check if required libraries are installed, and install them if needed
+installReqs("BiocManager", bioc = FALSE)
 installReqs("shiny", bioc = FALSE)
 installReqs("shinydashboard", bioc = FALSE)
 installReqs("plotly", bioc = FALSE)
@@ -54,16 +57,21 @@ installReqs("ggplot2", bioc = FALSE)
 installReqs("ggrepel", bioc = FALSE)
 installReqs("data.table", bioc = FALSE)
 installReqs("DT", bioc = FALSE)
-installReqs("BiocManager", bioc = FALSE)
 installReqs("DESeq2", bioc = TRUE)
+installReqs("vsn", bioc = TRUE)
 installReqs('apeglm', bioc = TRUE)
 installReqs('org.Hs.eg.db', bioc = TRUE)
 installReqs('org.Mm.eg.db', bioc = TRUE)
 installReqs('EnhancedVolcano', bioc = TRUE)
+installReqs('gridExtra', bioc = FALSE)
 installReqs('ggpubr', bioc = FALSE)
 installReqs('shinyjqui', bioc = FALSE)
+installReqs('scales', bioc = FALSE)
+installReqs('RColorBrewer', bioc = FALSE)
+installReqs('pheatmap', bioc = FALSE)
 
 #load required libraries
+library("BiocManager")
 library("shiny")
 library("shinydashboard")
 library("plotly")
@@ -72,6 +80,7 @@ library("ggrepel")
 library("data.table")
 library("DT")
 library("DESeq2")
+library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
 library('org.Mm.eg.db')
@@ -80,6 +89,8 @@ library("gridExtra")
 library("ggpubr")
 library("shinyjqui")
 library("scales")
+library("RColorBrewer")
+library("pheatmap")
 
 ui <- dashboardPage(
   dashboardHeader(title = paste("BEAVR", app_version, sep = " "), titleWidth = 300),
@@ -116,12 +127,15 @@ ui <- dashboardPage(
     
     conditionalPanel("input.navigationTabs == 'loadDataTab'",
                      div(id = 'loadDataTab_sidebar', 
+                         tags$div('class'="center",
                          h4("Welcome to BEAVR!"),
-                         #h3("Please see the GitHub page for help & info."),
+                         HTML('A <b>B</b>rowser-based tool for the <b>E</b>xploration <b>A</b>nd <b>V</b>isualization of <b>R</b>NAseq data<br><br>'),
+                         tags$p(
                          tags$a(href="https://github.com/developerpiru/VisualRNAseq",
                                 target="_blank",
                                 class ="sidebarlink",
                                 "Check GitHub for help & info")
+                         ))
                      )),
     
     conditionalPanel("input.navigationTabs == 'expSettingsTab'",
@@ -189,6 +203,58 @@ ui <- dashboardPage(
                            numericInput("pcaFontSize_xy_axis", label = "Axis labels", value = 18),
                            numericInput("pcaFontSize_legend_title", label = "Legend title", value = 16),
                            numericInput("pcaFontSize_legend_text", label = "Legend labels", value = 15)
+                         )
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'sampleClusteringPlotTab'",
+                     div(id = 'sampleClusteringPlotTab_sidebar', 
+                         
+                         h4("Appearance"),
+                         tags$div('class'="borderbox",
+                                  selectInput("sampleClustering_method", label = "Clustering method",
+                                              choices = list("Euclidean" = 1, "Pearson" = 2, "Maximum" = 3,
+                                                            "Manhattan" = 4, "Canberra" = 5, "Binary" = 6,
+                                                            "Minkowski" = 7),
+                                              selected = 1),
+                                  selectInput("sampleClustering_cellNums", label = "Cell values",
+                                              choices = list("Hide" = 1, "Decimal" = 2, "Exponential" = 3),
+                                              selected = 1),
+                                  numericInput("sampleClustering_treeHeightRows", label = "Row tree height", value = 50),
+                                  numericInput("sampleClustering_treeHeightCols", label = "Column tree width", value = 50),
+                                  checkboxInput("sampleClustering_legend", label = tags$b("Show legend"), value = TRUE)
+                                  
+                         ),
+                         
+                         h4("Font sizes"),
+                         tags$div('class'="borderbox",
+                                  numericInput("sampleClustering_fontsize", label = "Labels", value = 3),
+                                  numericInput("sampleClustering_fontsize_cellNums", label = "Cell values", value = 3)
+                         )
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'countMatrixHeatmapTab'",
+                     div(id = 'countMatrixHeatmapTab_sidebar', 
+                         
+                         h4("Appearance"),
+                         tags$div('class'="borderbox",
+                                  selectInput("sampleClustering_method", label = "Clustering method",
+                                              choices = list("Euclidean" = 1, "Pearson" = 2, "Maximum" = 3,
+                                                             "Manhattan" = 4, "Canberra" = 5, "Binary" = 6,
+                                                             "Minkowski" = 7),
+                                              selected = 1),
+                                  selectInput("sampleClustering_cellNums", label = "Cell values",
+                                              choices = list("Hide" = 1, "Decimal" = 2, "Exponential" = 3),
+                                              selected = 1),
+                                  numericInput("sampleClustering_treeHeightRows", label = "Row tree height", value = 50),
+                                  numericInput("sampleClustering_treeHeightCols", label = "Column tree width", value = 50),
+                                  checkboxInput("sampleClustering_legend", label = tags$b("Show legend"), value = TRUE)
+                                  
+                         ),
+                         
+                         h4("Font sizes"),
+                         tags$div('class'="borderbox",
+                                  numericInput("sampleClustering_fontsize", label = "Labels", value = 3),
+                                  numericInput("sampleClustering_fontsize_cellNums", label = "Cell values", value = 3)
                          )
                      )),
     
@@ -323,7 +389,7 @@ ui <- dashboardPage(
       )),
       
       #Experiment settings tab
-      tabPanel("Experiment settings", id = "expSettingsTab", value= "expSettingsTab", 
+      tabPanel("Settings", id = "expSettingsTab", value= "expSettingsTab", 
                
                selectInput("ref_genome_organism", label = "Reference organism",
                            choices = list("Human" = 1, "Mouse" = 2), 
@@ -335,15 +401,29 @@ ui <- dashboardPage(
       ),
       
       #DE gane table tab
-      tabPanel("DESeq2 output", id = "geneTableTab", value= "geneTableTab",  fluidRow(
+      tabPanel("Gene Table", id = "geneTableTab", value= "geneTableTab",  fluidRow(
         DT::dataTableOutput("calc_res_values")
         
       )),
       
       #PCA plot tab
-      tabPanel("PCA plot", id = "pcaPlot", value= "pcaPlotTab", fluidRow(
+      tabPanel("PCA", id = "pcaPlot", value= "pcaPlotTab", fluidRow(
         jqui_resizable( #jqui resizable canvas
           plotOutput("PCA_plot", height = "500", width = "500")
+        )
+      )),
+      
+      #Sample clustering plot tab
+      tabPanel("Sample clustering", id = "sampleClusteringPlot", value= "sampleClusteringPlotTab", fluidRow(
+        jqui_resizable( #jqui resizable canvas
+          plotOutput("sampleClustering_plot", height = "500", width = "500")
+        )
+      )),
+      
+      #Count matrix heatmap tab
+      tabPanel("Heatmap", id = "countMatrixHeatmap", value= "countMatrixHeatmapTab", fluidRow(
+        jqui_resizable( #jqui resizable canvas
+          plotOutput("countMatrix_heatmap", height = "500", width = "500")
         )
       )),
       

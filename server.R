@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.72.1"
+app_version = "0.73.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -17,20 +17,22 @@ app_version = "0.72.1"
 # automatically install required packages if not already installed
 # toggle for biocmanager packages
 # fixed volcano plot
-# added ability to customize font sizes and point sizes for all graphs/plots
-# added ability to plot multiple read count plots at once
+# ability to customize font sizes and point sizes for all graphs/plots
+# ability to plot multiple read count plots at once
 # customize legend positions on multiple read count plots
 # drag to customize the area of all plots
 # option to show y-axis title only on first plot per row
 # option to show log10 scale y-axis
 # dropped single read plot feature - use multi version with 1x1 grid for a single plot
-# added ability to pick human or mouse reference genomes to map ENSEMBL IDs
-# added ability to filter results table based on any/all columns
-# added ability to turn filtering on/off
-# added ability to download filtered results table
+# ability to pick human or mouse reference genomes to map ENSEMBL IDs
+# ability to filter results table based on any/all columns
+# ability to turn filtering on/off
+# ability to download filtered results table
 # volcano plot now shows filtered results if filtering is enabled
 # updated UI colours and other aesthetics
 # fixed legend positions for multi read count plots
+# sample clustering plot (pearson correlation, euclidean, etc)
+# count matrix heatmap to show most significant genes with highest variance between condition and treatment groups
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -47,6 +49,7 @@ installReqs <- function(package_name, bioc){
 }
 
 #check if required libraries are installed, and install them if needed
+installReqs("BiocManager", bioc = FALSE)
 installReqs("shiny", bioc = FALSE)
 installReqs("shinydashboard", bioc = FALSE)
 installReqs("plotly", bioc = FALSE)
@@ -54,17 +57,21 @@ installReqs("ggplot2", bioc = FALSE)
 installReqs("ggrepel", bioc = FALSE)
 installReqs("data.table", bioc = FALSE)
 installReqs("DT", bioc = FALSE)
-installReqs("BiocManager", bioc = FALSE)
 installReqs("DESeq2", bioc = TRUE)
 installReqs("vsn", bioc = TRUE)
 installReqs('apeglm', bioc = TRUE)
 installReqs('org.Hs.eg.db', bioc = TRUE)
 installReqs('org.Mm.eg.db', bioc = TRUE)
 installReqs('EnhancedVolcano', bioc = TRUE)
+installReqs('gridExtra', bioc = FALSE)
 installReqs('ggpubr', bioc = FALSE)
 installReqs('shinyjqui', bioc = FALSE)
+installReqs('scales', bioc = FALSE)
+installReqs('RColorBrewer', bioc = FALSE)
+installReqs('pheatmap', bioc = FALSE)
 
 #load required libraries
+library("BiocManager")
 library("shiny")
 library("shinydashboard")
 library("plotly")
@@ -73,6 +80,7 @@ library("ggrepel")
 library("data.table")
 library("DT")
 library("DESeq2")
+library("vsn")
 library('apeglm')
 library('org.Hs.eg.db')
 library('org.Mm.eg.db')
@@ -80,6 +88,9 @@ library('EnhancedVolcano')
 library("gridExtra")
 library("ggpubr")
 library("shinyjqui")
+library("scales")
+library("RColorBrewer")
+library("pheatmap")
 
 #increase max file size to 1000MB
 options(shiny.maxRequestSize = 1000*1024^2)
@@ -294,8 +305,11 @@ shinyServer(function(input, output, session) {
 
     #make a separate table of ensembl symbols and gene ids
     #required for gene read counts plot function
+    #make a copy of res table
     listofgenes <<- as.data.frame(res)
+    #keep only the GeneID column; drop everything else
     listofgenes <<- subset(listofgenes, select = c(GeneID))
+    #save ENSEMBL IDs in new ENSEMBL column
     listofgenes$ENSEMBL <<- rownames(listofgenes)
     
     #write files
@@ -387,12 +401,14 @@ shinyServer(function(input, output, session) {
     currentStep = 1
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
+    #transform data using variance stabilization method
     vsd <<- vst(dds, blind=FALSE)
     
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
     
+    #plot transformed data in PCA
     pcaData <- plotPCA(vsd, intgroup=c("condition", "replicate"), returnData=TRUE)
     percentVar <- round(100 * attr(pcaData, "percentVar"))
     
@@ -431,6 +447,139 @@ shinyServer(function(input, output, session) {
       #replicate names as labels
       p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
     }
+    
+    #return the plot
+    print(p)
+    
+  })
+  
+  #call function to show sample clustering plot
+  output$sampleClustering_plot = renderPlot({
+    withProgress(message = 'Generating sample clustering heatmap...', value = 1, min = 1, max = 100, {
+      do_sampleClustering_plot()
+    })
+  })
+  
+  #function to calculate sample clustering
+  do_sampleClustering_plot <- reactive({
+    
+    #Update progress bar
+    totalSteps = 3 + 3
+    currentStep = 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
+    
+    #transform data using variance stabilization method
+    vsd <<- vst(dds, blind=FALSE)
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
+    
+    #transpose the data
+    sampleDists <- dist(t(assay(vsd)))
+    
+    teststring = "fontsize = '10',"
+
+    #generate heatmap for sample clustering
+    sampleDistMatrix <- as.matrix(sampleDists)
+    rownames(sampleDistMatrix) <- paste(vsd$condition, vsd$replicate, sep="-")
+    colnames(sampleDistMatrix) <- paste(vsd$condition, vsd$replicate, sep="-")
+    colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+    p <- pheatmap(sampleDistMatrix,
+             clustering_distance_rows=sampleDists,
+             clustering_distance_cols=sampleDists,
+             col=colors)
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    
+    #show labels for points as determined by user
+    # if (input$PCAplot_labels == 1){
+    #   #no labels
+    #   p <- p
+    # } else if (input$PCAplot_labels == 2){
+    #   #sample names as labels
+    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(pcaData)))
+    #   aes(shape=rownames(d))
+    # } else if (input$PCAplot_labels == 3){
+    #   #replicate names as labels
+    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
+    # }
+    
+    #return the plot
+    print(p)
+    
+  })
+  
+  #call function to show count matrix heatmpa
+  output$countMatrix_heatmap = renderPlot({
+    withProgress(message = 'Generating heatmap...', value = 1, min = 1, max = 100, {
+      do_countMatrix_heatmap()
+    })
+  })
+  
+  #function to calculate sample clustering
+  do_countMatrix_heatmap <- reactive({
+    
+    #Update progress bar
+    totalSteps = 3 + 3
+    currentStep = 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
+    
+    #transform data using variance stabilization method
+    vsd <<- vst(dds, blind=FALSE)
+    rld <<- rlog(dds, blind=FALSE)
+    ntd <<- normTransform(dds)
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
+    
+    #get annotations for labels
+    annot <- as.data.frame(colData(dds)[,c("condition","replicate")])
+    
+    #get subset of dds data
+    #genestokeep <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:35]
+    genestokeep <- head(order(rowVars(assay(rld)), decreasing=TRUE), 50)
+    heatmap_data <- as.data.frame(assay(rld)[genestokeep,])
+    
+    #get the gene names for the subsetted data
+    if (input$ref_genome_organism == 1){
+      # 1 = human
+      heatmap_data$GeneID <- mapIds(org.Hs.eg.db,keys=rownames(heatmap_data),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
+    } else if (input$ref_genome_organism == 2){
+      # 2 = mouse
+      heatmap_data$GeneID <- mapIds(org.Mm.eg.db,keys=rownames(heatmap_data),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
+    }
+    
+    #drop any rows that don't have HGNC symbols (have NA instead)
+    heatmap_data <- na.omit(heatmap_data, cols = c("GeneID"))
+    #set rownames to GeneID
+    rownames(heatmap_data) <- heatmap_data$GeneID
+    #drop GeneID column before sending to pheatmap, whic must be numerical data
+    heatmap_data <- subset(heatmap_data, select = -c(GeneID))
+
+    #generate heatmap - no row labels
+    p <- pheatmap(heatmap_data, cluster_rows=TRUE, show_rownames=TRUE,
+                  cluster_cols=FALSE, scale="row", annotation_col=annot)
+
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
+    
+    #show labels for points as determined by user
+    # if (input$PCAplot_labels == 1){
+    #   #no labels
+    #   p <- p
+    # } else if (input$PCAplot_labels == 2){
+    #   #sample names as labels
+    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(pcaData)))
+    #   aes(shape=rownames(d))
+    # } else if (input$PCAplot_labels == 3){
+    #   #replicate names as labels
+    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
+    # }
     
     #return the plot
     print(p)
