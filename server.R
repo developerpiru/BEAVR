@@ -1,8 +1,9 @@
-# BEAVR
+# BEAVR: A Browser-based tool for the Exploration And Visualization of RNA-seq data
 # GUI to analyze RNAseq data using DESeq2
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# See Github for more info & ReadMe: https://github.com/developerpiru/VisualRNAseq
-app_version = "0.71.4"
+# See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
+
+app_version = "0.72.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -23,11 +24,17 @@ app_version = "0.71.4"
 # option to show y-axis title only on first plot per row
 # option to show log10 scale y-axis
 # dropped single read plot feature - use multi version with 1x1 grid for a single plot
+# added ability to pick human or mouse reference genomes to map ENSEMBL IDs
+# added ability to filter results table based on any/all columns
+# added ability to turn filtering on/off
+# added ability to download filtered results table
+# volcano plot now shows filtered results if filtering is enabled
+# updated UI colours and other aesthetics
+# fixed legend positions for multi read count plots
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
 #### legend symbols show letter 'a' below symbol on jitter plots
-#### alignment of legend is not centered on plots but on canvas
 
 #function to check for required packages and install them if not already installed
 installReqs <- function(package_name, bioc){
@@ -89,7 +96,7 @@ shinyServer(function(input, output, session) {
     
     #store in rawreadsdata variable
     rawreadsdata <- read.csv(input$rawreadsfile$datapath,
-                             header = input$header1,
+                             header = TRUE,
                              sep = input$sep1)
     
     rownames(rawreadsdata) <- rawreadsdata$gene_id
@@ -110,7 +117,7 @@ shinyServer(function(input, output, session) {
     
     #store in coldata variable
     coldata <- read.csv(input$coldatafile$datapath,
-                        header = input$header2,
+                        header = TRUE,
                         sep = input$sep2)
     
     return(coldata)
@@ -119,12 +126,14 @@ shinyServer(function(input, output, session) {
   
   #---END DATA INPUT---#
   
+  #---START DYNAMIC EXPERIMENT SETTINGS---#
+  
   #get control condition from list
   output$control_condslist <- renderUI({
     temp_coldata <- coldata()
     temp_condslist <- unique(temp_coldata[,2])
     
-    selectInput("control_condslist", "Choose control condition", temp_condslist)
+    selectInput("control_condslist", "Choose control condition", temp_condslist, selected = 1)
   })
   
   #get treatment condition from list
@@ -132,7 +141,7 @@ shinyServer(function(input, output, session) {
     temp_coldata <- coldata()
     temp_condslist <- unique(temp_coldata[,2])
     
-    selectInput("treatment1_condslist", "Choose treatment condition", temp_condslist)
+    selectInput("treatment1_condslist", "Choose treatment condition", temp_condslist, selected = 2)
   })
   
   #get false discovery rate from user
@@ -145,65 +154,7 @@ shinyServer(function(input, output, session) {
     numericInput("min_reads_value", "Drop genes with reads below:",value = 10)
   })
   
-  #get baseMean min value from DESeq2 results
-  output$baseMean_min <- renderUI({
-    numericInput("baseMean_min", label = "baseMean minimum threshold", value = min(resFDR$baseMean, na.rm=T))
-  })
-  
-  #get baseMean max value from DESeq2 results
-  output$baseMean_max <- renderUI({
-    numericInput("baseMean_max", label = "baseMean maximum threshold", value = max(resFDR$baseMean, na.rm=T))
-  })
-  
-  #get log2FC_min value from DESeq2 results
-  output$log2FC_min <- renderUI({
-    numericInput("log2FC_min", label = "log2FoldChange minimum threshold", value = min(resFDR$log2FoldChange, na.rm=T))
-  })
-  
-  #get log2FC_max value from DESeq2 results
-  output$log2FC_max <- renderUI({
-    numericInput("log2FC_max", label = "log2FoldChange maximum threshold", value = max(resFDR$log2FoldChange, na.rm=T))
-  })
-  
-  #get lfcSE_min value from DESeq2 results
-  output$log2FC_min <- renderUI({
-    numericInput("lfcSE_min", label = "lfcSE minimum threshold", value = min(resFDR$lfcSE, na.rm=T))
-  })
-  
-  #get lfcSE_max value from DESeq2 results
-  output$lfcSE_max <- renderUI({
-    numericInput("lfcSE_max", label = "lfcSE maximum threshold", value = max(resFDR$lfcSE, na.rm=T))
-  })
-  
-  #get stat_min value from DESeq2 results
-  output$stat_min <- renderUI({
-    numericInput("stat_min", label = "Stat minimum threshold", value = min(resFDR$stat, na.rm=T))
-  })
-  
-  #get stat_max value from DESeq2 results
-  output$stat_max <- renderUI({
-    numericInput("stat_max", label = "Stat maximum threshold", value = max(resFDR$stat, na.rm=T))
-  })
-  
-  #get pvalue_min value from DESeq2 results
-  output$pvalue_min <- renderUI({
-    numericInput("pvalue_min", label = "pvalue minimum threshold", value = min(resFDR$pvalue, na.rm=T))
-  })
-  
-  #get pvalue_max value from DESeq2 results
-  output$pvalue_max <- renderUI({
-    numericInput("pvalue_max", label = "pvalue maximum threshold", value = max(resFDR$pvalue, na.rm=T))
-  })
-  
-  #get padj_min value from DESeq2 results
-  output$padj_min <- renderUI({
-    numericInput("padj_min", label = "padj_min minimum threshold", value = min(resFDR$padj, na.rm=T))
-  })
-  
-  #get padj_max value from DESeq2 results
-  output$padj_max <- renderUI({
-    numericInput("padj_max", label = "padj_max minimum threshold", value = max(resFDR$padj, na.rm=T))
-  })
+  #---END DYNAMIC EXPERIMENT SETTINGS---#
   
   #DEBUG - function to check coldata against read count table column names
   coldatacompare <- reactive({
@@ -356,6 +307,19 @@ shinyServer(function(input, output, session) {
     
     resFDR <<- resFDR[,c(7,1:6)]
     
+    #update numericInputs for data filtering with the min/max values from resFDR
+    updateNumericInput(session, "log2FC_min", value = min(resFDR$log2FoldChange, na.rm=T))
+    updateNumericInput(session, "log2FC_max", value = max(resFDR$log2FoldChange, na.rm=T))
+    updateNumericInput(session, "pvalue_min", value = min(resFDR$pvalue, na.rm=T))
+    updateNumericInput(session, "pvalue_max", value = max(resFDR$pvalue, na.rm=T))
+    updateNumericInput(session, "padj_min", value = min(resFDR$padj, na.rm=T))
+    updateNumericInput(session, "padj_max", value = max(resFDR$padj, na.rm=T))
+    updateNumericInput(session, "baseMean_min", label = "Min", value = min(resFDR$baseMean, na.rm=T))
+    updateNumericInput(session, "baseMean_max", label = "Max", value = max(resFDR$baseMean, na.rm=T))
+    updateNumericInput(session, "lfcSE_min", label = "Min", value = min(resFDR$lfcSE, na.rm=T))
+    updateNumericInput(session, "lfcSE_max", label = "Max", value = max(resFDR$lfcSE, na.rm=T))
+    updateNumericInput(session, "stat_min", value = min(resFDR$stat, na.rm=T))
+    updateNumericInput(session, "stat_max", value = max(resFDR$stat, na.rm=T))
     return(resFDR)
     
   })
@@ -366,8 +330,35 @@ shinyServer(function(input, output, session) {
   #function to show table
   output$calc_res_values <- DT::renderDataTable({
     withProgress(message = 'Performing calculations...', value = 1, min = 1, max = 100, {
-      as.data.frame(calc_res())
+      unfilteredTable <<- as.data.frame(calc_res())
+      
+      #check if the Enable filtering checkbox is checked; if so, enable filtering as below
+      #save filtered table to filteredTable global variable
+      #if not, save the unfiltered table to filteredTable global variable
+      #that way, functions can be simplified and the same variable (filteredTable) can carry both table types
+      if (input$filterTableEnabled == TRUE){
+        filteredTable <<- subset(unfilteredTable, 
+                                 baseMean >= input$baseMean_min &
+                                   baseMean <= input$baseMean_max &
+                                   log2FoldChange >= input$log2FC_min &
+                                   log2FoldChange <= input$log2FC_max &
+                                   lfcSE >= input$lfcSE_min &
+                                   lfcSE <= input$lfcSE_max &
+                                   stat >= input$stat_min &
+                                   stat <= input$stat_max &
+                                   pvalue >= input$pvalue_min &
+                                   pvalue <= input$pvalue_max &
+                                   padj >= input$padj_min &
+                                   padj <= input$padj_max
+        )
+      } else {
+        filteredTable = unfilteredTable
+      }
+      
+      #show table
+      filteredTable
     })
+    
   })
   
   #download DE gene table
@@ -376,7 +367,8 @@ shinyServer(function(input, output, session) {
       paste("Differentially Expressed Genes.csv")
     },
     content = function(file) {
-      write.csv(as.data.frame(calc_res()), file, row.names = FALSE)
+      #write.csv(as.data.frame(calc_res()), file, row.names = FALSE)
+      write.csv(as.data.frame(filteredTable), file, row.names = FALSE)
     }
   )
   
@@ -461,8 +453,14 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     #get RNAseq data
-    RNAseqdatatoplot <<- as.data.frame(resFDR)
-    
+    #if filtering is enabled, use filtered data
+    if (input$filterTableEnabled == TRUE){
+      RNAseqdatatoplot <<- as.data.frame(filteredTable)
+    } else {
+      #otherwise, use unfiltered data
+      RNAseqdatatoplot <<- as.data.frame(unfilteredTable)
+    }
+
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
