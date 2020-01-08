@@ -2,6 +2,9 @@
 
 BEAVR: A **B**rowser-based tool for the **E**xploration **A**nd **V**isualization of **R**NAseq data. BEAVR is a browser-based graphical tool to automate analysis and exploration of small and large RNAseq datasets using DESeq2.
 
+# Release
+Current stable release is version 0.73.2
+
 # Requirements
 You must have the following components installed in order to run BEAVR:
 - R 3.5+	
