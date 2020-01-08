@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.73.1"
+app_version = "0.73.2"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -152,7 +152,7 @@ ui <- dashboardPage(
                      div(id = 'geneTableTab_sidebar',
                          
                          tags$div('class'="center", 
-                           #h4("Download Table"),
+                           tags$br(),
                            downloadButton("downloadDEGeneTable", "Download Table")
                          ),
 
@@ -414,11 +414,11 @@ ui <- dashboardPage(
       tabPanel("Load data", id = "loadDataTab", value= "loadDataTab", fluidRow(
         
         #Load read counts file
-        fileInput("rawreadsfile", "Select file with read counts",
+        fileInput("rawreadsfile", "Select read count table file",
                   multiple = FALSE,
                   accept = c("text/csv",
                              "text/comma-separated-values,text/plain",
-                             ".csv", ".txt")),
+                             ".csv")),
 
         radioButtons("sep1", "Separator",
                      choices = c(Comma = ",",
@@ -427,11 +427,11 @@ ui <- dashboardPage(
                      selected = ","),
         
         #Load coldata
-        fileInput("coldatafile", "Select file with sample treatment matrix",
+        fileInput("coldatafile", "Select sample treatment matrix file",
                   multiple = FALSE,
                   accept = c("text/csv",
                              "text/comma-separated-values,text/plain",
-                             ".csv", ".txt")),
+                             ".csv")),
 
         radioButtons("sep2", "Separator",
                      choices = c(Comma = ",",
@@ -477,17 +477,17 @@ ui <- dashboardPage(
         )
       )),
       
-      #Count matrix heatmap tab
-      tabPanel("Heatmap", id = "countMatrixHeatmap", value= "countMatrixHeatmapTab", fluidRow(
-        jqui_resizable( #jqui resizable canvas
-          plotOutput("countMatrix_heatmap", height = "500", width = "500")
-        )
-      )),
-      
       #Multiple gene read count plots
       tabPanel("Read count plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
         jqui_resizable( #jqui resizable canvas
           plotOutput("multi_genecount_plot1", height = "400", width="800")
+        )
+      )),
+      
+      #Count matrix heatmap tab
+      tabPanel("Heatmap", id = "countMatrixHeatmap", value= "countMatrixHeatmapTab", fluidRow(
+        jqui_resizable( #jqui resizable canvas
+          plotOutput("countMatrix_heatmap", height = "500", width = "500")
         )
       )),
       
