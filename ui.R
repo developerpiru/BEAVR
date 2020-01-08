@@ -33,6 +33,9 @@ app_version = "0.73.1"
 # fixed legend positions for multi read count plots
 # sample clustering plot (pearson correlation, euclidean, etc)
 # count matrix heatmap to show most significant genes with highest variance between condition and treatment groups
+# sample clustering heatmap colors
+# fixed colors for all heatmaps
+# specify distance and clustering type for count matrix heatmap
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -69,6 +72,7 @@ installReqs('shinyjqui', bioc = FALSE)
 installReqs('scales', bioc = FALSE)
 installReqs('RColorBrewer', bioc = FALSE)
 installReqs('pheatmap', bioc = FALSE)
+installReqs('colourpicker', bioc = FALSE)
 
 #load required libraries
 library("BiocManager")
@@ -91,6 +95,7 @@ library("shinyjqui")
 library("scales")
 library("RColorBrewer")
 library("pheatmap")
+library("colourpicker")
 
 ui <- dashboardPage(
   dashboardHeader(title = paste("BEAVR", app_version, sep = " "), titleWidth = 300),
@@ -211,69 +216,121 @@ ui <- dashboardPage(
                          
                          h4("Appearance"),
                          tags$div('class'="borderbox",
-                                  selectInput("sampleClustering_method", label = "Clustering method",
-                                              choices = list("Euclidean" = 1, "Pearson" = 2, "Maximum" = 3,
-                                                            "Manhattan" = 4, "Canberra" = 5, "Binary" = 6,
-                                                            "Minkowski" = 7),
+                                  selectInput("sampleClustering_method", label = "Distance method",
+                                              choices = list("Euclidean" = "euclidean", "Pearson" = "correlation", "Maximum" = "maximum",
+                                                            "Manhattan" = "manhattan", "Canberra" = "canberra", "Binary" = "binary",
+                                                            "Minkowski" = "minkowski"),
                                               selected = 1),
-                                  selectInput("sampleClustering_cellNums", label = "Cell values",
-                                              choices = list("Hide" = 1, "Decimal" = 2, "Exponential" = 3),
+                                  selectInput("sampleClustering_cellNums", label = "Distance values",
+                                              choices = list("Hide" = FALSE, "Decimal" = "%.2f", "Exponential" = "%.1e"),
                                               selected = 1),
+                                  colourInput("sampleClustering_cellNumsColor", "Distance value color", "black"),
                                   numericInput("sampleClustering_treeHeightRows", label = "Row tree height", value = 50),
                                   numericInput("sampleClustering_treeHeightCols", label = "Column tree width", value = 50),
+                                  selectInput("sampleClustering_mapColor", label = "Heatmap color",
+                                              choices = list("Blues" = "Blues",
+                                                             "Blue-Purple" = "BuPu",
+                                                             "Green-Blue" = "GnBu",
+                                                             "Greens" = "Greens",
+                                                             "Greys" = "Greys",
+                                                             "Oranges" = "Oranges", 
+                                                             "Orange-Red" = "OrRd",
+                                                             "Purple-Blue" = "PuBu",
+                                                             "Purple-Blue-Green" = "PuBuGn",
+                                                             "Purple-Red" = "PuRd",
+                                                             "Purples" = "Purples", 
+                                                             "Red-Purple" = "RdPu", 
+                                                             "Reds" = "Reds", 
+                                                             "Yellow-Green" = "YlGn",
+                                                             "Yellow-Green-Blue" = "YlGnBu",
+                                                             "Yellow-Orange-Brown" = "YlOrBr",
+                                                             "Yellow-Orange-Red" = "YlOrRd"
+                                              ), selected = 1),
+                                  colourInput("sampleClustering_borderColor", "Border color", "#FFFFFF", allowTransparent = TRUE),
                                   checkboxInput("sampleClustering_legend", label = tags$b("Show legend"), value = TRUE)
                                   
                          ),
                          
                          h4("Font sizes"),
                          tags$div('class'="borderbox",
-                                  numericInput("sampleClustering_fontsize", label = "Labels", value = 3),
-                                  numericInput("sampleClustering_fontsize_cellNums", label = "Cell values", value = 3)
+                                  numericInput("sampleClustering_fontsize", label = "Labels", value = 15),
+                                  numericInput("sampleClustering_fontsize_cellNums", label = "Cell values", value = 15)
                          )
                      )),
     
     conditionalPanel("input.navigationTabs == 'countMatrixHeatmapTab'",
                      div(id = 'countMatrixHeatmapTab_sidebar', 
                          
-                         h4("Appearance"),
+                         h4("Clustering"),
                          tags$div('class'="borderbox",
-                                  selectInput("sampleClustering_method", label = "Clustering method",
-                                              choices = list("Euclidean" = 1, "Pearson" = 2, "Maximum" = 3,
-                                                             "Manhattan" = 4, "Canberra" = 5, "Binary" = 6,
-                                                             "Minkowski" = 7),
+                                  selectInput("heatmap_clustMethod", label = "Clustering method",
+                                              choices = list("Ward.D" = "ward.D", 
+                                                             "Ward.D2" = "ward.D2", 
+                                                             "Single" = "single", 
+                                                             "Complete" = "complete", 
+                                                             "Average" = "average", 
+                                                             "McQuitty" = "mcquitty", 
+                                                             "Median" = "median", 
+                                                             "Centroid" = "centroid"),
                                               selected = 1),
-                                  selectInput("sampleClustering_cellNums", label = "Cell values",
-                                              choices = list("Hide" = 1, "Decimal" = 2, "Exponential" = 3),
-                                              selected = 1),
-                                  numericInput("sampleClustering_treeHeightRows", label = "Row tree height", value = 50),
-                                  numericInput("sampleClustering_treeHeightCols", label = "Column tree width", value = 50),
-                                  checkboxInput("sampleClustering_legend", label = tags$b("Show legend"), value = TRUE)
-                                  
+                                  checkboxInput("heatmap_clustRows", label = tags$b("Cluster rows"), value = TRUE),
+                                  checkboxInput("heatmap_clustCols", label = tags$b("Cluster columns"), value = FALSE)
+                         
                          ),
                          
+                         h4("Heatmap colors"),
+                         tags$div('class'="borderbox",
+                                  colourInput("heatmap_lowColor", "Low color", "#374AB3", allowTransparent = FALSE),
+                                  colourInput("heatmap_midColor", "Mid color", "#FFFFFF", allowTransparent = FALSE),
+                                  colourInput("heatmap_highColor", "High color", "#E62412", allowTransparent = FALSE),
+                                  colourInput("heatmap_borderColor", "Border color", "#FFFFFF", allowTransparent = TRUE)
+                         ),
+                         
+                         h4("Appearance"),
+                         tags$div('class'="borderbox",
+                                  selectInput("heatmap_distance", label = "Distance method",
+                                              choices = list("Euclidean" = "euclidean", "Pearson" = "correlation", "Maximum" = "maximum",
+                                                             "Manhattan" = "manhattan", "Canberra" = "canberra", "Binary" = "binary",
+                                                             "Minkowski" = "minkowski"),
+                                              selected = 1),
+                                  selectInput("heatmap_cellNums", label = "Distance values",
+                                              choices = list("Hide" = FALSE, "Decimal" = "%.2f", "Exponential" = "%.1e"),
+                                              selected = 1),
+                                  colourInput("heatmap_cellNumsColor", "Distance value color", "black"),
+                                  
+                                  numericInput("heatmap_treeHeightRows", label = "Row tree height", value = 50),
+                                  numericInput("heatmap_treeHeightCols", label = "Column tree width", value = 50),
+                                  selectInput("heatmap_showGeneNames", label = "Gene names",
+                                              choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL", "Hide" = "Hide")),
+                                  checkboxInput("heatmap_legend", label = tags$b("Show legend"), value = TRUE)
+                                  
+                         ),
+
                          h4("Font sizes"),
                          tags$div('class'="borderbox",
-                                  numericInput("sampleClustering_fontsize", label = "Labels", value = 3),
-                                  numericInput("sampleClustering_fontsize_cellNums", label = "Cell values", value = 3)
+                                  numericInput("heatmap_fontsize_geneNames", label = "Gene names", value = 10),
+                                  numericInput("heatmap_fontsize_sampleNames", label = "Sample names", value = 10),
+                                  numericInput("heatmap_fontsize", label = "Annotations", value = 10),
+                                  numericInput("heatmap_fontsize_cellNums", label = "Cell values", value = 10)
                          )
                      )),
     
     conditionalPanel("input.navigationTabs == 'genecountPlotTab'",
                      div(id = 'genecountPlotTab_sidebar',
-                         
+
                          textInput("gene_name", "Enter gene name", value = "KRAS"),
-                         
+
                          h4("Appearance"),
                          tags$div('class'="borderbox",
                            selectInput("readcountplot_type", label = "Plot type",
-                                       choices = list("Boxplot" = 1, "Jitter plot" = 2), 
+                                       choices = list("Boxplot" = 1, "Jitter plot" = 2),
                                        selected = 1),
                            numericInput("genecountPointSize", label = "Jitter point size", value = 3),
                            selectInput("readcountplot_labels", label = "Sample labels",
-                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
+                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3),
                                        selected = 1)
                          ),
-                         
+
                          h4("Font sizes"),
                          tags$div('class'="borderbox",
                            numericInput("genecountFontSize_plot_title", label = "Gene name", value = 20),

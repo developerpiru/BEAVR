@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.73.1"
+app_version = "0.73.2"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -33,6 +33,9 @@ app_version = "0.73.1"
 # fixed legend positions for multi read count plots
 # sample clustering plot (pearson correlation, euclidean, etc)
 # count matrix heatmap to show most significant genes with highest variance between condition and treatment groups
+# sample clustering heatmap colors
+# fixed colors for all heatmaps
+# specify distance and clustering type for count matrix heatmap
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -69,6 +72,7 @@ installReqs('shinyjqui', bioc = FALSE)
 installReqs('scales', bioc = FALSE)
 installReqs('RColorBrewer', bioc = FALSE)
 installReqs('pheatmap', bioc = FALSE)
+installReqs('colourpicker', bioc = FALSE)
 
 #load required libraries
 library("BiocManager")
@@ -91,6 +95,7 @@ library("shinyjqui")
 library("scales")
 library("RColorBrewer")
 library("pheatmap")
+library("colourpicker")
 
 #increase max file size to 1000MB
 options(shiny.maxRequestSize = 1000*1024^2)
@@ -468,45 +473,61 @@ shinyServer(function(input, output, session) {
     currentStep = 1
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
-    #transform data using variance stabilization method
-    vsd <<- vst(dds, blind=FALSE)
+    #get some user defined values
+    clust_dist = input$sampleClustering_method
+    if (input$sampleClustering_cellNums == FALSE){
+      display_cellVals = FALSE
+    } else if (input$sampleClustering_cellNums == "%.2f"){
+      display_cellVals = TRUE
+      cellVals_format = "%.2f"
+    } else if (input$sampleClustering_cellNums == "%.1e"){
+      display_cellVals = TRUE
+      cellVals_format = "%.1e"
+    }
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Calculating..."))
+    
+    #transform data using variance stabilization method
+    vsd <<- vst(dds, blind=FALSE)
     
     #transpose the data
     sampleDists <- dist(t(assay(vsd)))
     
-    teststring = "fontsize = '10',"
-
     #generate heatmap for sample clustering
     sampleDistMatrix <- as.matrix(sampleDists)
     rownames(sampleDistMatrix) <- paste(vsd$condition, vsd$replicate, sep="-")
     colnames(sampleDistMatrix) <- paste(vsd$condition, vsd$replicate, sep="-")
-    colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+    map_colors <- colorRampPalette( rev(brewer.pal(9, paste(input$sampleClustering_mapColor))) )(255)
     p <- pheatmap(sampleDistMatrix,
-             clustering_distance_rows=sampleDists,
-             clustering_distance_cols=sampleDists,
-             col=colors)
+                  #base fontsize
+                  fontsize = input$sampleClustering_fontsize,
+                  #display cell values
+                  display_numbers = display_cellVals,
+                  #cell value format
+                  number_format = cellVals_format,
+                  #cell value fontsize
+                  fontsize_number = input$sampleClustering_fontsize_cellNums,
+                  #cell value font color
+                  number_color = input$sampleClustering_cellNumsColor,
+                  #show legend
+                  legend = input$sampleClustering_legend,
+                  #tree draw heights for rows and columns
+                  treeheight_row = input$sampleClustering_treeHeightRows,
+                  treeheight_col = input$sampleClustering_treeHeightCols,
+                  #distance measurement method for rows and columns
+                  clustering_distance_rows=clust_dist,
+                  clustering_distance_cols=clust_dist,
+                  #heatmap color
+                  col = map_colors,
+                  #border color
+                  border_color = input$sampleClustering_borderColor)
     
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
-    
-    #show labels for points as determined by user
-    # if (input$PCAplot_labels == 1){
-    #   #no labels
-    #   p <- p
-    # } else if (input$PCAplot_labels == 2){
-    #   #sample names as labels
-    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(pcaData)))
-    #   aes(shape=rownames(d))
-    # } else if (input$PCAplot_labels == 3){
-    #   #replicate names as labels
-    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
-    # }
-    
+
     #return the plot
     print(p)
     
@@ -519,13 +540,30 @@ shinyServer(function(input, output, session) {
     })
   })
   
-  #function to calculate sample clustering
+  #function to calculate count matrix heatmap
   do_countMatrix_heatmap <- reactive({
     
     #Update progress bar
     totalSteps = 3 + 3
     currentStep = 1
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
+    
+    #get user defined varaibles
+    #get some user defined values
+    clust_dist = input$heatmap_distance
+    if (input$heatmap_cellNums == FALSE){
+      display_cellVals = FALSE
+    } else if (input$heatmap_cellNums == "%.2f"){
+      display_cellVals = TRUE
+      cellVals_format = "%.2f"
+    } else if (input$heatmap_cellNums == "%.1e"){
+      display_cellVals = TRUE
+      cellVals_format = "%.1e"
+    }
+    
+    #Update progress bar
+    currentStep = currentStep + 1
+    incProgress(currentStep/totalSteps*100, detail = paste("Calculating..."))
     
     #transform data using variance stabilization method
     vsd <<- vst(dds, blind=FALSE)
@@ -534,7 +572,7 @@ shinyServer(function(input, output, session) {
     
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Subsetting..."))
     
     #get annotations for labels
     annot <- as.data.frame(colData(dds)[,c("condition","replicate")])
@@ -555,32 +593,61 @@ shinyServer(function(input, output, session) {
     
     #drop any rows that don't have HGNC symbols (have NA instead)
     heatmap_data <- na.omit(heatmap_data, cols = c("GeneID"))
-    #set rownames to GeneID
-    rownames(heatmap_data) <- heatmap_data$GeneID
+    
+    #set flag to TRUE by default
+    show_geneNames = TRUE
+    
+    #check which option is set for rownames in the heatmap by the user
+    if (input$heatmap_showGeneNames == "HGNC"){
+      #set rownames to GeneID
+      rownames(heatmap_data) <- heatmap_data$GeneID
+      #if false, rownames are already set to ENSEMBL IDs so don't change anything
+    } else if (input$heatmap_showGeneNames == "Hide") {
+      #set flag to false
+      show_geneNames = FALSE
+    }
+
     #drop GeneID column before sending to pheatmap, whic must be numerical data
     heatmap_data <- subset(heatmap_data, select = -c(GeneID))
 
     #generate heatmap - no row labels
-    p <- pheatmap(heatmap_data, cluster_rows=TRUE, show_rownames=TRUE,
-                  cluster_cols=FALSE, scale="row", annotation_col=annot)
+    p <- pheatmap(heatmap_data, 
+                  scale = "row", 
+                  cluster_rows = input$heatmap_clustRows, 
+                  cluster_cols = input$heatmap_clustCols,
+                  #distance measurement method for rows and columns
+                  clustering_distance_rows=clust_dist,
+                  clustering_distance_cols=clust_dist,
+                  #clustering method
+                  clustering_method = input$heatmap_clustMethod,
+                  #tree draw heights for rows and columns
+                  treeheight_row = input$heatmap_treeHeightRows,
+                  treeheight_col = input$heatmap_treeHeightCols,
+                  #show gene names
+                  show_rownames = show_geneNames,
+                  #base fontsize
+                  fontsize = input$heatmap_fontsize,
+                  #display cell values
+                  display_numbers = display_cellVals,
+                  #cell value format
+                  number_format = cellVals_format,
+                  #cell value fontsize
+                  fontsize_number = input$heatmap_fontsize_cellNums,
+                  #gene name fontsize
+                  fontsize_row = input$heatmap_fontsize_geneNames,
+                  #sample name fontsize
+                  fontsize_col = input$heatmap_fontsize_sampleNames,
+                  #cell value font color
+                  number_color = input$heatmap_cellNumsColor,
+                  annotation_col=annot,
+                  #border color
+                  border_color = input$heatmap_borderColor,
+                  color = colorRampPalette(c(input$heatmap_lowColor, input$heatmap_midColor, input$heatmap_highColor))(50))
 
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
-    
-    #show labels for points as determined by user
-    # if (input$PCAplot_labels == 1){
-    #   #no labels
-    #   p <- p
-    # } else if (input$PCAplot_labels == 2){
-    #   #sample names as labels
-    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(pcaData)))
-    #   aes(shape=rownames(d))
-    # } else if (input$PCAplot_labels == 3){
-    #   #replicate names as labels
-    #   p <- p + geom_text_repel(size=input$pcaLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate))
-    # }
-    
+
     #return the plot
     print(p)
     
