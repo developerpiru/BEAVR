@@ -25,6 +25,7 @@ You must have the following components installed in order to run BEAVR:
 - library("scales")
 - library("RColorBrewer")
 - library("pheatmap")
+- library("colourpicker")
 
 # Installation
 As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching BEAVR using the commands below.
