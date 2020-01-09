@@ -8,15 +8,13 @@ BEAVR is a browser-based graphical tool to automate analysis and exploration of 
 
 Current stable release is version 0.73.2
 
-# Requirements
+# Installation & Requirements
 
 You must have the following components installed in order to run BEAVR:
 - R 3.5+	
 - library("BiocManager")
 - library("shiny")
 - library("shinydashboard")
-
-# Installation
 
 As of version 0.62, all other required packages will be installed automatically. If you run into an error, try relaunching BEAVR using the commands below.
 
