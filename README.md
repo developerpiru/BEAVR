@@ -3,37 +3,23 @@
 BEAVR: A **B**rowser-based tool for the **E**xploration **A**nd **V**isualization of **R**NAseq data. BEAVR is a browser-based graphical tool to automate analysis and exploration of small and large RNAseq datasets using DESeq2.
 
 # Release
+
 Current stable release is version 0.73.2
 
 # Requirements
+
 You must have the following components installed in order to run BEAVR:
 - R 3.5+	
 - library("BiocManager")
 - library("shiny")
 - library("shinydashboard")
-- library("plotly")
-- library("ggplot2")
-- library("ggrepel")
-- library("data.table")
-- library("DT")
-- library("DESeq2")
-- library("vsn")
-- library('apeglm')
-- library('org.Hs.eg.db')
-- library('org.Mm.eg.db')
-- library('EnhancedVolcano')
-- library("gridExtra")
-- library("ggpubr")
-- library("shinyjqui")
-- library("scales")
-- library("RColorBrewer")
-- library("pheatmap")
-- library("colourpicker")
 
 # Installation
-As of version 0.62, all required packages should be installed automatically. If you run into an error, try relaunching BEAVR using the commands below.
-    
+
+As of version 0.62, all other required packages will be installed automatically. If you run into an error, try relaunching BEAVR using the commands below.
+
 # Run BEAVR
+
 Load the required for launch and run the latest version of BEAVR using:
 
 	library(shiny)
@@ -65,6 +51,7 @@ Once complete, you can view the resulting data table, PCA plot, read count plots
 The data table can be downloaded and saved using the ```Download Table``` button above the table. You can save the PCA plot or read count plots by right clicking and selecting "save image as...". To save the volcano plot, hover over the plot to display the toolbar in the top-right of the plot. Then click the camera icon to save the current view.
 
 # Known Bugs & Error messages
+
  Issue | Solution
 ---------|---------
 **Bug:** PCA plot, gene read count plot, and volcano plot won't auto-update after changing the treatment condition. The results table will update correctly. | Edit the parameters in the sidebar for PCA/read count/volcano plots.
