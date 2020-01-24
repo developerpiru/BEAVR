@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.73.2"
+app_version = "0.75.0"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -261,6 +261,14 @@ ui <- dashboardPage(
     conditionalPanel("input.navigationTabs == 'countMatrixHeatmapTab'",
                      div(id = 'countMatrixHeatmapTab_sidebar', 
                          
+                         h4("Genes"),
+                         tags$div('class'="borderbox",
+                                  numericInput("sampleClustering_numGenes", label = "Number of top DE genes to show", value = 50),
+                                  selectInput("heatmap_showGeneNames", label = "Gene names",
+                                              choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL", "Hide" = "Hide"))
+                                  
+                                  
+                         ),
                          h4("Clustering"),
                          tags$div('class'="borderbox",
                                   selectInput("heatmap_clustMethod", label = "Clustering method",
@@ -300,8 +308,6 @@ ui <- dashboardPage(
                                   
                                   numericInput("heatmap_treeHeightRows", label = "Row tree height", value = 50),
                                   numericInput("heatmap_treeHeightCols", label = "Column tree width", value = 50),
-                                  selectInput("heatmap_showGeneNames", label = "Gene names",
-                                              choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL", "Hide" = "Hide")),
                                   checkboxInput("heatmap_legend", label = tags$b("Show legend"), value = TRUE)
                                   
                          ),

@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.73.2"
+app_version = "0.75.0"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -407,7 +407,10 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
     #transform data using variance stabilization method
-    vsd <<- vst(dds, blind=FALSE)
+    #nsub=nrow(dds)
+    #vsd <<- vst(dds, blind=FALSE)
+    vsd <<- varianceStabilizingTransformation(dds, blind = FALSE)
+    #vsd <<- rlogTransformation(dds, blind = FALSE, fitType = "parametric")
     
     #Update progress bar
     currentStep = currentStep + 1
@@ -490,7 +493,8 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Calculating..."))
     
     #transform data using variance stabilization method
-    vsd <<- vst(dds, blind=FALSE)
+    #vsd <<- vst(dds, blind=FALSE)
+    vsd <<- varianceStabilizingTransformation(dds, blind = FALSE)
     
     #transpose the data
     sampleDists <- dist(t(assay(vsd)))
@@ -566,9 +570,11 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Calculating..."))
     
     #transform data using variance stabilization method
-    vsd <<- vst(dds, blind=FALSE)
-    rld <<- rlog(dds, blind=FALSE)
-    ntd <<- normTransform(dds)
+    #vsd <<- vst(dds, blind=FALSE)
+    vsd <<- varianceStabilizingTransformation(dds, blind = FALSE)
+    #rld <<- rlog(dds, blind=FALSE)
+    rld <<- rlogTransformation(dds, blind = FALSE, fitType = "parametric")
+    #ntd <<- normTransform(dds)
     
     #Update progress bar
     currentStep = currentStep + 1
@@ -579,7 +585,10 @@ shinyServer(function(input, output, session) {
     
     #get subset of dds data
     #genestokeep <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:35]
-    genestokeep <- head(order(rowVars(assay(rld)), decreasing=TRUE), 50)
+    #show user-define genes - top most differentially expressed genes
+    #genestokeep <- head(order(rowVars(assay(rld)), decreasing=TRUE), 50)
+    #genestokeep <- head(order(rowVars(assay(rld)), decreasing=TRUE), input$sampleClustering_numGenes)
+    genestokeep <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:input$sampleClustering_numGenes]
     heatmap_data <- as.data.frame(assay(rld)[genestokeep,])
     
     #get the gene names for the subsetted data
@@ -591,23 +600,28 @@ shinyServer(function(input, output, session) {
       heatmap_data$GeneID <- mapIds(org.Mm.eg.db,keys=rownames(heatmap_data),column="SYMBOL",keytype="ENSEMBL",multiVals="first")
     }
     
-    #drop any rows that don't have HGNC symbols (have NA instead)
-    heatmap_data <- na.omit(heatmap_data, cols = c("GeneID"))
+    # #drop any rows that don't have HGNC symbols (have NA instead)
+    # heatmap_data <- na.omit(heatmap_data, cols = c("GeneID"))
     
     #set flag to TRUE by default
     show_geneNames = TRUE
     
     #check which option is set for rownames in the heatmap by the user
     if (input$heatmap_showGeneNames == "HGNC"){
+      
+      #drop any rows that don't have HGNC symbols (have NA instead)
+      heatmap_data <- na.omit(heatmap_data, cols = c("GeneID"))
+      
       #set rownames to GeneID
       rownames(heatmap_data) <- heatmap_data$GeneID
+      
       #if false, rownames are already set to ENSEMBL IDs so don't change anything
     } else if (input$heatmap_showGeneNames == "Hide") {
       #set flag to false
       show_geneNames = FALSE
     }
 
-    #drop GeneID column before sending to pheatmap, whic must be numerical data
+    #drop GeneID column before sending to pheatmap, which must be numerical data
     heatmap_data <- subset(heatmap_data, select = -c(GeneID))
 
     #generate heatmap - no row labels
