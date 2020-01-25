@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.75.0"
+app_version = "0.75.2"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -36,6 +36,8 @@ app_version = "0.75.0"
 # sample clustering heatmap colors
 # fixed colors for all heatmaps
 # specify distance and clustering type for count matrix heatmap
+# fix variance transformations for small nsubs (small sample sets)
+# volcano plot colors
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -393,10 +395,21 @@ ui <- dashboardPage(
                                      placeholder = NULL)
                          ),
                          
+                         h4("Colors"),
+                         tags$div('class'="borderbox",
+                                  colourInput("volcano_NSColor", "Not significant color", "#5B5B5C", allowTransparent = FALSE),
+                                  colourInput("volcano_LFCColor", "LFC only color", "#0FBD32", allowTransparent = FALSE),
+                                  colourInput("volcano_pvalColor", "p value only color", "#126FE8", allowTransparent = FALSE),
+                                  colourInput("volcano_pvalLFCColor", "LFC and p value color", "#FF0000", allowTransparent = TRUE)
+                         ),
+                         
                          h4("Appearance"),
                          tags$div('class'="borderbox",
                            numericInput("volcanoPointSize", label = "Point size", value = 3),
-                           checkboxInput("volcanoCutoffLines", label = tags$b("Show cutoff lines"), value = TRUE)
+                           checkboxInput("volcanoCutoffLines", label = tags$b("Show cutoff lines"), value = TRUE),
+                           selectInput("volcanoLegendPosition", label = "Legend position", 
+                                       choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
+                                       selected = "bottom")
                          ),
                          
                          h4("Font sizes"),

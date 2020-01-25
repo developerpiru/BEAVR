@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.75.0"
+app_version = "0.75.2"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -36,6 +36,8 @@ app_version = "0.75.0"
 # sample clustering heatmap colors
 # fixed colors for all heatmaps
 # specify distance and clustering type for count matrix heatmap
+# fix variance transformations for small nsubs (small sample sets)
+# volcano plot colors
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -423,16 +425,16 @@ shinyServer(function(input, output, session) {
     #generate the plot
     p <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=replicate)) +
       geom_point(size = input$pcaPointSize) +
-      labs(shape="Replicate", colour="Condition") +
+      labs(shape="Replicate", color="Condition") +
       xlab(paste0("PC1: ",percentVar[1],"% variance")) +
       ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
       theme_classic() +
-      theme(axis.text.x = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-            axis.text.y = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
-            axis.title.x = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-            axis.title.y = element_text(colour="black",size=input$pcaFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
-            legend.title = element_text(colour="black",size=input$pcaFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-            legend.text =  element_text(colour="black",size=input$pcaFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+      theme(axis.text.x = element_text(color="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+            axis.text.y = element_text(color="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+            axis.title.x = element_text(color="black",size=input$pcaFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+            axis.title.y = element_text(color="black",size=input$pcaFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+            legend.title = element_text(color="black",size=input$pcaFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+            legend.text =  element_text(color="black",size=input$pcaFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
             legend.text.align = 0,
             text = element_text(size=input$pcaFontSize_x_axis))
     
@@ -711,11 +713,12 @@ shinyServer(function(input, output, session) {
                            legendLabSize = input$volcanoFontSize_legend_title,
                            gridlines.major = FALSE,
                            gridlines.minor = FALSE,
-                           legendPosition = "bottom",
+                           legendPosition = input$volcanoLegendPosition,
                            legendLabels = c('Not Significant', expression(Log[2]~FC~only), "p-value only", expression(p-value~and~log[2]~FC)),
                            cutoffLineType = "longdash",
                            cutoffLineCol = 'black',
                            labCol = 'black',
+                           col = c(input$volcano_NSColor, input$volcano_LFCColor, input$volcano_pvalColor, input$volcano_pvalLFCColor),
                            caption = ""
       )
       
@@ -735,9 +738,11 @@ shinyServer(function(input, output, session) {
                            legendLabSize = input$volcanoFontSize_legend_title,
                            gridlines.major = FALSE,
                            gridlines.minor = FALSE,
-                           legendPosition = "bottom",
+                           legendPosition = input$volcanoLegendPosition,
+                           legendLabels = c('Not Significant', expression(Log[2]~FC~only), "p-value only", expression(p-value~and~log[2]~FC)),
                            cutoffLineType = "blank",
                            labCol = 'black',
+                           col = c(input$volcano_NSColor, input$volcano_LFCColor, input$volcano_pvalColor, input$volcano_pvalLFCColor),
                            caption = ""
       )
     }
@@ -798,18 +803,18 @@ shinyServer(function(input, output, session) {
       p[[i]] <- ggplot(d, aes(x=condition, y=count, color=condition)) +
         ggtitle(val) +
         geom_point(size = input$genecountPointSize) +
-        labs(shape="Replicate", colour="Condition") +
+        labs(shape="Replicate", color="Condition") +
         xlab("") +
         ylab("Normalized read count") +
         theme_classic() +
-        theme(axis.text.x = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-              axis.text.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
-              axis.title.x = element_text(colour="black",size=0),
-              axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
-              plot.title = element_text(colour="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-              #legend.title = element_text(colour="black",size=input$multi_genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+        theme(axis.text.x = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+              axis.text.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+              axis.title.x = element_text(color="black",size=0),
+              axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+              plot.title = element_text(color="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+              #legend.title = element_text(color="black",size=input$multi_genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
               legend.title = element_blank(),
-              legend.text =  element_text(colour="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+              legend.text =  element_text(color="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
               legend.text.align = 0)
       
       #change plot type to boxplot or jitter plot based on user selection
@@ -825,16 +830,16 @@ shinyServer(function(input, output, session) {
       #show labels for points as determined by user
       if (input$multi_readcountplot_labels == 1){
         #no labels
-        p[[i]] <- p[[i]] + labs(shape="Replicate", colour="Condition")
+        p[[i]] <- p[[i]] + labs(shape="Replicate", color="Condition")
       } else if (input$multi_readcountplot_labels == 2){
         #sample names as labels
         p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
-          labs(shape="Replicate", colour="Condition")
+          labs(shape="Replicate", color="Condition")
         #aes(shape=rownames(d))
       } else if (input$multi_readcountplot_labels == 3){
         #replicate names as labels
         p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
-          labs(shape="Replicate", colour="Condition")
+          labs(shape="Replicate", color="Condition")
       }
       
       #adjust legend based on user selection
@@ -849,12 +854,12 @@ shinyServer(function(input, output, session) {
       #turn off y-axis unless the plot is the first one in a row, based on user selection
       if (input$multi_genecountSharedYAxis == TRUE){
         if ((i-1)%%input$multi_genecountGridColumns == 0 | i==1){
-          p[[i]] <- p[[i]] + theme(axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
+          p[[i]] <- p[[i]] + theme(axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
         } else {
           p[[i]] <- p[[i]] + theme(axis.title.y = element_blank())
         }
       } else {
-        p[[i]] <- p[[i]] + theme(axis.title.y = element_text(colour="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
+        p[[i]] <- p[[i]] + theme(axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
       }
       
       #set y-axis to log scale depending on user selection
