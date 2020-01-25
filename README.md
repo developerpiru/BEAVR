@@ -26,7 +26,7 @@ As of version 0.62, all other required packages will be installed automatically.
 
 # Run BEAVR
 
-Load the required for launch and run the latest version of BEAVR using:
+Load the required libraries for launch and run the latest version of BEAVR using:
 
 	library(shiny)
 	library(shinydashboard)
