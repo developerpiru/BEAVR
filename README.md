@@ -4,11 +4,11 @@ BEAVR: A **B**rowser-based tool for the **E**xploration **A**nd **V**isualizatio
 
 BEAVR is a graphical tool to automate analysis and exploration of small and large RNAseq datasets using DESeq2.
 
-# Release
+## Release
 
 Current stable release is version 0.75.2
 
-# Installation & Requirements
+## Installation & Requirements
 
 You must have the following components installed in order to run BEAVR:
 - R 3.5+	
@@ -24,7 +24,7 @@ To install the required packages, enter these commands in R:
 
 As of version 0.62, all other required packages will be installed automatically. If you run into an error, make sure you have R 3.5+ installed and try reinstalling the above packages. 
 
-# Run BEAVR
+## Run BEAVR
 
 Load the required libraries for launch and run the latest version of BEAVR using:
 
