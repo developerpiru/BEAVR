@@ -430,7 +430,7 @@ ui <- dashboardPage(
       id = "navigationTabs",
       
       #Load data tab
-      tabPanel("Load data", id = "loadDataTab", value= "loadDataTab", fluidRow(
+      tabPanel("Load Data", id = "loadDataTab", value= "loadDataTab", fluidRow(
         
         #Load read counts file
         fileInput("rawreadsfile", "Select read count table file",
@@ -490,14 +490,14 @@ ui <- dashboardPage(
       )),
       
       #Sample clustering plot tab
-      tabPanel("Sample clustering", id = "sampleClusteringPlot", value= "sampleClusteringPlotTab", fluidRow(
+      tabPanel("Sample Clustering", id = "sampleClusteringPlot", value= "sampleClusteringPlotTab", fluidRow(
         jqui_resizable( #jqui resizable canvas
           plotOutput("sampleClustering_plot", height = "500", width = "500")
         )
       )),
       
       #Multiple gene read count plots
-      tabPanel("Read count plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
+      tabPanel("Read Count Plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
         jqui_resizable( #jqui resizable canvas
           plotOutput("multi_genecount_plot1", height = "400", width="800")
         )
@@ -511,7 +511,7 @@ ui <- dashboardPage(
       )),
       
       #Volcano plot
-      tabPanel("Volcano plot", id = "volcanoPlotTab", value= "volcanoPlotTab", fluidRow(
+      tabPanel("Volcano Plot", id = "volcanoPlotTab", value= "volcanoPlotTab", fluidRow(
         jqui_resizable( #jqui resizable canvas
           plotOutput("volcanoPlot", height = "500", width="800")
         )
