@@ -2,7 +2,7 @@
 
 BEAVR: A **B**rowser-based tool for the **E**xploration **A**nd **V**isualization of **R**NAseq data. 
 
-BEAVR is a browser-based graphical tool to automate analysis and exploration of small and large RNAseq datasets using DESeq2.
+BEAVR is a graphical tool to automate analysis and exploration of small and large RNAseq datasets using DESeq2.
 
 # Release
 
@@ -39,6 +39,8 @@ If you are using R, a browser window should open automatically showing the app. 
 BEAVR requires two file inputs:
 1. Read counts file
 2. Column data file
+
+See the **Examples** folder for examples of these two files prepared for the Sehrawat et al. (2018) dataset. 
 
 The **read counts table file** contains all the reads for all samples in one file (.txt or .csv file). The format must be as follows:
 1. The first column must contain ENSEMBL IDs for every gene. The heading name for this column must be ```gene_id```.
