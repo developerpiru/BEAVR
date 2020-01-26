@@ -4,6 +4,25 @@ BEAVR: A **B**rowser-based tool for the **E**xploration **A**nd **V**isualizatio
 
 BEAVR is a graphical tool to automate analysis and exploration of small and large RNAseq datasets using DESeq2.
 
+## Table of contents
+
+[Installation & Requirements](https://github.com/developerpiru/BEAVR#installation--requirements)
+[Run BEAVR](https://github.com/developerpiru/BEAVR#run-beavr)
+[Usage](https://github.com/developerpiru/BEAVR#usage)
+- [Preparing the read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
+- [Preparing the sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
+- [Load your data into BEAVR](https://github.com/developerpiru/BEAVR#load-your-data-into-beavr)
+- [Experiment settings](https://github.com/developerpiru/BEAVR#experiment-settings)
+- [Differential gene expression (DGE) analysis](https://github.com/developerpiru/BEAVR#differential-gene-expression-analysis-dge)
+- [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#pca-plot)
+-- [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
+-- [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
+-- [Read count plot](https://github.com/developerpiru/BEAVR#read-count-plots)
+-- [Heatmap](https://github.com/developerpiru/BEAVR#heatmap)
+-- [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
+-- [Resizing and saving images](https://github.com/developerpiru/BEAVR#resizing-and-saving-images)
+[Known bugs & error messages](https://github.com/developerpiru/BEAVR#known-bugs--error-messages)
+
 ## Installation & Requirements
 
 You must have the following components installed in order to run BEAVR:
@@ -84,7 +103,7 @@ Click on the ```Gene Table``` tab to begin calculations. You will see a progress
 
 PCA plot, sample clustering/correlation plot, read count plots, heatmap, and volcano plot for your experiment. All graphs and plots can be saved by right clicking on the image and saving as an image.
 
-## Plots, graphs, and heatmaps
+## Plots, graphs and heatmaps
 
 Each of the other tabs will provide output of plots, graphs, and heatmaps for the data you provided.
 
@@ -135,7 +154,7 @@ If filtering is enabled in the ```Gene Table``` plot, then only those filtered g
 Any of the plots, graphs, and heatmaps can be resized by clicking and dragging the edges. 
 You can save them by right clicking and choosing "save image as".
 
-# Known Bugs & Error messages
+# Known bugs & error messages
 
  Issue | Solution
 ---------|---------
