@@ -37,9 +37,11 @@ You must have the following components installed in order to run BEAVR:
 
 To install the required packages, enter these commands in R:
 
+```R
 	install.packages("BiocManager")
 	install.packages("shiny")
 	install.packages("shinydashboard")
+```
 
 As of version 0.62, all other required packages will be installed automatically. If you run into an error, make sure you have R 3.5+ installed and try reinstalling the above packages. 
 
