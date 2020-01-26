@@ -6,7 +6,7 @@ BEAVR is a browser-based graphical tool to automate analysis and exploration of 
 
 # Release
 
-Current stable release is version 0.73.2
+Current stable release is version 0.75.2
 
 # Installation & Requirements
 
