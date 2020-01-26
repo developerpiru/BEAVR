@@ -63,7 +63,7 @@ BEAVR requires two file inputs:
 1. Read counts file
 2. Column data file
 
-See the **Examples** folder for examples of these two files prepared for the Sehrawat *et al.* (2018) dataset. 
+See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Examples) folder for examples of these two files prepared for the Sehrawat *et al.* (2018) dataset. 
 
 ## Preparing the read count table file
 
