@@ -17,7 +17,7 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 - [Load your data into BEAVR](https://github.com/developerpiru/BEAVR#load-your-data-into-beavr)
 - [Experiment settings](https://github.com/developerpiru/BEAVR#experiment-settings)
 - [Differential gene expression (DGE) analysis](https://github.com/developerpiru/BEAVR#differential-gene-expression-analysis-dge)
-- [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#pca-plot)
+- [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#plots-graphs-and-heatmaps)
   - [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
   - [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
   - [Read count plot](https://github.com/developerpiru/BEAVR#read-count-plots)
