@@ -50,6 +50,7 @@ The table must be arranged as follows:
 1. The first column must contain ENSEMBL IDs for every gene. The heading name for this column must be ```gene_id```.
 2. The next ```n``` columns must contain the raw read counts for each ```n``` samples. Label the heading name for each column with a unique sample/replicate identifier.
 
+Here is what it should like if you prepare it in Microsoft Excel:
 ![Image of read count table](images/readcounttable.jpg)
 
 The **sample treatment matrix file** tells BEAVR which columns in the read count file belong to which treatment groups (ie. Untreated and Treated). The format for this must be as follows:
