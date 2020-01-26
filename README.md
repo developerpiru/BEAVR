@@ -6,26 +6,26 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 
 ## Table of contents
 
-[Installation & Requirements](https://github.com/developerpiru/BEAVR#installation--requirements)
+- [Installation & Requirements](https://github.com/developerpiru/BEAVR#installation--requirements)
 
-[Run BEAVR](https://github.com/developerpiru/BEAVR#run-beavr)
+- [Run BEAVR](https://github.com/developerpiru/BEAVR#run-beavr)
 
-[Usage](https://github.com/developerpiru/BEAVR#usage)
+- [Usage](https://github.com/developerpiru/BEAVR#usage)
 
-- [Preparing the read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
-- [Preparing the sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
-- [Load your data into BEAVR](https://github.com/developerpiru/BEAVR#load-your-data-into-beavr)
-- [Experiment settings](https://github.com/developerpiru/BEAVR#experiment-settings)
-- [Differential gene expression (DGE) analysis](https://github.com/developerpiru/BEAVR#differential-gene-expression-analysis-dge)
-- [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#plots-graphs-and-heatmaps)
-  - [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
-  - [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
-  - [Read count plot](https://github.com/developerpiru/BEAVR#read-count-plots)
-  - [Heatmap](https://github.com/developerpiru/BEAVR#heatmap)
-  - [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
-  - [Resizing and saving images](https://github.com/developerpiru/BEAVR#resizing-and-saving-images)
+ - [Preparing the read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
+ - [Preparing the sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
+ - [Load your data into BEAVR](https://github.com/developerpiru/BEAVR#load-your-data-into-beavr)
+ - [Experiment settings](https://github.com/developerpiru/BEAVR#experiment-settings)
+ - [Differential gene expression (DGE) analysis](https://github.com/developerpiru/BEAVR#differential-gene-expression-analysis-dge)
+ - [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#plots-graphs-and-heatmaps)
+   - [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
+   - [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
+   - [Read count plot](https://github.com/developerpiru/BEAVR#read-count-plots)
+   - [Heatmap](https://github.com/developerpiru/BEAVR#heatmap)
+   - [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
+   - [Resizing and saving images](https://github.com/developerpiru/BEAVR#resizing-and-saving-images)
   
-[Known bugs & error messages](https://github.com/developerpiru/BEAVR#known-bugs--error-messages)
+- [Known bugs & error messages](https://github.com/developerpiru/BEAVR#known-bugs--error-messages)
 
 ## Installation & Requirements
 
