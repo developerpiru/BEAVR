@@ -15,12 +15,12 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 - [Experiment settings](https://github.com/developerpiru/BEAVR#experiment-settings)
 - [Differential gene expression (DGE) analysis](https://github.com/developerpiru/BEAVR#differential-gene-expression-analysis-dge)
 - [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#pca-plot)
- - [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
- - [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
- - [Read count plot](https://github.com/developerpiru/BEAVR#read-count-plots)
- - [Heatmap](https://github.com/developerpiru/BEAVR#heatmap)
- - [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
- - [Resizing and saving images](https://github.com/developerpiru/BEAVR#resizing-and-saving-images)
+  - [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
+  - [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
+  - [Read count plot](https://github.com/developerpiru/BEAVR#read-count-plots)
+  - [Heatmap](https://github.com/developerpiru/BEAVR#heatmap)
+  - [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
+  - [Resizing and saving images](https://github.com/developerpiru/BEAVR#resizing-and-saving-images)
 [Known bugs & error messages](https://github.com/developerpiru/BEAVR#known-bugs--error-messages)
 
 ## Installation & Requirements
