@@ -14,7 +14,7 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 
 - [Preparing the read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
 - [Preparing the sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
-- [Load your data into BEAVR](https://github.com/developerpiru/BEAVR#load-your-data-into-beavr)
+- [Loading your data into BEAVR](https://github.com/developerpiru/BEAVR#loading-your-data-into-beavr)
 - [Experiment settings](https://github.com/developerpiru/BEAVR#experiment-settings)
 - [Differential gene expression (DGE) analysis](https://github.com/developerpiru/BEAVR#differential-gene-expression-analysis-dge)
 - [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#plots-graphs-and-heatmaps)
@@ -92,7 +92,7 @@ The table must be arranged as follows:
 Here is the sample treatment matrix file prepared for the [Sehrawat *et al.* (2018)](https://pubmed.ncbi.nlm.nih.gov/29581250-lsd1-activates-a-lethal-prostate-cancer-gene-network-independently-of-its-demethylase-function/) dataset in Microsoft Excel:
 ![Image of read count table](images/sampletreatmentmatrix.jpg)
 
-## Load your data into BEAVR
+## Loading your data into BEAVR
 
 On the ```Load data``` tab, select the files you have prepared. Make sure you select the correct file type format for each file. 
 
