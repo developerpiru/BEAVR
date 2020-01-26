@@ -60,8 +60,8 @@ If you are using R, a browser window should open automatically showing the app. 
 # Usage
 
 BEAVR requires two file inputs:
-1. Read counts file
-2. Column data file
+1. [Read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
+2. [Sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
 
 See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Examples) folder for examples of these two files prepared for the [Sehrawat *et al.* (2018)](https://pubmed.ncbi.nlm.nih.gov/29581250-lsd1-activates-a-lethal-prostate-cancer-gene-network-independently-of-its-demethylase-function/) dataset. 
 
