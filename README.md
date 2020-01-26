@@ -53,17 +53,41 @@ The table must be arranged as follows:
 Here is what it should like if you prepare it in Microsoft Excel:
 ![Image of read count table](images/readcounttable.jpg)
 
-The **sample treatment matrix file** tells BEAVR which columns in the read count file belong to which treatment groups (ie. Untreated and Treated). The format for this must be as follows:
-1. The first column must list the sample\replicate identifiers of each sample you have in your read counts file. For example, for ```n``` samples in the read counts file, you must have ```n``` rows in the column data file. Each row is a unique sample. The heading name for this column can be left blank (it is not used).
-	- **Note:** it is critical that the order of the samples here (each row) is in the same order as the samples (each column) in the read counts file.
-2. The second column identifies which treatment condition\group the samples belong to. The heading name for this column must be ```condition```. For example, in each row of this column, identify that respective sample as belonging to ```Untreated``` or ```Treated```.
-3. In the third column, you can specify additional characteristics for each sample. For example, you can specify different genotype groups or replicates like ```Replicate-A```, ```Replicate-B```, and ```Replicate-C```. The heading name for this column must be ```replicate```.
+The `gene_id` column contains ENSEMBL IDs for each gene. 
+The columns labelled `DMSO_24h-1, DMSO_24h-2, DMSO_24h-3, SP2509_24h-1, SP2509_24h-2, SP2509_24h-3` are the unique samples/replicates in the experiment and contain the raw, unnormalized read quantities for each gene for eacn sample.
 
-Once you load these files under the ```Load data``` tab and select your experimental settings under the ```Settings``` tab, click on the ```Gene Table``` tab to begin calculations. You will see a progress bar in the bottom right-hand corner of the window. 
+## Preparing the sample treatment matrix file
+
+The **sample treatment matrix file** informs BEAVR which columns in the read count file belong to which treatment groups (ie. Untreated and Treated, or Wildtype and Mutant). The file type may be tab-delimited (.txt) or comma-separated (.csv).
+
+The table must be arranged as follows:
+1. The first column must list the sample or replicate identifiers of each sample you have in your read counts file. For example, for ```n``` samples in the read counts file, you must have ```n``` rows in the column data file. Each row is a unique sample. The heading name for this column can be left blank (it is not used).
+	- **Note:** it is critical that the order of the samples here (each row) is in the **same order** as the samples (each column) in the read count table file!
+2. The second column identifies which treatment condition/group the samples belong to. The heading name for this column must be ```condition```. For example, in each row of this column, you must identify that respective sample as belonging to ```Untreated``` or ```Treated``` or ```Wildtype``` or ```Mutant```.
+3. In the third column, you can specify additional characteristics for each sample. For example, you can specify different genotype groups or replicates like ```Replicate-A```, ```Replicate-B```, and ```Replicate-C``` (must be alphanumeric). The heading name for this column must be ```replicate```.
+
+Here is the sample treatment matrix file prepared for the Sehrawat *et al.* (2018) dataset in Microsoft Excel:
+![Image of read count table](images/sampletreatmentmatrix.jpg)
+
+## Load your data into BEAVR
+
+Once you load these files under the ```Load data``` tab and 
+
+## Experiment settings
+
+Select your experimental settings under the ```Settings``` tab
+
+## Differential gene expression analysis (DGE)
+
+Click on the ```Gene Table``` tab to begin calculations. You will see a progress bar in the bottom right-hand corner of the window. 
+
+The data table can be downloaded and saved using the ```Download``` button in the sidebar. All graphs and plots can be saved by right clicking on the image and saving as an image.
 
 Once complete, you can view the resulting data table, PCA plot, sample clustering/correlation plot, read count plots, heatmap, and volcano plot for your experiment.
 
-The data table can be downloaded and saved using the ```Download``` button in the sidebar. All graphs and plots can be saved by right clicking on the image and saving as an image.
+## Plots, graphs, and heatmaps
+
+
 
 # Known Bugs & Error messages
 
