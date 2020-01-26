@@ -42,9 +42,15 @@ BEAVR requires two file inputs:
 
 See the **Examples** folder for examples of these two files prepared for the Sehrawat *et al.* (2018) dataset. 
 
-The **read counts table file** contains all the reads for all samples in one file (.txt or .csv file). The format must be as follows:
+## Preparing the read count table file
+
+The **read counts table file** contains all the raw reads for all the samples in your experiment in a tab-delimited (.txt) or comma-separated (.csv) file type.
+
+The table must be arranged as follows:
 1. The first column must contain ENSEMBL IDs for every gene. The heading name for this column must be ```gene_id```.
-2. The next ```n``` columns must contain the raw read counts for each ```n``` samples. Label the heading name for each column with a unique sample\replicate identifier.
+2. The next ```n``` columns must contain the raw read counts for each ```n``` samples. Label the heading name for each column with a unique sample/replicate identifier.
+
+
 
 The **sample treatment matrix file** tells BEAVR which columns in the read count file belong to which treatment groups (ie. Untreated and Treated). The format for this must be as follows:
 1. The first column must list the sample\replicate identifiers of each sample you have in your read counts file. For example, for ```n``` samples in the read counts file, you must have ```n``` rows in the column data file. Each row is a unique sample. The heading name for this column can be left blank (it is not used).
