@@ -40,7 +40,7 @@ BEAVR requires two file inputs:
 1. Read counts file
 2. Column data file
 
-See the **Examples** folder for examples of these two files prepared for the Sehrawat et al. (2018) dataset. 
+See the **Examples** folder for examples of these two files prepared for the Sehrawat *et al.* (2018) dataset. 
 
 The **read counts table file** contains all the reads for all samples in one file (.txt or .csv file). The format must be as follows:
 1. The first column must contain ENSEMBL IDs for every gene. The heading name for this column must be ```gene_id```.
