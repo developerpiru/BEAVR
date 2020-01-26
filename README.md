@@ -63,7 +63,7 @@ BEAVR requires two file inputs:
 1. Read counts file
 2. Column data file
 
-See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Examples) folder for examples of these two files prepared for the Sehrawat *et al.* (2018) dataset. 
+See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Examples) folder for examples of these two files prepared for the [Sehrawat *et al.* (2018)](https://pubmed.ncbi.nlm.nih.gov/29581250-lsd1-activates-a-lethal-prostate-cancer-gene-network-independently-of-its-demethylase-function/) dataset. 
 
 ## Preparing the read count table file
 
@@ -73,7 +73,7 @@ The table must be arranged as follows:
 1. The first column must contain ENSEMBL IDs for every gene. The heading name for this column must be ```gene_id```.
 2. The next ```n``` columns must contain the raw read counts for each ```n``` samples. Label the heading name for each column with a unique sample/replicate identifier.
 
-Here is what it should like if you prepare it in Microsoft Excel:
+Here is what it looks like for the [Sehrawat *et al.* (2018)](https://pubmed.ncbi.nlm.nih.gov/29581250-lsd1-activates-a-lethal-prostate-cancer-gene-network-independently-of-its-demethylase-function/) dataset in Microsoft Excel:
 ![Image of read count table](images/readcounttable.jpg)
 
 The `gene_id` column contains ENSEMBL IDs for each gene. 
@@ -89,7 +89,7 @@ The table must be arranged as follows:
 2. The second column identifies which treatment condition/group the samples belong to. The heading name for this column must be ```condition```. For example, in each row of this column, you must identify that respective sample as belonging to ```Untreated``` or ```Treated``` or ```Wildtype``` or ```Mutant```.
 3. In the third column, you can specify additional characteristics for each sample. For example, you can specify different genotype groups or replicates like ```Replicate-A```, ```Replicate-B```, and ```Replicate-C``` (must be alphanumeric). The heading name for this column must be ```replicate```.
 
-Here is the sample treatment matrix file prepared for the Sehrawat *et al.* (2018) dataset in Microsoft Excel:
+Here is the sample treatment matrix file prepared for the [Sehrawat *et al.* (2018)](https://pubmed.ncbi.nlm.nih.gov/29581250-lsd1-activates-a-lethal-prostate-cancer-gene-network-independently-of-its-demethylase-function/) dataset in Microsoft Excel:
 ![Image of read count table](images/sampletreatmentmatrix.jpg)
 
 ## Load your data into BEAVR
