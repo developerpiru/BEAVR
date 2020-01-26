@@ -71,19 +71,22 @@ Here is the sample treatment matrix file prepared for the Sehrawat *et al.* (201
 
 ## Load your data into BEAVR
 
-Once you load these files under the ```Load data``` tab and 
+On the ```Load data``` tab, select the files you have prepared. Make sure you select the correct file type format for each file. 
+
+![Image of read count table](images/loaddata.jpg)
 
 ## Experiment settings
 
-Select your experimental settings under the ```Settings``` tab
+On the ```Settings``` tab, you can select the reference organism, the control condition and the treatment condition, the false discovery rate used for statistics, and the minimum read count required for each gene (genes below this value will be dropped from analysis).
 
 ## Differential gene expression analysis (DGE)
 
-Click on the ```Gene Table``` tab to begin calculations. You will see a progress bar in the bottom right-hand corner of the window. 
+Click on the ```Gene Table``` tab to begin calculations. You will see a progress bar in the bottom right-hand corner of the window. The results will be displayed in a table format which you can search, order and filter and download using the side bar. 
 
-The data table can be downloaded and saved using the ```Download``` button in the sidebar. All graphs and plots can be saved by right clicking on the image and saving as an image.
+![Image of read count table](images/dgetable.jpg)
 
-Once complete, you can view the resulting data table, PCA plot, sample clustering/correlation plot, read count plots, heatmap, and volcano plot for your experiment.
+
+Once complete, you can view the resulting data table, PCA plot, sample clustering/correlation plot, read count plots, heatmap, and volcano plot for your experiment. All graphs and plots can be saved by right clicking on the image and saving as an image.
 
 ## Plots, graphs, and heatmaps
 
