@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.75.2"
+app_version = "0.80.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -270,10 +270,14 @@ shinyServer(function(input, output, session) {
 
     #Update progress bar
     currentStep = currentStep + 1
-    incProgress(currentStep/totalSteps*100, detail = paste("Using 'apeglm' for LFC shrinkage..."))
+    incProgress(currentStep/totalSteps*100, detail = paste("Performing LFC shrinkage..."))
     
     #adjust conditions based on contrast
-    resLFC <<- lfcShrink(dds, coef=LFC_coef, type="apeglm")
+    if (input$shrinkage_method == 1){
+      resLFC <<- lfcShrink(dds, coef=LFC_coef, type="apeglm")
+    } else {
+      resLFC <<- lfcShrink(dds, coef=LFC_coef, type="normal")
+    }
     
     #Update progress bar
     currentStep = currentStep + 1

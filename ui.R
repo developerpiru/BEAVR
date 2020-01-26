@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.75.2"
+app_version = "0.80.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -473,6 +473,9 @@ ui <- dashboardPage(
                uiOutput("control_condslist"),
                uiOutput("treatment1_condslist"),
                uiOutput("FDR_value"),
+               selectInput("shrinkage_method", label = "Shrinkage estimator",
+                           choices = list("Approximate posterior estimation (apeglm)" = 1, "Normal (adaptive normal distribution)" = 2), 
+                           selected = 1),
                uiOutput("min_reads")
       ),
       
