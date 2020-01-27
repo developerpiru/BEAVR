@@ -47,15 +47,29 @@ As of version 0.62, all other required packages will be installed automatically.
 
 ## Run BEAVR
 
-Load the required libraries for launch and run the latest version of BEAVR using:
+There are two ways to run BEAVR
 
+1. Automatically download and run the latest version directly from GitHub:
+
+Open a new R session and enter these commands:
 ```
 library(shiny)
 library(shinydashboard)
 runGitHub("BEAVR", "developerpiru")
 ```
 
-If you are using R, a browser window should open automatically showing the app. If you are using RStudio, click "Open in browser" in the window that opens.
+2. Download a local copy and launch from a folder
+  1. First download the latest release using the download button above. 
+  2. Extract the zip archive
+  3. Open a new R session and enter these commands:
+	```
+	library(shiny)
+	library(shinydashboard)
+	runApp("/path/to/folder/BEAVR-master")
+	```
+	Where ```/path/to/folder/``` is the directory where you extracted the zip archive.
+
+If you are using R, a browser window should open automatically showing the app. If you are using RStudio, click "Open in browser" at the top of the popup window.
 
 # Usage
 
