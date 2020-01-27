@@ -65,9 +65,9 @@ There are two ways to run BEAVR
 	```
 	library(shiny)
 	library(shinydashboard)
-	runApp("/path/to/folder/BEAVR-master")
+	runApp("/path/to/folder/BEAVR-version")
 	```
-	Where ```/path/to/folder/``` is the directory where you extracted the zip archive.
+	Where ```/path/to/folder/``` is the directory where you extracted the zip archive ```version``` is the version number you 	downloaded.
 
 If you are using R, a browser window should open automatically showing the app. If you are using RStudio, click "Open in browser" at the top of the popup window.
 
