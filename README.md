@@ -36,7 +36,7 @@ You must have the following components installed in order to run BEAVR:
 - library("shiny")
 - library("shinydashboard")
 
-To install the required packages, enter these commands in R:
+To install the **minimum** required packages, enter these commands in R:
 
 ```
 install.packages("BiocManager")
@@ -44,7 +44,30 @@ install.packages("shiny")
 install.packages("shinydashboard")
 ```
 
-As of version 0.62, all other required packages will be installed automatically. If you run into an error, make sure you have R 3.5+ installed and try reinstalling the above packages. 
+As of version 0.62, all other required packages should install automatically upon launch. 
+If you run into an error, you can manually install the required components with these commands:
+```
+install.packages("BiocManager")
+install.packages("shiny")
+install.packages("shinydashboard")
+install.packages("plotly")
+install.packages("ggplot2")
+install.packages("ggrepel")
+install.packages("DT")
+install.packages("gridExtra")
+install.packages("ggpubr")
+install.packages("shinyjqui")
+install.packages("scales")
+install.packages("RColorBrewer")
+install.packages("pheatmap")
+install.packages("colourpicker")
+BiocManager::install("DESeq2")
+BiocManager::install("vsn")
+BiocManager::install("apeglm")
+BiocManager::install("org.Hs.eg.db")
+BiocManager::install("org.Mm.eg.db")
+BiocManager::install("EnhancedVolcano")
+```
 
 ## Run BEAVR
 
