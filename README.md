@@ -46,7 +46,7 @@ install.packages("shinydashboard")
 
 Then follow the steps below to [Run BEAVR](https://github.com/developerpiru/BEAVR#run-beavr). 
 
-All other required components should be installed upon first launch. If you run into an error, you can manually install these other components:
+All other required components should be installed upon first launch. **If you run into an error**, you can manually install these other components:
 
 ```
 install.packages("BiocManager")
