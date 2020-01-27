@@ -51,12 +51,12 @@ There are two ways to run BEAVR
 
 1. Automatically download and run the latest version directly from GitHub:
 
-Open a new R session and enter these commands:
-```
-library(shiny)
-library(shinydashboard)
-runGitHub("BEAVR", "developerpiru")
-```
+    1. Open a new R session and enter these commands:
+	```
+	library(shiny)
+	library(shinydashboard)
+	runGitHub("BEAVR", "developerpiru")
+	```
 
 2. Download a local copy and launch from a folder
     1. First download the latest release using the download button above. 
