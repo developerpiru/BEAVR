@@ -30,11 +30,11 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 
 ## Installation & Requirements
 
-You must have the following components installed in order to run BEAVR:
-- R 3.5+	
-- library("BiocManager")
-- library("shiny")
-- library("shinydashboard")
+The **minimum requirements** for running BEAVR are:
+- [R 3.5+](https://cran.r-project.org/)	
+- BiocManager
+- shiny
+- shinydashboard
 
 To install the **minimum** required packages, enter these commands in R:
 
@@ -44,8 +44,10 @@ install.packages("shiny")
 install.packages("shinydashboard")
 ```
 
-As of version 0.62, all other required packages should install automatically upon launch. 
-If you run into an error, you can manually install the required components with these commands:
+Then follow the steps below to [Run BEAVR](https://github.com/developerpiru/BEAVR#run-beavr). 
+
+All other required components should be installed upon first launch. If you run into an error, you can manually install these other components:
+
 ```
 install.packages("BiocManager")
 install.packages("shiny")
