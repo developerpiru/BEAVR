@@ -85,7 +85,7 @@ There are two ways to run BEAVR
 	```
 
 2. Download a local copy and launch from a folder
-    1. First download the latest release using the download button above. 
+    1. Download the latest release from [here](https://github.com/developerpiru/BEAVR/releases/latest) or by using the download button above
     2. Extract the zip archive
     3. Open a new R session and enter these commands:
 	```
