@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.80.1"
+app_version = "1.0.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -38,6 +38,7 @@ app_version = "0.80.1"
 # specify distance and clustering type for count matrix heatmap
 # fix variance transformations for small nsubs (small sample sets)
 # volcano plot colors
+# enter gene names for heatmap
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -207,7 +208,13 @@ shinyServer(function(input, output, session) {
     
     #get values
     temp_cts <- cts()
-    temp_coldata <- coldata()
+    temp_coldata <<- coldata()
+    
+    #get number of unique conditions
+    num_conditions <<- length(unique(temp_coldata[,2]))
+    
+    #prepare list of condition names
+    conds_names <<- levels(temp_coldata[,2])
     
     control_factor <- input$control_condslist
     treatment1_factor <- input$treatment1_condslist
@@ -237,6 +244,10 @@ shinyServer(function(input, output, session) {
   #calculate results from dds
   #calculates LFC and FDR
   calc_res <- reactive({
+    
+    #set flag to FALSE for first run indicator -- used in multi gene count function
+    first_run_flag1 <<- TRUE
+    first_run_flag2 <<- TRUE
     
     #Update progress bar
     totalSteps = 8 + 3
@@ -421,6 +432,25 @@ shinyServer(function(input, output, session) {
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
+
+    #run only if first_run_flag2 boolean is TRUE; meaning ui is being initialized
+    if (first_run_flag2 == TRUE){
+      #call function to loop through and create more colour widgets for each condition in the experiment
+      #widget names are pcaColorX, where X is an integer
+      #selector is the target div tag container in ui
+      dynamic_colorgen(widget_name = "pcaColor", selector = "#pcaColorbox")
+    }
+    
+    #set first run flag to false so color widgets are no longer made
+    first_run_flag2 <<- FALSE
+    
+    #vector to save colours
+    multi_colorslist <- NULL
+    
+    #loop through and get the colours that the user choses
+    for (count in 1:num_conditions){
+      multi_colorslist[count] <- input[[paste0('pcaColor', count)]]
+    }
     
     #plot transformed data in PCA
     pcaData <- plotPCA(vsd, intgroup=c("condition", "replicate"), returnData=TRUE)
@@ -429,6 +459,7 @@ shinyServer(function(input, output, session) {
     #generate the plot
     p <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=replicate)) +
       geom_point(size = input$pcaPointSize) +
+      scale_color_manual(values = multi_colorslist) + 
       labs(shape="Replicate", color="Condition") +
       xlab(paste0("PC1: ",percentVar[1],"% variance")) +
       ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
@@ -558,7 +589,6 @@ shinyServer(function(input, output, session) {
     currentStep = 1
     incProgress(currentStep/totalSteps*100, detail = paste("Initializing..."))
     
-    #get user defined varaibles
     #get some user defined values
     clust_dist = input$heatmap_distance
     if (input$heatmap_cellNums == FALSE){
@@ -576,9 +606,7 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Calculating..."))
     
     #transform data using variance stabilization method
-    #vsd <<- vst(dds, blind=FALSE)
     vsd <<- varianceStabilizingTransformation(dds, blind = FALSE)
-    #rld <<- rlog(dds, blind=FALSE)
     rld <<- rlogTransformation(dds, blind = FALSE, fitType = "parametric")
     #ntd <<- normTransform(dds)
     
@@ -589,12 +617,27 @@ shinyServer(function(input, output, session) {
     #get annotations for labels
     annot <- as.data.frame(colData(dds)[,c("condition","replicate")])
     
-    #get subset of dds data
-    #genestokeep <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:35]
-    #show user-define genes - top most differentially expressed genes
-    #genestokeep <- head(order(rowVars(assay(rld)), decreasing=TRUE), 50)
-    #genestokeep <- head(order(rowVars(assay(rld)), decreasing=TRUE), input$sampleClustering_numGenes)
-    genestokeep <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:input$sampleClustering_numGenes]
+    
+    
+    if (input$heatmap_pickTopGenes == TRUE){
+      #get the top X genes as defined by user
+      genestokeep <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:input$heatmap_numGenes]
+      
+    } else {
+      #get the list of genes entered by the user
+      genestomap_HGNC <<- unlist(strsplit(toupper(input$heatmap_GeneNames), ","))
+      
+      #convert the user-entered gene symbols to ENSEMBL IDS
+      if (input$ref_genome_organism == 1){
+        # 1 = human
+        genestokeep <<- mapIds(org.Hs.eg.db,keys=genestomap_HGNC,column="ENSEMBL",keytype="SYMBOL",multiVals="first")
+      } else if (input$ref_genome_organism == 2){
+        # 2 = mouse
+        genestokeep <<- mapIds(org.Mm.eg.db,keys=genestomap_HGNC,column="ENSEMBL",keytype="SYMBOL",multiVals="first")
+      }
+    }
+
+    #subset the required genes from the rld transformation data   
     heatmap_data <- as.data.frame(assay(rld)[genestokeep,])
     
     #get the gene names for the subsetted data
@@ -784,6 +827,26 @@ shinyServer(function(input, output, session) {
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Plotting..."))
+  
+    
+    #run only if first_run_flag2 boolean is TRUE; meaning ui is being initialized
+    # if (first_run_flag1 == TRUE){
+    #   #call function to loop through and create more colour widgets for each condition in the experiment
+    #   #widget names are pcaColorX, where X is an integer
+    #   #selector is the target div tag container in ui
+    #   dynamic_colorgen(widget_name = "multi_genecountColor", selector = "#multi_genecountColorbox")
+    # }
+    # 
+    # #set first run flag to false so color widgets are no longer made
+    # first_run_flag1 <<- FALSE
+    
+    #vector to save colours
+    #multi_colorslist <- NULL
+    
+    #loop through and get the colours that the user choses
+    # for (count in 1:num_conditions){
+    #   multi_colorslist[count] <- input[[paste0('multi_genecountColor', count)]]
+    # }
     
     #initialize variables to run through and generate all the gene count plots
     p = list()
@@ -802,62 +865,112 @@ shinyServer(function(input, output, session) {
       }
       
       d <- plotCounts(dds, gene=listofgenes[which(listofgenes$GeneID==val),2], intgroup=c("condition", "replicate"), returnData=TRUE)
-      
+
       #generate each plot
-      p[[i]] <- ggplot(d, aes(x=condition, y=count, color=condition)) +
-        ggtitle(val) +
-        geom_point(size = input$genecountPointSize) +
-        labs(shape="Replicate", color="Condition") +
-        xlab("") +
-        ylab("Normalized read count") +
-        theme_classic() +
-        theme(axis.text.x = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
-              axis.text.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
-              axis.title.x = element_text(color="black",size=0),
-              axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
-              plot.title = element_text(color="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-              #legend.title = element_text(color="black",size=input$multi_genecountFontSize_legend_title,angle=0,hjust=.5,vjust=.5,face="plain"),
-              legend.title = element_blank(),
-              legend.text =  element_text(color="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
-              legend.text.align = 0)
+      # p[[i]] <- ggplot(d, aes(x=condition, y=count, color=condition)) +
+      #   #p[[i]] <- ggplot(d, x=condition, y=count) +
+      #   ggtitle(val) +
+      #   geom_point(size = input$genecountPointSize) +
+      #   labs(shape="Replicate", color="Condition") +
+      #   xlab("") +
+      #   ylab("Normalized read count") +
+      #   theme_classic() +
+      #   theme(axis.text.x = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+      #         axis.text.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),  
+      #         axis.title.x = element_text(color="black",size=0),
+      #         axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+      #         plot.title = element_text(color="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+      #         legend.title = element_blank(),
+      #         legend.text =  element_text(color="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+      #         legend.text.align = 0)
+      # p[[i]] <- p[[i]] + stat_compare_means(label = "p.signif", method = "t.test", paired = TRUE, ref.group = input$control_condslist , label.y = layer_scales(p[[i]])$y$range$range[2], size = 5)
+      # p[[i]]$layers[[2]]$aes_params$textsize <- 5   
       
       #change plot type to boxplot or jitter plot based on user selection
       if (input$multi_readcountplot_type == 1){
-        p[[i]] <- p[[i]] + geom_boxplot() +
-          #hide points
-          geom_point(size = -1)
+        #boxplot
+        p[[i]] <- ggboxplot(d, x = "condition", y = "count", color = "condition", add = "jitter") +
+          ggtitle(val) +
+          xlab("") +
+          ylab("Normalized read count") +
+          theme_classic() +
+          theme(axis.text.x = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+                axis.text.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),
+                axis.title.x = element_text(color="black",size=0),
+                axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+                plot.title = element_text(color="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+                legend.title = element_blank(),
+                legend.text =  element_text(color="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+                legend.text.align = 0)
+        
+        #display statistics on plots if selected
+        # if (input$multi_genecountStats == TRUE){
+        #   #add statistics
+        #   p[[i]] <- p[[i]] + stat_compare_means(label = "p.signif", method = "t.test", paired = TRUE, ref.group = input$control_condslist, label.y = layer_scales(p[[i]])$y$range$range[2]+input$multi_genecountStatsYcord, size = 6)
+        #   p[[i]] <- p[[i]] + stat_compare_means(aes(label = paste0("p =", ..p.format..)), method = "t.test", label.y = layer_scales(p[[i]])$y$range$range[2]+input$multi_genecountStatsYcord, size = 6)
+        #   p[[i]]$layers[[2]]$aes_params$textsize <- 6
+        # }
+         
+        
       } else {
-        p[[i]] <- p[[i]] + geom_jitter(size=input$multi_genecountPointSize, width=0, height=0) +
-          aes(shape=replicate)
+        #jitter plot
+        p[[i]] <- ggplot(d, aes(x=condition, y=count, color=condition)) +
+          ggtitle(val) +
+          #geom_point(size = input$genecountPointSize) +
+          geom_jitter(aes(size=input$multi_genecountPointSize)) +
+          xlab("") +
+          ylab("Normalized read count") +
+          theme_classic() +
+          theme(axis.text.x = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=.5,vjust=.5,face="plain"),
+                axis.text.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=0,hjust=1,vjust=0,face="plain"),
+                axis.title.x = element_text(color="black",size=0),
+                axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"),
+                plot.title = element_text(color="black",size=input$multi_genecountFontSize_plot_title,angle=0,hjust=.5,vjust=.5,face="plain"),
+                legend.title = element_blank(),
+                legend.text =  element_text(color="black",size=input$multi_genecountFontSize_legend_text,angle=0,hjust=.5,vjust=.5,face="plain"),
+                legend.text.align = 0)
+          
+          #display statistics on plots if selected
+          # if (input$multi_genecountStats == TRUE){
+          #   #add statistics
+          #   p[[i]] <- p[[i]] + stat_compare_means(label = "p.signif", method = "t.test", paired = TRUE, ref.group = input$control_condslist, label.y = layer_scales(p[[i]])$y$range$range[2]+input$multi_genecountStatsYcord, size = 6)
+          #   p[[i]] <- p[[i]] + stat_compare_means(aes(label = paste0("p =", ..p.format..)), method = "t.test", label.y = layer_scales(p[[i]])$y$range$range[2]+input$multi_genecountStatsYcord, size = 6)
+          # }
+        
       }
       
       #show labels for points as determined by user
       if (input$multi_readcountplot_labels == 1){
         #no labels
-        p[[i]] <- p[[i]] + labs(shape="Replicate", color="Condition")
+        p[[i]] <- p[[i]]
       } else if (input$multi_readcountplot_labels == 2){
         #sample names as labels
-        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=rownames(d))) +
-          labs(shape="Replicate", color="Condition")
-        #aes(shape=rownames(d))
+        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, 
+                                           nudge_x=0.1, nudge_y=0.1, 
+                                           segment.color=NA, aes(label=rownames(d))) 
+          # + labs(shape="Replicate", color="Condition")
+          #aes(shape=rownames(d))
       } else if (input$multi_readcountplot_labels == 3){
         #replicate names as labels
-        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, nudge_x=0.1, nudge_y=0.1, segment.color=NA, aes(label=replicate)) +
-          labs(shape="Replicate", color="Condition")
+        p[[i]] <- p[[i]] + geom_text_repel(size=input$multi_genecountLabelFontSize, 
+                                           nudge_x=0.1, nudge_y=0.1, 
+                                           segment.color=NA, aes(label=replicate))
+          # + labs(shape="Replicate", color="Condition")
       }
-      
-      #adjust legend based on user selection
-      if (input$multi_genecountShowLegends == 1){ # hide legend on all plots
-        p[[i]] <- p[[i]] + theme(legend.position = "none")
-      } else if (input$multi_genecountShowLegends == 2 | input$multi_genecountShowLegends == 3){ # show legend on all plots or show one common legend
-        p[[i]] <- p[[i]] + theme(legend.position = paste(input$multi_genecountLegendPosition))
-      } else if (input$multi_genecountShowLegends == 3){ # show one common legend
-        
-      }
-      
+      # 
+      # ###### this code is redundant now ######
+      # #adjust legend based on user selection
+      # if (input$multi_genecountShowLegends == 1){ # hide legend on all plots
+      #   p[[i]] <- p[[i]] + theme(legend.position = "none")
+      # } else if (input$multi_genecountShowLegends == 2 | input$multi_genecountShowLegends == 3){ # show legend on all plots or show one common legend
+      #   p[[i]] <- p[[i]] + theme(legend.position = paste(input$multi_genecountLegendPosition))
+      # } else if (input$multi_genecountShowLegends == 3){ # show one common legend
+      #   
+      # }
+      # 
       #turn off y-axis unless the plot is the first one in a row, based on user selection
       if (input$multi_genecountSharedYAxis == TRUE){
-        if ((i-1)%%input$multi_genecountGridColumns == 0 | i==1){
+        if ((i-1) %% input$multi_genecountGridColumns == 0 | i == 1){
           p[[i]] <- p[[i]] + theme(axis.title.y = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=90,hjust=.5,vjust=.5,face="plain"))
         } else {
           p[[i]] <- p[[i]] + theme(axis.title.y = element_blank())
@@ -872,7 +985,11 @@ shinyServer(function(input, output, session) {
                                          labels = trans_format("log10", math_format(10^.x)))
       }
       
-      
+      #rotate x-axis text based on user selection
+      if (input$pcaRotateText == TRUE){
+        p[[i]] <- p[[i]] + theme(axis.text.x = element_text(color="black",size=input$multi_genecountFontSize_xy_axis,angle=45,hjust=.5,vjust=.5,face="plain"))
+      }
+
     }
     
     #Update progress bar
@@ -880,12 +997,64 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))
     
     #return the plot
+    #specify legend position
     if (input$multi_genecountShowLegends == 1){
       do.call(ggarrange, c(p, nrow=input$multi_genecountGridRows, ncol=input$multi_genecountGridColumns, common.legend = FALSE, legend="none"))
     } else if (input$multi_genecountShowLegends == 3){
       do.call(ggarrange, c(p, nrow=input$multi_genecountGridRows, ncol=input$multi_genecountGridColumns, common.legend = TRUE, legend=paste(input$multi_genecountLegendPosition)))
     } else {
       do.call(ggarrange, c(p, nrow=input$multi_genecountGridRows, ncol=input$multi_genecountGridColumns, common.legend = FALSE, legend=paste(input$multi_genecountLegendPosition)))
+    }
+    
+  })
+  
+  get_unique_conds <- reactive({
+    
+    #use a random plot table sample
+    temp <- plotCounts(dds, gene=listofgenes[1,2], intgroup=c("condition", "replicate"), returnData=TRUE)
+    #determine number of rows
+    nrow(temp)
+    
+    #empty vector to hold unique conditions
+    newlist <- NULL
+    
+    newtemp <- as.matrix(temp)
+    
+    newlist[1] <- newtemp[1,2]
+    
+    counter = 2
+    for (i in 2:nrow(newtemp)){
+      
+      prev = newtemp[i-1,2]
+      curr = newtemp[i,2]
+      
+      if (curr != prev){
+        newlist[counter] <- curr
+        counter = counter+1
+      }
+    }
+    
+    return(newlist)
+    
+  })  
+  
+  dynamic_colorgen <- function(widget_name, selector)({
+    
+    #get list of unique condition names
+    unique_conds <- get_unique_conds()
+    
+    #initialize vector to hold dynamically generated names for color widgets
+    colorwidget_names <- NULL
+    
+    for (count in 1:num_conditions){
+      
+      #prepare unique identifier name for current widget in the loop
+      colorwidget_names[count] <- paste0(widget_name, count)
+      
+      insertUI(
+        selector = selector,
+        ui = colourInput(colorwidget_names[count], unique_conds[count], "#EB4141", allowTransparent = FALSE)
+      )
     }
     
   })

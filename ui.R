@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "0.80.1"
+app_version = "1.0.1"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -38,6 +38,7 @@ app_version = "0.80.1"
 # specify distance and clustering type for count matrix heatmap
 # fix variance transformations for small nsubs (small sample sets)
 # volcano plot colors
+# enter gene names for heatmap
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -204,6 +205,11 @@ ui <- dashboardPage(
                            numericInput("pcaPointSize", label = "Point size", value = 3)
                          ),
                          
+                         h4("Colors"),
+                         tags$div('class'="borderbox",
+                                  tags$div(id="pcaColorbox")
+                         ),
+                         
                          h4("Font sizes"),
                          tags$div('class'="borderbox",
                            numericInput("pcaLabelFontSize", label = "Sample labels", value = 5),
@@ -260,16 +266,93 @@ ui <- dashboardPage(
                          )
                      )),
     
+    conditionalPanel("input.navigationTabs == 'genecountPlotTab'",
+                     div(id = 'genecountPlotTab_sidebar'#,
+                     # 
+                     #     textInput("gene_name", "Enter gene name", value = "KRAS"),
+                     # 
+                     #     h4("Appearance"),
+                     #     tags$div('class'="borderbox",
+                     #       selectInput("readcountplot_type", label = "Plot type",
+                     #                   choices = list("Boxplot" = 1, "Jitter plot" = 2),
+                     #                   selected = 1),
+                     #       #numericInput("genecountPointSize", label = "Jitter point size", value = 3),
+                     #       selectInput("readcountplot_labels", label = "Sample labels",
+                     #                   choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3),
+                     #                   selected = 1)
+                     #     ),
+                     # 
+                     #     h4("Font sizes"),
+                     #     tags$div('class'="borderbox",
+                     #       numericInput("genecountFontSize_plot_title", label = "Gene name", value = 20),
+                     #       numericInput("genecountLabelFontSize", label = "Sample labels", value = 5),
+                     #       numericInput("genecountFontSize_xy_axis", label = "Axis labels", value = 18),
+                     #       numericInput("genecountFontSize_legend_title", label = "Legend title", value = 16),
+                     #       numericInput("genecountFontSize_legend_text", label = "Legend labels", value = 15)
+                     #     )
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'multigenecountPlotTab'",
+                     div(id = 'multigenecountPlotTab_sidebar',
+                         
+                         h4("Genes"),
+                         tags$div('class'="borderbox",
+                           textAreaInput("multi_gene_name", label = "Enter gene names", value = "HRAS,KRAS,NRAS", width = NULL,
+                                         height = 100, cols = NULL, rows = NULL, placeholder = NULL,
+                                         resize = NULL)
+                         ),
+                         h4("Appearance"),
+                         tags$div('class'="borderbox",
+                           numericInput("multi_genecountGridRows", label = "Grid rows", value = 1),
+                           numericInput("multi_genecountGridColumns", label = "Grid columns", value = 3),
+                           selectInput("multi_readcountplot_type", label = "Plot type",
+                                       choices = list("Boxplot" = 1, "Jitter plot" = 2),
+                                       selected = 1),
+                           numericInput("multi_genecountPointSize", label = "Jitter point size", value = 3),
+                           selectInput("multi_readcountplot_labels", label = "Sample labels",
+                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
+                                       selected = 1),
+                           # checkboxInput("multi_genecountStats", label = tags$b("Show statistics"), value = TRUE),
+                           numericInput("multi_genecountStatsYcord", label = tags$b("Adjust statistics placement"), value = "5"),
+                           checkboxInput("multi_genecountSharedYAxis", label = tags$b("Label y-axis on first plot per row"), value = TRUE),
+                           checkboxInput("multi_log10scale", label = tags$b("Log10 scale y-axis"), value = FALSE),
+                           checkboxInput("pcaRotateText", label = tags$b("Rotate x-axis labels"), value = TRUE),
+                           selectInput("multi_genecountShowLegends", label = "Show legends", 
+                                       choices = list("Hide legends" = 1, "Show legends on all plots" = 2, "Show one common legend" = 3), 
+                                       selected = 3),
+                           selectInput("multi_genecountLegendPosition", label = "Legend position", 
+                                       choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
+                                       selected = "Top")
+                         ),
+                         
+                         # h4("Colors"),
+                         # tags$div('class'="borderbox",
+                         #          tags$div(id="multi_genecountColorbox")
+                         # ),
+                         
+                         h4("Font sizes"),
+                         tags$div('class'="borderbox",
+                           numericInput("multi_genecountFontSize_plot_title", label = "Gene name", value = 15),
+                           numericInput("multi_genecountLabelFontSize", label = "Sample labels", value = 5),
+                           numericInput("multi_genecountFontSize_xy_axis", label = "Axis labels", value = 12),
+                           numericInput("multi_genecountFontSize_legend_text", label = "Legend labels", value = 12)
+                         )
+                     )),
+    
     conditionalPanel("input.navigationTabs == 'countMatrixHeatmapTab'",
                      div(id = 'countMatrixHeatmapTab_sidebar', 
                          
                          h4("Genes"),
                          tags$div('class'="borderbox",
-                                  numericInput("sampleClustering_numGenes", label = "Number of top DE genes to show", value = 50),
+                                  
+                                  textAreaInput("heatmap_GeneNames", label = "Enter gene names", value = "HRAS,KRAS,NRAS", width = NULL,
+                                                height = 100, cols = NULL, rows = NULL, placeholder = NULL,
+                                                resize = NULL),
+                                  checkboxInput("heatmap_pickTopGenes", label = tags$b("Show top genes instead"), value = FALSE),
+                                  numericInput("heatmap_numGenes", label = "Number of top genes to show", value = 50),
                                   selectInput("heatmap_showGeneNames", label = "Gene names",
                                               choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL", "Hide" = "Hide"))
-                                  
-                                  
+
                          ),
                          h4("Clustering"),
                          tags$div('class'="borderbox",
@@ -285,10 +368,10 @@ ui <- dashboardPage(
                                               selected = 1),
                                   checkboxInput("heatmap_clustRows", label = tags$b("Cluster rows"), value = TRUE),
                                   checkboxInput("heatmap_clustCols", label = tags$b("Cluster columns"), value = FALSE)
-                         
+                                  
                          ),
                          
-                         h4("Heatmap colors"),
+                         h4("Colors"),
                          tags$div('class'="borderbox",
                                   colourInput("heatmap_lowColor", "Low color", "#374AB3", allowTransparent = FALSE),
                                   colourInput("heatmap_midColor", "Mid color", "#FFFFFF", allowTransparent = FALSE),
@@ -313,74 +396,13 @@ ui <- dashboardPage(
                                   checkboxInput("heatmap_legend", label = tags$b("Show legend"), value = TRUE)
                                   
                          ),
-
+                         
                          h4("Font sizes"),
                          tags$div('class'="borderbox",
                                   numericInput("heatmap_fontsize_geneNames", label = "Gene names", value = 10),
                                   numericInput("heatmap_fontsize_sampleNames", label = "Sample names", value = 10),
                                   numericInput("heatmap_fontsize", label = "Annotations", value = 10),
                                   numericInput("heatmap_fontsize_cellNums", label = "Cell values", value = 10)
-                         )
-                     )),
-    
-    conditionalPanel("input.navigationTabs == 'genecountPlotTab'",
-                     div(id = 'genecountPlotTab_sidebar',
-
-                         textInput("gene_name", "Enter gene name", value = "KRAS"),
-
-                         h4("Appearance"),
-                         tags$div('class'="borderbox",
-                           selectInput("readcountplot_type", label = "Plot type",
-                                       choices = list("Boxplot" = 1, "Jitter plot" = 2),
-                                       selected = 1),
-                           numericInput("genecountPointSize", label = "Jitter point size", value = 3),
-                           selectInput("readcountplot_labels", label = "Sample labels",
-                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3),
-                                       selected = 1)
-                         ),
-
-                         h4("Font sizes"),
-                         tags$div('class'="borderbox",
-                           numericInput("genecountFontSize_plot_title", label = "Gene name", value = 20),
-                           numericInput("genecountLabelFontSize", label = "Sample labels", value = 5),
-                           numericInput("genecountFontSize_xy_axis", label = "Axis labels", value = 18),
-                           numericInput("genecountFontSize_legend_title", label = "Legend title", value = 16),
-                           numericInput("genecountFontSize_legend_text", label = "Legend labels", value = 15)
-                         )
-                     )),
-    
-    conditionalPanel("input.navigationTabs == 'multigenecountPlotTab'",
-                     div(id = 'multigenecountPlotTab_sidebar',
-                         
-                         textInput("multi_gene_name", "Enter gene names separated by a comma", value = "HRAS,KRAS,NRAS"),
-                         
-                         h4("Appearance"),
-                         tags$div('class'="borderbox",
-                           numericInput("multi_genecountGridRows", label = "Grid rows", value = 1),
-                           numericInput("multi_genecountGridColumns", label = "Grid columns", value = 3),
-                           selectInput("multi_readcountplot_type", label = "Plot type",
-                                       choices = list("Boxplot" = 1, "Jitter plot" = 2),
-                                       selected = 1),
-                           numericInput("multi_genecountPointSize", label = "Jitter point size", value = 3),
-                           selectInput("multi_readcountplot_labels", label = "Sample labels",
-                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
-                                       selected = 1),
-                           checkboxInput("multi_genecountSharedYAxis", label = tags$b("Label y-axis on first plot per row"), value = TRUE),
-                           checkboxInput("multi_log10scale", label = tags$b("Log10 scale y-axis"), value = FALSE),
-                           selectInput("multi_genecountShowLegends", label = "Show legends", 
-                                       choices = list("Hide legends" = 1, "Show legends on all plots" = 2, "Show one common legend" = 3), 
-                                       selected = 3),
-                           selectInput("multi_genecountLegendPosition", label = "Legend position", 
-                                       choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
-                                       selected = "Top")
-                         ),
-                         
-                         h4("Font sizes"),
-                         tags$div('class'="borderbox",
-                           numericInput("multi_genecountFontSize_plot_title", label = "Gene name", value = 15),
-                           numericInput("multi_genecountLabelFontSize", label = "Sample labels", value = 5),
-                           numericInput("multi_genecountFontSize_xy_axis", label = "Axis labels", value = 12),
-                           numericInput("multi_genecountFontSize_legend_text", label = "Legend labels", value = 12)
                          )
                      )),
     
