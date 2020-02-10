@@ -185,7 +185,9 @@ You can also chose to display the read counts in a jitter plot instead of a box 
 
 ### Heatmap
 
-The ```Heatmap``` tab will allow you display the differential expression of genes in a clustered heatmap. You can use the sidebar controls to specify the type of clustering for rows and/or columns and also customize things like the color and font sizes.
+The ```Heatmap``` tab will allow you to display the differential expression of genes in a clustered heatmap. You can use the sidebar controls to specify the type of clustering for rows and/or columns and also customize things like the color and font sizes.
+
+You can enter a list of genes separated by a comma to make a heatmap of genes you are interested in. Alternatively, if you want to make a heatmap of the top differentially expressed genes, select the checkbox ```Show top genes instead``` and then enter the number of top genes to show  (e.g. the top 10, 50, 100, etc.). Note: increasing the number of genes to show will increase processing time to perform clustering.
 
 ![Image of read count table](images/heatmap.jpg)
 
