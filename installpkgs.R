@@ -1,5 +1,4 @@
-library(methods)
-
+#install all required R packages for BEAVR
 installCran <- function(package_name){
   install.packages(package_name)
 }
@@ -7,6 +6,9 @@ installCran <- function(package_name){
 installBioc <- function(package_name){
   BiocManager::install(package_name)
 }
+
+#may need to run this
+options(install.packages.compile.from.source="interactive")
 
 ## load required libraries
 installCran("shiny")
