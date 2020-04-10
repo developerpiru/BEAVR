@@ -1,4 +1,5 @@
 #install all required R packages for BEAVR
+
 installCran <- function(package_name){
   install.packages(package_name)
 }
@@ -8,6 +9,7 @@ installBioc <- function(package_name){
 }
 
 #may need to run this
+options(repos = "https://cloud.r-project.org")
 options(install.packages.compile.from.source="interactive")
 
 ## load required libraries

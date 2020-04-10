@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.1"
+app_version = "1.0.7"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -39,6 +39,8 @@ app_version = "1.0.1"
 # fix variance transformations for small nsubs (small sample sets)
 # volcano plot colors
 # enter gene names for heatmap
+# start info bar containing basic steps
+# help tab for basic help/tips info
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -55,95 +57,178 @@ installReqs <- function(package_name, bioc){
 }
 
 #check if required libraries are installed, and install them if needed
-installReqs("BiocManager", bioc = FALSE)
-installReqs("shiny", bioc = FALSE)
-installReqs("shinydashboard", bioc = FALSE)
-installReqs("plotly", bioc = FALSE)
-installReqs("ggplot2", bioc = FALSE)
-installReqs("ggrepel", bioc = FALSE)
-installReqs("data.table", bioc = FALSE)
-installReqs("DT", bioc = FALSE)
-installReqs("DESeq2", bioc = TRUE)
-installReqs("vsn", bioc = TRUE)
-installReqs('apeglm', bioc = TRUE)
-installReqs('org.Hs.eg.db', bioc = TRUE)
-installReqs('org.Mm.eg.db', bioc = TRUE)
-installReqs('EnhancedVolcano', bioc = TRUE)
-installReqs('gridExtra', bioc = FALSE)
-installReqs('ggpubr', bioc = FALSE)
-installReqs('shinyjqui', bioc = FALSE)
-installReqs('scales', bioc = FALSE)
-installReqs('RColorBrewer', bioc = FALSE)
-installReqs('pheatmap', bioc = FALSE)
-installReqs('colourpicker', bioc = FALSE)
+# installReqs("BiocManager", bioc = FALSE)
+# installReqs("shiny", bioc = FALSE)
+# installReqs("shinydashboard", bioc = FALSE)
+# installReqs("plotly", bioc = FALSE)
+# installReqs("ggplot2", bioc = FALSE)
+# installReqs("ggrepel", bioc = FALSE)
+# installReqs("data.table", bioc = FALSE)
+# installReqs("DT", bioc = FALSE)
+# installReqs("DESeq2", bioc = TRUE)
+# installReqs("vsn", bioc = TRUE)
+# installReqs('apeglm', bioc = TRUE)
+# installReqs('org.Hs.eg.db', bioc = TRUE)
+# installReqs('org.Mm.eg.db', bioc = TRUE)
+# installReqs('EnhancedVolcano', bioc = TRUE)
+# installReqs('gridExtra', bioc = FALSE)
+# installReqs('ggpubr', bioc = FALSE)
+# installReqs('shinyjqui', bioc = FALSE)
+# installReqs('scales', bioc = FALSE)
+# installReqs('RColorBrewer', bioc = FALSE)
+# installReqs('pheatmap', bioc = FALSE)
+# installReqs('colourpicker', bioc = FALSE)
 
-#load required libraries
-library("BiocManager")
+## load required libraries
 library("shiny")
 library("shinydashboard")
-library("plotly")
-library("ggplot2")
-library("ggrepel")
+library("shinyWidgets")
+
+#cran packages
+library("BiocManager")
+library("colourpicker")
 library("data.table")
+library("devtools") # to install from github
 library("DT")
+library("ggplot2")
+library("ggpubr")
+library("ggrepel")
+library("ggraph")
+library("gridExtra")
+library("pheatmap")
+library("RColorBrewer")
+library("scales")
+library("shiny")
+library("shinydashboard")
+library("shinyjqui")
+library("shinyWidgets")
+library("shinycssloaders")
+library("circlize")
+
+# #Bioconductor packages
 library("DESeq2")
 library("vsn")
-library('apeglm')
-library('org.Hs.eg.db')
-library('org.Mm.eg.db')
-library('EnhancedVolcano')
-library("gridExtra")
-library("ggpubr")
-library("shinyjqui")
-library("scales")
-library("RColorBrewer")
-library("pheatmap")
-library("colourpicker")
+library("apeglm")
+library("org.Hs.eg.db")
+library("org.Mm.eg.db")
+library("ReactomePA") #from bioconductor
+library("enrichplot") #from bioconductor
+
+# #GitHub packages
+library("EnhancedVolcano")
+library("ComplexHeatmap")
+#devtools::install_github('kevinblighe/EnhancedVolcano')
+#devtools::install_github("jokergoo/ComplexHeatmap") # install ComplexHeatmap package
+
+
+# cran_pkg_list <- c("BiocManager", "colourpicker", "data.table", "devtools", "DT", "ggplot2", "ggpubr", "ggrepel", "gridExtra",
+#                    "pheatmap", "RColorBrewer", "scales", "shiny", "shinydashboard", "shinyjqui", "shinyWidgets", "circlize",
+#                    "ggraph", "shinycssloaders")
+# 
+# bioc_pkg_list <- c("DESeq2", "vsn", "apeglm", "org.Hs.eg.db", "org.Mm.eg.db", "ReactomePA", "enrichplot")
+# 
+# for (pkg in cran_pkg_list){
+#   require(pkg)
+#   if (!require(pkg)){
+#     print(paste0("The ", pkg, " package is not installed and is required. Installing it now..."))
+#     install.packages(pkg, quiet = TRUE)
+#   }
+# }
+# 
+# for (pkg in bioc_pkg_list){
+#   require(pkg)
+#   if (!require(pkg)){
+#     print(paste0("The ", pkg, " package is not installed and is required. Installing it now..."))
+#     BiocManager::install(pkg)
+#   }
+# }
+# 
+# require("EnhancedVolcano")
+# if (!require("EnhancedVolcano")){
+#   print(paste0("The EnhancedVolcano package is not installed and is required. Installing it now..."))
+#   devtools::install_github('kevinblighe/EnhancedVolcano')
+# }
+# 
+# require("ComplexHeatmap")
+# if (!require("ComplexHeatmap")){
+#   print(paste0("The ComplexHeatmap package is not installed and is required. Installing it now..."))
+#   devtools::install_github("jokergoo/ComplexHeatmap")
+# }
+
+
+
+spinner_type = 1
+spinner_col = "#0C71CF"
 
 ui <- dashboardPage(
-  dashboardHeader(title = paste("BEAVR", app_version, sep = " "), titleWidth = 300),
+  dashboardHeader(title = "BEAVR", titleWidth = 300),
   
   dashboardSidebar(width = 300,
     
-    tags$style(".skin-purple .sidebar 
-               a { 
-                  color: #444; 
-               }"),
-    
-    tags$style(".skin-purple .sidebar 
+    tags$style("
+
+               .skin-blue .sidebar 
                a.sidebarlink:link, a.sidebarlink:visited { 
-                                    color: #FFF;
-               }"),
-    tags$style(".skin-purple .sidebar
-                a.sidebarlink:hover {
-                                    color: #777;
-               }"),
+                        color: #FFFFFF;
+               }
+               
+               .skin-blue .sidebar
+               a.sidebarlink:hover {
+                        color: #FFFFFF;
+               }               
+
+               .skin-blue .sidebar
+               .treeview {
+                        color: #FFFFFF;
+               } 
     
-    tags$style(".skin-purple .sidebar
-                .center {
+               .skin-blue .sidebar
+               .center {
                         text-align: center;
-               }"),
+               }
+
+               .skin-blue .sidebar               
+               a.shiny-download-link:link, a.shiny-download-link:visited {
+                        color: #000000;
+               }
+               
+               .skin-blue .sidebar               
+               a.shiny-download-link:hover {
+                        color: #000000;
+               }
+
+               .skin-blue .sidebar
+               .borderbox {
+                        padding: 2px 0px 0px 0px;
+               }
+
+               .skin-blue .sidebar
+               .infobox {
+                        padding: 2px 2px 10px 10px;
+                        margin: 5px 5px 5px 5px;
+                        display:block;
+                        clear:both;
+                        white-space: normal;
+               }
+
+               .content-wrapper, .right-side {
+                        background-color: #FFFFFF;
+                        overflow-x: auto;
+               }
+
+               "),
     
-    tags$style(".skin-purple .sidebar
-                .borderbox {
-                        border: 2px solid #666;
-                        padding: 5px 5px 5px 5px;
-                        margin: 5px;
-               }"),
     
+    
+    sidebarMenu(
+      
     #Conditional Panels to show tab-specific settings in sidebar
-    
     conditionalPanel("input.navigationTabs == 'loadDataTab'",
-                     div(id = 'loadDataTab_sidebar', 
-                         tags$div('class'="center",
-                         h4("Welcome to BEAVR!"),
-                         HTML('A <b>B</b>rowser-based tool for the <b>E</b>xploration <b>A</b>nd <b>V</b>isualization of <b>R</b>NAseq data<br><br>'),
-                         tags$p(
-                         tags$a(href="https://github.com/developerpiru/VisualRNAseq",
-                                target="_blank",
-                                class ="sidebarlink",
-                                "Check GitHub for help & info")
-                         ))
+
+                     div(id = 'loadDataTab_sidebar',
+                         tags$div('class'="infobox",
+                                  htmlOutput("startinfo")
+                         )
                      )),
     
     conditionalPanel("input.navigationTabs == 'expSettingsTab'",
@@ -156,85 +241,122 @@ ui <- dashboardPage(
                          
                          tags$div('class'="center", 
                            tags$br(),
-                           downloadButton("downloadDEGeneTable", "Download Table")
+                           downloadButton("downloadDEGeneTable", "Download Table", class = "btn")
                          ),
 
-                         checkboxInput("filterTableEnabled", label = tags$b("Enable filtering"), value = FALSE),
+                         materialSwitch("filterTableEnabled", label = tags$b("Filter table"), value = FALSE, status = "primary"),
                          
-                         h4("Common filtering options"),
-                         tags$div('class'="borderbox",
-                           #log2FoldChange
-                           tags$b("log2FoldChange"),
-                           numericInput("log2FC_min", label = "Min", value = 0),  
-                           numericInput("log2FC_max", label = "Max", value = 0),
-                           #pvalue
-                           tags$b("pvalue"),
-                           numericInput("pvalue_min", label = "Min", value = 0),
-                           numericInput("pvalue_max", label = "Max", value = 0),
-                           #padj
-                           tags$b("padj"),
-                           numericInput("padj_min", label = "Min", value = 0),
-                           numericInput("padj_max", label = "Max", value = 0)
+                         menuItem(
+                           h4("Common filtering options"),
+                           tags$div('class'="borderbox",
+                             #log2FoldChange
+                               tags$b("log2FoldChange"),
+                               numericInput("log2FC_min", label = "Min", value = 0),  
+                               numericInput("log2FC_max", label = "Max", value = 0),
+                             
+                             #pvalue
+                               tags$b("pvalue"),
+                               numericInput("pvalue_min", label = "Min", value = 0),
+                               numericInput("pvalue_max", label = "Max", value = 0),
+                             
+                             #padj
+                               tags$b("padj"),
+                               numericInput("padj_min", label = "Min", value = 0),
+                               numericInput("padj_max", label = "Max", value = 0)
+                             
+                           )
                          ),
-                         
-                         h4("More filtering options"),
-                         tags$div('class'="borderbox",
-                           #baseMean
-                           tags$b("baseMean"),
-                           numericInput("baseMean_min", label = "Min", value = 0),
-                           numericInput("baseMean_max", label = "Max", value = 0),
-                           #lfcSE
-                           tags$b("lfcSE"),
-                           numericInput("lfcSE_min", label = "Min", value = 0),
-                           numericInput("lfcSE_max", label = "Max", value = 0),
-                           #stat
-                           tags$b("stat"),
-                           numericInput("stat_min", label = "Min", value = 0),
-                           numericInput("stat_max", label = "Max", value = 0)
+                         menuItem(
+                           h4("More filtering options"),
+                           tags$div('class'="borderbox",
+                             #baseMean
+                               tags$b("baseMean"),
+                               numericInput("baseMean_min", label = "Min", value = 0),
+                               numericInput("baseMean_max", label = "Max", value = 0),
+                             
+                             #lfcSE
+                               tags$b("lfcSE"),
+                               numericInput("lfcSE_min", label = "Min", value = 0),
+                               numericInput("lfcSE_max", label = "Max", value = 0),
+                             
+                             #stat
+                               tags$b("stat"),
+                               numericInput("stat_min", label = "Min", value = 0),
+                               numericInput("stat_max", label = "Max", value = 0)
+                           )
                          )
                      )),
     
     conditionalPanel("input.navigationTabs == 'pcaPlotTab'",
                      div(id = 'pcaPlotTab_sidebar', 
                          
-                         h4("Appearance"),
-                         tags$div('class'="borderbox",
-                           selectInput("PCAplot_labels", label = "Sample labels",
-                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3),
-                                       selected = 1),
-                           numericInput("pcaPointSize", label = "Point size", value = 3)
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                             selectInput("PCAplot_labels", label = "Sample labels",
+                                         choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3),
+                                         selected = 1),
+                             numericInput("pcaPointSize", label = "Point size", value = 3)
+                           )
                          ),
                          
-                         h4("Colors"),
-                         tags$div('class'="borderbox",
-                                  tags$div(id="pcaColorbox")
+                         menuItem(
+                           h4("Colors"),
+                           tags$div('class'="borderbox",
+                                    tags$div(id="pcaColorbox")
+                           )
                          ),
                          
-                         h4("Font sizes"),
-                         tags$div('class'="borderbox",
-                           numericInput("pcaLabelFontSize", label = "Sample labels", value = 5),
-                           numericInput("pcaFontSize_xy_axis", label = "Axis labels", value = 18),
-                           numericInput("pcaFontSize_legend_title", label = "Legend title", value = 16),
-                           numericInput("pcaFontSize_legend_text", label = "Legend labels", value = 15)
+                         menuItem(
+                           h4("Font sizes"),
+                           tags$div('class'="borderbox",
+                             numericInput("pcaLabelFontSize", label = "Sample labels", value = 5),
+                             numericInput("pcaFontSize_xy_axis", label = "Axis labels", value = 18),
+                             numericInput("pcaFontSize_legend_title", label = "Legend title", value = 16),
+                             numericInput("pcaFontSize_legend_text", label = "Legend labels", value = 15)
+                           )
                          )
+                         
                      )),
     
     conditionalPanel("input.navigationTabs == 'sampleClusteringPlotTab'",
                      div(id = 'sampleClusteringPlotTab_sidebar', 
                          
+                         menuItem(
                          h4("Appearance"),
                          tags$div('class'="borderbox",
                                   selectInput("sampleClustering_method", label = "Distance method",
-                                              choices = list("Euclidean" = "euclidean", "Pearson" = "correlation", "Maximum" = "maximum",
-                                                            "Manhattan" = "manhattan", "Canberra" = "canberra", "Binary" = "binary",
-                                                            "Minkowski" = "minkowski"),
-                                              selected = 1),
+                                              choices = list("Euclidean" = "euclidean", "Pearson" = "pearson", "Spearman" = "spearman", 
+                                                             "Kendall" = "kendall", "Maximum" = "maximum", "Manhattan" = "manhattan", 
+                                                             "Canberra" = "canberra", "Binary" = "binary", "Minkowski" = "minkowski"),
+                                              selected = "euclidean"),
                                   selectInput("sampleClustering_cellNums", label = "Distance values",
                                               choices = list("Hide" = FALSE, "Decimal" = "%.2f", "Exponential" = "%.1e"),
-                                              selected = 1),
-                                  colourInput("sampleClustering_cellNumsColor", "Distance value color", "black"),
-                                  numericInput("sampleClustering_treeHeightRows", label = "Row tree height", value = 50),
-                                  numericInput("sampleClustering_treeHeightCols", label = "Column tree width", value = 50),
+                                              selected = FALSE),
+                                  
+                                  numericInput("sampleClusterin_row_dend_width", label = "Row dendrogram width", value = 2),
+                                  numericInput("sampleClusterin_col_dend_height", label = "Column dendrogram height", value = 2),
+                                  selectInput("sampleClusterin_row_dend_position", label = "Row dendrogram position",
+                                              choices = list("Left" = "left", "Right" = "right"),
+                                              selected = "left"),
+                                  selectInput("sampleClusterin_col_dend_position", label = "Column dendrogram position",
+                                              choices = list("Top" = "top", "Bottom" = "bottom"),
+                                              selected = "top"),
+                                  selectInput("sampleClusterin_rowlabel_position", label = "Row label position",
+                                              choices = list("Left" = "left", "Right" = "right"),
+                                              selected = "right"),
+                                  selectInput("sampleClusterin_collabel_position", label = "Column label position",
+                                              choices = list("Top" = "top", "Bottom" = "bottom"),
+                                              selected = "bottom"),
+                                  numericInput("sampleClusterin_row_rotation", label = "Row label rotation (degrees)", value = 0),
+                                  numericInput("sampleClusterin_col_rotation", label = "Column label rotation (degrees)", value = 45)
+                                  
+                         )
+                         ),
+                         
+                         menuItem(
+                           h4("Heatmap colors"),
+                           tags$div('class'="borderbox",
                                   selectInput("sampleClustering_mapColor", label = "Heatmap color",
                                               choices = list("Blues" = "Blues",
                                                              "Blue-Purple" = "BuPu",
@@ -253,187 +375,287 @@ ui <- dashboardPage(
                                                              "Yellow-Green-Blue" = "YlGnBu",
                                                              "Yellow-Orange-Brown" = "YlOrBr",
                                                              "Yellow-Orange-Red" = "YlOrRd"
-                                              ), selected = 1),
-                                  colourInput("sampleClustering_borderColor", "Border color", "#FFFFFF", allowTransparent = TRUE),
-                                  checkboxInput("sampleClustering_legend", label = tags$b("Show legend"), value = TRUE)
-                                  
+                                              ), selected = "Blues"),
+                                  colourInput("sampleClustering_borderColor", "Border color", "#FFFFFF", allowTransparent = TRUE)
+                           )
                          ),
                          
-                         h4("Font sizes"),
-                         tags$div('class'="borderbox",
-                                  numericInput("sampleClustering_fontsize", label = "Labels", value = 15),
-                                  numericInput("sampleClustering_fontsize_cellNums", label = "Cell values", value = 15)
+                         menuItem(
+                           h4("Label colors"),
+                           tags$div('class'="borderbox",
+                                    colourInput("sampleClustering_rowlabelColor", "Row labels", "black"),
+                                    colourInput("sampleClustering_collabelColor", "Column labels", "black"),
+                                    colourInput("sampleClustering_cellNumsColor", "Distance values", "black"),
+                                    colourInput("sampleClustering_legendColor", "Legend labels", "black")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Legends"),
+                           tags$div('class'="borderbox",
+                                    selectInput("sampleClustering_main_legend", label = "Legend position",
+                                                choices = list("Left" = "left", 
+                                                               "Right" = "right", "Top" = "top", "Bottom" = "bottom"),
+                                                selected = "right"),
+                                    selectInput("sampleClustering_main_legend_dir", label = "Legend direction",
+                                                choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"),
+                                                selected = "horizontal")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Font sizes"),
+                           tags$div('class'="borderbox",
+                                    numericInput("sampleClustering_fontsize_rowNames", label = "Row names", value = 10),
+                                    numericInput("sampleClustering_fontsize_colNames", label = "Columns names", value = 10),
+                                    numericInput("sampleClustering_fontsize_cellNums", label = "Cell values", value = 10),
+                                    numericInput("sampleClustering_fontsize_legends", label = "Legend labels", value = 10)
+                           )
                          )
-                     )),
-    
-    conditionalPanel("input.navigationTabs == 'genecountPlotTab'",
-                     div(id = 'genecountPlotTab_sidebar'#,
-                     # 
-                     #     textInput("gene_name", "Enter gene name", value = "KRAS"),
-                     # 
-                     #     h4("Appearance"),
-                     #     tags$div('class'="borderbox",
-                     #       selectInput("readcountplot_type", label = "Plot type",
-                     #                   choices = list("Boxplot" = 1, "Jitter plot" = 2),
-                     #                   selected = 1),
-                     #       #numericInput("genecountPointSize", label = "Jitter point size", value = 3),
-                     #       selectInput("readcountplot_labels", label = "Sample labels",
-                     #                   choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3),
-                     #                   selected = 1)
-                     #     ),
-                     # 
-                     #     h4("Font sizes"),
-                     #     tags$div('class'="borderbox",
-                     #       numericInput("genecountFontSize_plot_title", label = "Gene name", value = 20),
-                     #       numericInput("genecountLabelFontSize", label = "Sample labels", value = 5),
-                     #       numericInput("genecountFontSize_xy_axis", label = "Axis labels", value = 18),
-                     #       numericInput("genecountFontSize_legend_title", label = "Legend title", value = 16),
-                     #       numericInput("genecountFontSize_legend_text", label = "Legend labels", value = 15)
-                     #     )
                      )),
     
     conditionalPanel("input.navigationTabs == 'multigenecountPlotTab'",
                      div(id = 'multigenecountPlotTab_sidebar',
                          
-                         h4("Genes"),
-                         tags$div('class'="borderbox",
-                           textAreaInput("multi_gene_name", label = "Enter gene names", value = "HRAS,KRAS,NRAS", width = NULL,
-                                         height = 100, cols = NULL, rows = NULL, placeholder = NULL,
-                                         resize = NULL)
-                         ),
-                         h4("Appearance"),
-                         tags$div('class'="borderbox",
-                           numericInput("multi_genecountGridRows", label = "Grid rows", value = 1),
-                           numericInput("multi_genecountGridColumns", label = "Grid columns", value = 3),
-                           selectInput("multi_readcountplot_type", label = "Plot type",
-                                       choices = list("Boxplot" = 1, "Jitter plot" = 2),
-                                       selected = 1),
-                           numericInput("multi_genecountPointSize", label = "Jitter point size", value = 3),
-                           selectInput("multi_readcountplot_labels", label = "Sample labels",
-                                       choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
-                                       selected = 1),
-                           # checkboxInput("multi_genecountStats", label = tags$b("Show statistics"), value = TRUE),
-                           numericInput("multi_genecountStatsYcord", label = tags$b("Adjust statistics placement"), value = "5"),
-                           checkboxInput("multi_genecountSharedYAxis", label = tags$b("Label y-axis on first plot per row"), value = TRUE),
-                           checkboxInput("multi_log10scale", label = tags$b("Log10 scale y-axis"), value = FALSE),
-                           checkboxInput("pcaRotateText", label = tags$b("Rotate x-axis labels"), value = TRUE),
-                           selectInput("multi_genecountShowLegends", label = "Show legends", 
-                                       choices = list("Hide legends" = 1, "Show legends on all plots" = 2, "Show one common legend" = 3), 
-                                       selected = 3),
-                           selectInput("multi_genecountLegendPosition", label = "Legend position", 
-                                       choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
-                                       selected = "Top")
+                         menuItem(
+                           h4("Genes"),
+                           tags$div('class'="borderbox",
+                             textAreaInput("multi_gene_name", label = "Enter gene names", value = "HRAS,KRAS,NRAS", width = NULL,
+                                           height = 100, cols = NULL, rows = NULL, placeholder = NULL,
+                                           resize = NULL)
+                           )
                          ),
                          
-                         # h4("Colors"),
-                         # tags$div('class'="borderbox",
-                         #          tags$div(id="multi_genecountColorbox")
-                         # ),
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                             numericInput("multi_genecountGridRows", label = "Grid rows", value = 1),
+                             numericInput("multi_genecountGridColumns", label = "Grid columns", value = 3),
+                             selectInput("multi_readcountplot_type", label = "Plot type",
+                                         choices = list("Boxplot" = 1, "Jitter plot" = 2),
+                                         selected = 1),
+                             numericInput("multi_genecountPointSize", label = "Jitter point size", value = 3),
+                             selectInput("multi_readcountplot_labels", label = "Sample labels",
+                                         choices = list("No labels" = 1, "Sample names" = 2, "Replicate names" = 3), 
+                                         selected = 1),
+                             materialSwitch("multi_genecountSharedYAxis", label = tags$b("Label y-axis on first plot per row"), value = TRUE, status = "primary"),
+                             materialSwitch("multi_log10scale", label = tags$b("Log10 scale y-axis"), value = FALSE, status = "primary"),
+                             materialSwitch("pcaRotateText", label = tags$b("Rotate x-axis labels"), value = TRUE, status = "primary"),
+                             selectInput("multi_genecountShowLegends", label = "Show legends", 
+                                         choices = list("Hide legends" = 1, "Show legends on all plots" = 2, "Show one common legend" = 3), 
+                                         selected = 3),
+                             selectInput("multi_genecountLegendPosition", label = "Legend position", 
+                                         choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
+                                         selected = "Top")
+                           )
+                         ),
                          
-                         h4("Font sizes"),
-                         tags$div('class'="borderbox",
-                           numericInput("multi_genecountFontSize_plot_title", label = "Gene name", value = 15),
-                           numericInput("multi_genecountLabelFontSize", label = "Sample labels", value = 5),
-                           numericInput("multi_genecountFontSize_xy_axis", label = "Axis labels", value = 12),
-                           numericInput("multi_genecountFontSize_legend_text", label = "Legend labels", value = 12)
+                         menuItem(
+                           h4("Statistics"),
+                           tags$div('class'="borderbox",
+                             materialSwitch("multi_genecountStats", label = tags$b("Show statistics"), value = TRUE, status = "primary"),
+                             numericInput("multi_genecountStatsYcord", label = tags$b("Adjust statistics placement"), value = "1")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Colors"),
+                           tags$div('class'="borderbox",
+                                    tags$div(id="multi_genecountColorbox")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Font sizes"),
+                           tags$div('class'="borderbox",
+                             numericInput("multi_genecountFontSize_plot_title", label = "Gene name", value = 15),
+                             numericInput("multi_genecountLabelFontSize", label = "Sample labels", value = 5),
+                             numericInput("multi_genecountFontSize_xy_axis", label = "Axis labels", value = 12),
+                             numericInput("multi_genecountFontSize_legend_text", label = "Legend labels", value = 12),
+                             numericInput("multi_genecountFontSize_stats_text", label = "Statistics", value = 6)
+                           )
                          )
                      )),
     
     conditionalPanel("input.navigationTabs == 'countMatrixHeatmapTab'",
                      div(id = 'countMatrixHeatmapTab_sidebar', 
                          
+                         menuItem(
                          h4("Genes"),
                          tags$div('class'="borderbox",
                                   
                                   textAreaInput("heatmap_GeneNames", label = "Enter gene names", value = "HRAS,KRAS,NRAS", width = NULL,
                                                 height = 100, cols = NULL, rows = NULL, placeholder = NULL,
                                                 resize = NULL),
-                                  checkboxInput("heatmap_pickTopGenes", label = tags$b("Show top genes instead"), value = FALSE),
+                                  materialSwitch("heatmap_pickTopGenes", label = tags$b("Show top genes instead"), value = FALSE, status = "primary"),
                                   numericInput("heatmap_numGenes", label = "Number of top genes to show", value = 50),
                                   selectInput("heatmap_showGeneNames", label = "Gene names",
                                               choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL", "Hide" = "Hide"))
 
+                         )
                          ),
+                         
+                         menuItem(
                          h4("Clustering"),
                          tags$div('class'="borderbox",
+                                  selectInput("heatmap_varlogmethod", label = "Variance stabilization method",
+                                              choices = list("Regularized log transformation" = "rlog",
+                                                             "Variance stabilization" = "vst"),
+                                              selected = "rlog"),
                                   selectInput("heatmap_clustMethod", label = "Clustering method",
-                                              choices = list("Ward.D" = "ward.D", 
-                                                             "Ward.D2" = "ward.D2", 
+                                              choices = list("Ward D1 (Ward 1963)" = "ward.D", 
+                                                             "Ward D2 (Complete Ward's criteriom)" = "ward.D2", 
                                                              "Single" = "single", 
                                                              "Complete" = "complete", 
                                                              "Average" = "average", 
                                                              "McQuitty" = "mcquitty", 
                                                              "Median" = "median", 
                                                              "Centroid" = "centroid"),
-                                              selected = 1),
-                                  checkboxInput("heatmap_clustRows", label = tags$b("Cluster rows"), value = TRUE),
-                                  checkboxInput("heatmap_clustCols", label = tags$b("Cluster columns"), value = FALSE)
-                                  
+                                              selected = "ward.D"),
+                                  selectInput("heatmap_distance", label = "Distance method",
+                                              choices = list("Euclidean" = "euclidean", "Pearson" = "pearson", "Spearman" = "spearman", 
+                                                             "Kendall" = "kendall", "Maximum" = "maximum", "Manhattan" = "manhattan", 
+                                                             "Canberra" = "canberra", "Binary" = "binary", "Minkowski" = "minkowski"),
+                                              selected = "euclidean"),
+                                  materialSwitch("heatmap_clustRows", label = tags$b("Cluster rows"), value = TRUE, status = "primary"),
+                                  materialSwitch("heatmap_clustCols", label = tags$b("Cluster columns"), value = FALSE, status = "primary")
+                         
+                         )          
                          ),
                          
-                         h4("Colors"),
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                                    sliderInput("heatmap_scale_range", label = "Gene expression scale", 
+                                                min = -6, max = 6, value = c(-2,2), step = 0.5),
+                                    selectInput("heatmap_annotations", label = "Annotations",
+                                                choices = list("None" = "none", "Both" = "both", 
+                                                               "Replicate" = "replicate", "Treatment" = "treatment"),
+                                                selected = "both"),
+                                    selectInput("heatmap_cellNums", label = "Distance values",
+                                                choices = list("Hide" = FALSE, "Decimal" = "%.2f", "Exponential" = "%.1e"),
+                                                selected = FALSE),
+                                    
+                                    numericInput("heatmap_row_dend_width", label = "Row dendrogram width", value = 2),
+                                    numericInput("heatmap_col_dend_height", label = "Column dendrogram height", value = 2),
+                                    selectInput("heatmap_row_dend_position", label = "Row dendrogram position",
+                                                choices = list("Left" = "left", "Right" = "right"),
+                                                selected = "left"),
+                                    selectInput("heatmap_col_dend_position", label = "Column dendrogram position",
+                                                choices = list("Top" = "top", "Bottom" = "bottom"),
+                                                selected = "top"),
+                                    selectInput("heatmap_genelabel_position", label = "Gene label position",
+                                                choices = list("Left" = "left", "Right" = "right"),
+                                                selected = "right"),
+                                    selectInput("heatmap_samplelabel_position", label = "Sample label position",
+                                                choices = list("Top" = "top", "Bottom" = "bottom"),
+                                                selected = "bottom"),
+                                    numericInput("heatmap_row_rotation", label = "Gene name rotation (degrees)", value = 0),
+                                    numericInput("heatmap_col_rotation", label = "Sample name rotation (degrees)", value = 45)
+                           )
+                         ),
+                         
+                         menuItem(
+                         h4("Heatmap colors"),
                          tags$div('class'="borderbox",
                                   colourInput("heatmap_lowColor", "Low color", "#374AB3", allowTransparent = FALSE),
                                   colourInput("heatmap_midColor", "Mid color", "#FFFFFF", allowTransparent = FALSE),
                                   colourInput("heatmap_highColor", "High color", "#E62412", allowTransparent = FALSE),
-                                  colourInput("heatmap_borderColor", "Border color", "#FFFFFF", allowTransparent = TRUE)
+                                  colourInput("heatmap_borderColor", "Border color", "#FFFFFF00", allowTransparent = TRUE)
+                         )
                          ),
                          
-                         h4("Appearance"),
+                         menuItem(
+                         h4("Replicate colors"),
                          tags$div('class'="borderbox",
-                                  selectInput("heatmap_distance", label = "Distance method",
-                                              choices = list("Euclidean" = "euclidean", "Pearson" = "correlation", "Maximum" = "maximum",
-                                                             "Manhattan" = "manhattan", "Canberra" = "canberra", "Binary" = "binary",
-                                                             "Minkowski" = "minkowski"),
-                                              selected = 1),
-                                  selectInput("heatmap_cellNums", label = "Distance values",
-                                              choices = list("Hide" = FALSE, "Decimal" = "%.2f", "Exponential" = "%.1e"),
-                                              selected = 1),
-                                  colourInput("heatmap_cellNumsColor", "Distance value color", "black"),
-                                  
-                                  numericInput("heatmap_treeHeightRows", label = "Row tree height", value = 50),
-                                  numericInput("heatmap_treeHeightCols", label = "Column tree width", value = 50),
-                                  checkboxInput("heatmap_legend", label = tags$b("Show legend"), value = TRUE)
-                                  
+                                  tags$div(id="heatmap_replicateColorbox")
+                         )
                          ),
                          
+                         menuItem(
+                         h4("Condition/Treatment colors"),
+                         tags$div('class'="borderbox",
+                                  tags$div(id="heatmap_conditionColorbox")
+                         )
+                         ),
+                         
+                         menuItem(
+                           h4("Label colors"),
+                           tags$div('class'="borderbox",
+                                    colourInput("heatmap_rowlabelColor", "Gene labels", "black"),
+                                    colourInput("heatmap_collabelColor", "Sample labels", "black"),
+                                    colourInput("heatmap_cellNumsColor", "Distance values", "black"),
+                                    colourInput("heatmap_legendColor", "Legend labels", "black")
+                           )
+                         ),
+                         
+                         menuItem(
+                         h4("Legends"),
+                         tags$div('class'="borderbox",
+                                  selectInput("heatmap_main_legend", label = "Main legend position",
+                                              choices = list("Left" = "left", 
+                                                             "Right" = "right", "Top" = "top", "Bottom" = "bottom"),
+                                              selected = "right"),
+                                  selectInput("heatmap_anno_legend", label = "Annotations legend position",
+                                              choices = list("Left" = "left", 
+                                                             "Right" = "right", "Top" = "top", "Bottom" = "bottom"),
+                                              selected = "right"),
+                                  selectInput("heatmap_main_legend_dir", label = "Main legend direction",
+                                              choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"),
+                                              selected = "vertical"),
+                                  selectInput("heatmap_anno_legend_dir", label = "Annotations legend direction",
+                                              choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"),
+                                              selected = "vertical")
+                         )
+                         ),
+                         
+                         menuItem(
                          h4("Font sizes"),
                          tags$div('class'="borderbox",
                                   numericInput("heatmap_fontsize_geneNames", label = "Gene names", value = 10),
                                   numericInput("heatmap_fontsize_sampleNames", label = "Sample names", value = 10),
-                                  numericInput("heatmap_fontsize", label = "Annotations", value = 10),
-                                  numericInput("heatmap_fontsize_cellNums", label = "Cell values", value = 10)
+                                  numericInput("heatmap_fontsize_annotations", label = "Annotations", value = 10),
+                                  numericInput("heatmap_fontsize_cellNums", label = "Cell values", value = 10),
+                                  numericInput("heatmap_fontsize_legends", label = "Legend labels", value = 10)
+                         )
                          )
                      )),
     
     conditionalPanel("input.navigationTabs == 'volcanoPlotTab'",
                      div(id = 'volcanoPlotTab_sidebar',
                          
+                         menuItem(
                          h4("Cutoffs"),
                          tags$div('class'="borderbox",
                            textInput("FCcutoff", "Log2 fold change", value = 1, width = NULL,
                                      placeholder = NULL),
                            textInput("padjcutoff", "Adjusted p value", value = "0.05", width = NULL,
                                      placeholder = NULL)
+                         )
                          ),
                          
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                                    numericInput("volcanoPointSize", label = "Point size", value = 3),
+                                    materialSwitch("volcanoCutoffLines", label = tags$b("Show cutoff lines"), value = TRUE, status = "primary"),
+                                    selectInput("volcanoLegendPosition", label = "Legend position", 
+                                                choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
+                                                selected = "bottom")
+                           )
+                         ),
+                         
+                         menuItem(
                          h4("Colors"),
                          tags$div('class'="borderbox",
                                   colourInput("volcano_NSColor", "Not significant color", "#5B5B5C", allowTransparent = FALSE),
                                   colourInput("volcano_LFCColor", "LFC only color", "#0FBD32", allowTransparent = FALSE),
                                   colourInput("volcano_pvalColor", "p value only color", "#126FE8", allowTransparent = FALSE),
                                   colourInput("volcano_pvalLFCColor", "LFC and p value color", "#FF0000", allowTransparent = TRUE)
+                         )
                          ),
                          
-                         h4("Appearance"),
-                         tags$div('class'="borderbox",
-                           numericInput("volcanoPointSize", label = "Point size", value = 3),
-                           checkboxInput("volcanoCutoffLines", label = tags$b("Show cutoff lines"), value = TRUE),
-                           selectInput("volcanoLegendPosition", label = "Legend position", 
-                                       choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
-                                       selected = "bottom")
-                         ),
-                         
+                         menuItem(
                          h4("Font sizes"),
                          tags$div('class'="borderbox",
                            numericInput("volcanoFontSize_plot_title", label = "Plot title", value = 15),
@@ -441,8 +663,264 @@ ui <- dashboardPage(
                            numericInput("volcanoFontSize_xy_axis", label = "Axis labels", value = 15),
                            numericInput("volcanoFontSize_legend_title", label = "Legend labels", value = 15)
                          )
+                         )
                          
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'enrichmentPlotTab'",
+                     div(id = 'enrichmentPlotTab_sidebar',
+                         
+                         menuItem(
+                           h4("Enrichment"),
+                           tags$div('class'="borderbox",
+                                    numericInput("enrPvalcutoff", "p value cutoff for enrichment", value = "0.05"),
+                                    numericInput("enrNumCategories", label = "Max number of categories", value = 10)
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                                    selectInput("enrPlotType", label = "Plot type", 
+                                                choices = list("Bar plot" = "bar", "Dot plot" = "dot"), 
+                                                selected = "bar"),
+                                    selectInput("enrLegendPosition", label = "Legend position", 
+                                                choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
+                                                selected = "right"),
+                                    selectInput("enrLegendDirection", label = "Legend direction", 
+                                                choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"), 
+                                                selected = "vertical")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Colors"),
+                           tags$div('class'="borderbox",
+                                    colourInput("enrMostColor", "Most significant color", "#374AB3", allowTransparent = FALSE),
+                                    colourInput("enrLeastColor", "Least significant color", "#E62412", allowTransparent = FALSE)
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Font sizes"),
+                           tags$div('class'="borderbox",
+                                    numericInput("enrFontSize_xy_axis", label = "Axis labels", value = 15),
+                                    numericInput("enrFontSize_legend", label = "Legend labels", value = 15)
+                           )
+                         )
+                         
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'enrichmentMapTab'",
+                     div(id = 'enrichmentMapTab_sidebar',
+                         
+                         menuItem(
+                           h4("Enrichment"),
+                           tags$div('class'="borderbox",
+                                    numericInput("enrMapPvalcutoff", "p value cutoff for enrichment", value = "0.05")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                                    selectInput("enrMapLegendPosition", label = "Legend position", 
+                                                choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
+                                                selected = "right"),
+                                    selectInput("enrMapLegendDirection", label = "Legend direction", 
+                                                choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"), 
+                                                selected = "vertical")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Colors"),
+                           tags$div('class'="borderbox",
+                                    colourInput("enrMapMostColor", "Most significant color", "#374AB3", allowTransparent = FALSE),
+                                    colourInput("enrMapLeastColor", "Least significant color", "#E62412", allowTransparent = FALSE),
+                                    colourInput("enrMaplineColor", "Edge/Line color", "#C9C3C3", allowTransparent = FALSE),
+                                    sliderInput("enrMaptransparency", label = "Edge/Line transparency",
+                                                min = 0, max = 100, value = 50, step = 1, post = "%")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Font sizes"),
+                           tags$div('class'="borderbox",
+                                    numericInput("enrMapFontSize_labels", label = "Labels", value = 5),
+                                    numericInput("enrMapFontSize_legend", label = "Legend labels", value = 15)
+                           )
+                         )
+                         
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'gseaMapTab'",
+                     div(id = 'gseaMapTab_sidebar',
+                         
+                         menuItem(
+                           h4("Enrichment"),
+                           tags$div('class'="borderbox",
+                                    numericInput("gseaMapPvalcutoff", "p value cutoff for enrichment", value = "0.05")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                                    selectInput("gseaMapLegendPosition", label = "Legend position", 
+                                                choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
+                                                selected = "right"),
+                                    selectInput("gseaMapLegendDirection", label = "Legend direction", 
+                                                choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"), 
+                                                selected = "vertical")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Colors"),
+                           tags$div('class'="borderbox",
+                                    colourInput("gseaMapMostColor", "Most significant color", "#374AB3", allowTransparent = FALSE),
+                                    colourInput("gseaMapLeastColor", "Least significant color", "#E62412", allowTransparent = FALSE),
+                                    colourInput("gseaMaplineColor", "Edge/Line color", "#C9C3C3", allowTransparent = FALSE),
+                                    sliderInput("gseaMaptransparency", label = "Edge/Line transparency",
+                                                min = 0, max = 100, value = 50, step = 1, post = "%")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Font sizes"),
+                           tags$div('class'="borderbox",
+                                    numericInput("gseaMapFontSize_labels", label = "Axis labels", value = 5),
+                                    numericInput("gseaMapFontSize_legend", label = "Legend labels", value = 15)
+                           )
+                         )
+                         
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'gseaPlotTab'",
+                     div(id = 'gseaPlotTab_sidebar',
+                         
+                         menuItem(
+                           h4("Enrichment"),
+                           tags$div('class'="borderbox",
+                                    uiOutput("gseaPlotPathways")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Appearance"),
+                           tags$div('class'="borderbox",
+                                    selectInput("gseaPlotShowPvalue", label = "p values",
+                                                choices = list("Show" = TRUE, "Hide" = FALSE),
+                                                selected = FALSE)
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Colors"),
+                           tags$div('class'="borderbox",
+                                    colourInput("gseaPlotLineColor", "Enrichment score line color", "#1EFF00", allowTransparent = FALSE)
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Font sizes"),
+                           tags$div('class'="borderbox",
+                                    numericInput("gseaPlotFontSize", label = "Base font size", value = 15)
+                           )
+                         )
+                         
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'enrichmentTableTab'",
+                     div(id = 'enrichmentTableTab_sidebar',
+                         
+                         tags$div('class'="center", 
+                                  tags$br(),
+                                  downloadButton("downloadenrichmentTable", "Download Table", class = "btn")
+                         ),
+                         
+                         materialSwitch("enrichmentTablefilterTableEnabled", label = tags$b("Filter table"), value = FALSE, status = "primary"),
+                         
+                         menuItem(
+                           h4("Filter by statistics"),
+                           tags$div('class'="borderbox",
+                                    tags$b("Count"),
+                                    numericInput("enr_count_min", label = "Min", value = 0),
+                                    numericInput("enr_count_max", label = "Max", value = 0),
+                                    
+                                    #pvalue
+                                    tags$b("pvalue"),
+                                    numericInput("enr_pvalue_min", label = "Min", value = 0),
+                                    numericInput("enr_pvalue_max", label = "Max", value = 0),
+                                    
+                                    #padj
+                                    tags$b("padj"),
+                                    numericInput("enr_padj_min", label = "Min", value = 0),
+                                    numericInput("enr_padj_max", label = "Max", value = 0),
+                                    
+                                    #qvalue
+                                    tags$b("qvalue"),
+                                    numericInput("enr_qvalue_min", label = "Min", value = 0),
+                                    numericInput("enr_qvalue_max", label = "Max", value = 0)
+                                    
+                           )
+                         )
+                     )),
+    
+    conditionalPanel("input.navigationTabs == 'gseaTableTab'",
+                     div(id = 'gseaTableTab_sidebar',
+                         
+                         tags$div('class'="center", 
+                                  tags$br(),
+                                  downloadButton("downloadgseaTable", "Download Table", class = "btn")
+                         ),
+                         
+                         materialSwitch("gseaTablefilterTableEnabled", label = tags$b("Filter table"), value = FALSE, status = "primary"),
+                         
+                         menuItem(
+                           h4("Filter by enrichment scores"),
+                           tags$div('class'="borderbox",
+                                    #enrichment Score
+                                    tags$b("Enrichment score (ES)"),
+                                    numericInput("gsea_enrichmentScore_min", label = "Min", value = 0),  
+                                    numericInput("gsea_enrichmentScore_max", label = "Max", value = 0),
+                                    
+                                    #NES
+                                    tags$b("Normalized enrichment score (NES)"),
+                                    numericInput("gsea_nes_min", label = "Min", value = 0),
+                                    numericInput("gsea_nes_max", label = "Max", value = 0)
+                                    
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Filter by statistics"),
+                           tags$div('class'="borderbox",
+                                    #pvalue
+                                    tags$b("pvalue"),
+                                    numericInput("gsea_pvalue_min", label = "Min", value = 0),
+                                    numericInput("gsea_pvalue_max", label = "Max", value = 0),
+                                    
+                                    #padj
+                                    tags$b("padj"),
+                                    numericInput("gsea_padj_min", label = "Min", value = 0),
+                                    numericInput("gsea_padj_max", label = "Max", value = 0),
+                                    
+                                    #qvalue
+                                    tags$b("qvalue"),
+                                    numericInput("gsea_qvalue_min", label = "Min", value = 0),
+                                    numericInput("gsea_qvalue_max", label = "Max", value = 0),
+                                    
+                                    tags$b("Rank"),
+                                    numericInput("gsea_rank_min", label = "Min", value = 0),
+                                    numericInput("gsea_rank_max", label = "Max", value = 0)
+                                    
+                           )
+                         )
                      ))
+    
+    )
   ), #end dashboard Sidebar
   
   dashboardBody(
@@ -453,6 +931,9 @@ ui <- dashboardPage(
       
       #Load data tab
       tabPanel("Load Data", id = "loadDataTab", value= "loadDataTab", fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         #Load read counts file
         fileInput("rawreadsfile", "Select read count table file",
@@ -478,75 +959,445 @@ ui <- dashboardPage(
                      choices = c(Comma = ",",
                                  Semicolon = ";",
                                  Tab = "\t"),
-                     selected = ",")
+                     selected = ","),
         
-        # #Input for conditions
-        # #selectInput("condslist", "Dataset", c("Complete step 1"))
-        # uiOutput("cityControls")
+        HTML('</p></div>')
         
       )),
       
       #Experiment settings tab
       tabPanel("Settings", id = "expSettingsTab", value= "expSettingsTab", 
-               
-               selectInput("ref_genome_organism", label = "Reference organism",
-                           choices = list("Human" = 1, "Mouse" = 2), 
-                           selected = 1),
-               uiOutput("control_condslist"),
-               uiOutput("treatment1_condslist"),
-               uiOutput("FDR_value"),
-               selectInput("shrinkage_method", label = "Shrinkage estimator",
-                           choices = list("Approximate posterior estimation (apeglm)" = 1, "Normal (adaptive normal distribution)" = 2), 
-                           selected = 1),
-               uiOutput("min_reads")
+        
+       #layout HTML tags
+       HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+
+       selectInput("ref_genome_organism", label = "Reference organism",
+                   choices = list("Human" = 1, "Mouse" = 2),
+                   selected = 1),
+       uiOutput("control_condslist"),
+       uiOutput("treatment1_condslist"),
+       uiOutput("FDR_value"),
+       selectInput("shrinkage_method", label = "Shrinkage estimator",
+                   choices = list("Approximate posterior estimation (apeglm)" = 1, "Normal (adaptive normal distribution)" = 2),
+                   selected = 1),
+       uiOutput("min_reads"),
+
+       HTML('</p></div>')
+       
       ),
       
       #DE gane table tab
       tabPanel("Gene Table", id = "geneTableTab", value= "geneTableTab",  fluidRow(
-        DT::dataTableOutput("calc_res_values")
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        DT::dataTableOutput("calc_res_values"),
+        
+        HTML('</p></div>')
         
       )),
       
       #PCA plot tab
       tabPanel("PCA", id = "pcaPlot", value= "pcaPlotTab", fluidRow(
-        jqui_resizable( #jqui resizable canvas
-          plotOutput("PCA_plot", height = "500", width = "500")
-        )
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("PCAplot_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("savePCApng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("savePCAjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("savePCAsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("savePCApdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("savePCAtiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for PCA plot
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("PCA_plot", height = "500", width = "500"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+
       )),
       
       #Sample clustering plot tab
       tabPanel("Sample Clustering", id = "sampleClusteringPlot", value= "sampleClusteringPlotTab", fluidRow(
-        jqui_resizable( #jqui resizable canvas
-          plotOutput("sampleClustering_plot", height = "500", width = "500")
-        )
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("sampleClustering_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveClusteringpng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveClusteringjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveClusteringsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveClusteringpdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveClusteringtiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for Sample Clustering plot
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("sampleClustering_plot", height = "500", width = "500"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+        
       )),
       
       #Multiple gene read count plots
       tabPanel("Read Count Plots", id = "multigenecountPlotTab", value= "multigenecountPlotTab", fluidRow(
-        jqui_resizable( #jqui resizable canvas
-          plotOutput("multi_genecount_plot1", height = "400", width="800")
-        )
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("ReadCount_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveReadCountpng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveReadCountjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveReadCountsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveReadCountpdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveReadCounttiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for Read count plots
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("multi_genecount_plot1", height = "400", width="800"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+        
       )),
       
       #Count matrix heatmap tab
       tabPanel("Heatmap", id = "countMatrixHeatmap", value= "countMatrixHeatmapTab", fluidRow(
-        jqui_resizable( #jqui resizable canvas
-          plotOutput("countMatrix_heatmap", height = "500", width = "500")
-        )
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("Heatmap_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveHeatmappng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveHeatmapjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveHeatmapsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveHeatmappdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveHeatmaptiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for Count Matrix Heatmap
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("countMatrix_heatmap", height = "500", width = "500"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+
       )),
       
       #Volcano plot
       tabPanel("Volcano Plot", id = "volcanoPlotTab", value= "volcanoPlotTab", fluidRow(
-        jqui_resizable( #jqui resizable canvas
-          plotOutput("volcanoPlot", height = "500", width="800")
-        )
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("Volcanoplot_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveVolcanopng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveVolcanojpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveVolcanosvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveVolcanopdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveVolcanotiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for Count Matrix Heatmap
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("volcanoPlot", height = "500", width="800"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+        
+      )),
+      
+      #Pathway Enrichment barplot and dotplot
+      tabPanel("Pathway Enrichment Plot", id = "enrichmentPlotTab", value= "enrichmentPlotTab", fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("enrichmentplot_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveEnrichmentplotpng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentplotjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentplotsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentplotpdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentplottiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for Enrichment plot
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("enrichmentPlot", height = "500", width="800"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+        
+      )),
+      
+      #Pathway Enrichment Map
+      tabPanel("Pathway Enrichment Map", id = "enrichmentMapTab", value= "enrichmentMapTab", fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("enrichmentmap_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveEnrichmentmappng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentmapjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentmapsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentmappdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveEnrichmentmaptiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for Enrichment map
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("enrichmentMap", height = "500", width="800"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+        
+      )),
+      
+      #Pathway Enrichment results table tab
+      tabPanel("Pathway Enrichment Table", id = "enrichmentTableTab", value= "enrichmentTableTab",  fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        DT::dataTableOutput("show_enrichmentTable"),
+        
+        HTML('</p></div>')
+        
+      )),
+      
+      #GSEA Map
+      tabPanel("GSEA Map", id = "gseaMapTab", value= "gseaMapTab", fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("gseamap_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveGSEAmappng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAmapjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAmapsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAmappdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAmaptiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for GSEA map
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("gseaMap", height = "500", width="800"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        HTML('</div>')
+        
+      )),
+      
+      #GSEA Plot
+      tabPanel("GSEA Plot", id = "gseaPlotTab", value= "gseaPlotTab", fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        # download buttons
+        dropdown(label = "Save plot",
+                 selectInput("gseaplot_dpi", label = "Output dpi", width = "100",
+                             choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
+                             selected = 48),
+                 downloadButton("saveGSEAplotpng", "PNG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAplotjpg", "JPG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAplotsvg", "SVG"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAplotpdf", "PDF"),
+                 HTML('<br><br>'),
+                 downloadButton("saveGSEAplottiff", "TIFF"),
+                 size = "default",
+                 icon = icon("download", class = ""), 
+                 up = FALSE
+        ),
+        HTML('</p>'),
+        
+        jqui_resizable(#jqui resizable canvass
+          tagList(
+            # div box for GSEA plot
+            HTML('<div style="border:1px solid black;padding:5px 5px 0px 0px;width:500;background-color: #FFFFFF;float:left;display:block;"><p>'),
+            plotOutput("gseaPlot", height = "500", width="800"),
+            HTML('</p></div>')
+          )
+        ),
+        
+        #output box to show GSEA pvalues
+        HTML('<div style="background-color:#FFFFFF;clear:both;display:block;font:12px bold Arial, Helvetica, sans-serif;"><p>'),
+        textOutput("gseaPlotpvals"),
+        HTML('</p></div>'),
+        
+        HTML('</div>')
+        
+      )),
+      
+      #GSEA results table tab
+      tabPanel("GSEA Table", id = "gseaTableTab", value= "gseaTableTab",  fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+        
+        DT::dataTableOutput("show_gseaTable"),
+        
+        HTML('</p></div>')
+        
+      )),
+      
+      #Help/About tab
+      tabPanel("Help", id = "helpTab", value= "helpTab", fluidRow(
+        
+        #layout HTML tags
+        HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
+
+        #output box to show GSEA pvalues
+        HTML('<div style="background-color:#FFFFFF;clear:both;display:block;font:12px bold Arial, Helvetica, sans-serif;"><p>'),
+        htmlOutput("helpinfo"),
+        HTML('</p></div>'),
+        
+        HTML('</p></div>')
+        
       ))
       
     )
     
   ), #end dashboardBody
   
-  skin = "purple"
+  skin = "blue"
   
   
 ) #end dashboardPage
