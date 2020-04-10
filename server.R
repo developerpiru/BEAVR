@@ -56,74 +56,11 @@ app_version = "1.0.7"
 # pathway enrichment analysis using ReactomePA and enrichplot packages (overenrichment analysis and GSEA maps and plots)
 # full customization of pathway and gsea plots/maps
 # added results tables for pathway enrichment results and GSEA results
+# added shiny.port option to use port 3838
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
 #### legend symbols show letter 'a' below symbol on jitter plots
-
-#function to check for required packages and install them if not already installed
-installReqs <- function(package_name, bioc){
-  if (requireNamespace(package_name, quietly = TRUE) == FALSE) {
-    if (bioc == FALSE)
-      install.packages(package_name)
-    else if (bioc == TRUE) #install using Bioconductor package manager
-      BiocManager::install(package_name)
-  }
-}
-
-#check if required libraries are installed, and install them if needed
-# installReqs("BiocManager", bioc = FALSE)
-# installReqs("shiny", bioc = FALSE)
-# installReqs("shinydashboard", bioc = FALSE)
-# installReqs("plotly", bioc = FALSE)
-# installReqs("ggplot2", bioc = FALSE)
-# installReqs("ggrepel", bioc = FALSE)
-# installReqs("data.table", bioc = FALSE)
-# installReqs("DT", bioc = FALSE)
-# installReqs("DESeq2", bioc = TRUE)
-# installReqs("vsn", bioc = TRUE)
-# installReqs('apeglm', bioc = TRUE)
-# installReqs('org.Hs.eg.db', bioc = TRUE)
-# installReqs('org.Mm.eg.db', bioc = TRUE)
-# installReqs('EnhancedVolcano', bioc = TRUE)
-# installReqs('gridExtra', bioc = FALSE)
-# installReqs('ggpubr', bioc = FALSE)
-# installReqs('shinyjqui', bioc = FALSE)
-# installReqs('scales', bioc = FALSE)
-# installReqs('RColorBrewer', bioc = FALSE)
-# installReqs('pheatmap', bioc = FALSE)
-# installReqs('colourpicker', bioc = FALSE)
-
-#load required libraries
-#install_github("jokergoo/ComplexHeatmap") # install ComplexHeatmap package
-# require("BiocManager")
-# require("colourpicker")
-# require("ComplexHeatmap")
-# require("data.table")
-# require("DESeq2")
-# require("devtools") # to install from github
-# require("DT")
-# require("ggplot2")
-# require("ggpubr")
-# require("ggrepel")
-# require("gridExtra")
-# require("pheatmap")
-# require("RColorBrewer")
-# require("scales")
-# require("shiny")
-# require("shinydashboard")
-# require("shinyjqui")
-# require("shinyWidgets")
-# require("vsn")
-# require("apeglm")
-# require("circlize")
-# require("EnhancedVolcano")
-# require("enrichplot") #from bioconductor
-# require("ggraph") #from cran, for enrichment maps
-# require("org.Hs.eg.db")
-# require("org.Mm.eg.db")
-# require("ReactomePA") #from bioconductor
-# require("shinycssloaders")
 
 #set port to 3838
 options(shiny.port = 3838)
@@ -735,9 +672,6 @@ shinyServer(function(input, output, session) {
       rownames(heatmap_data) <- heatmap_data$GeneID
       
       #if false, rownames are already set to ENSEMBL IDs so don't change anything
-    } else if (input$heatmap_showGeneNames == "Hide") {
-      #set flag to false
-      show_geneNames = FALSE
     }
     
     #drop GeneID column before sending to pheatmap, which must be numerical data

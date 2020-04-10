@@ -46,39 +46,6 @@ app_version = "1.0.7"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
 #### legend symbols show letter 'a' below symbol on jitter plots
 
-#function to check for required packages and install them if not already installed
-installReqs <- function(package_name, bioc){
-  if (requireNamespace(package_name, quietly = TRUE) == FALSE) {
-    if (bioc == FALSE)
-      install.packages(package_name)
-    else if (bioc == TRUE) #install using Bioconductor package manager
-      BiocManager::install(package_name)
-  }
-}
-
-#check if required libraries are installed, and install them if needed
-# installReqs("BiocManager", bioc = FALSE)
-# installReqs("shiny", bioc = FALSE)
-# installReqs("shinydashboard", bioc = FALSE)
-# installReqs("plotly", bioc = FALSE)
-# installReqs("ggplot2", bioc = FALSE)
-# installReqs("ggrepel", bioc = FALSE)
-# installReqs("data.table", bioc = FALSE)
-# installReqs("DT", bioc = FALSE)
-# installReqs("DESeq2", bioc = TRUE)
-# installReqs("vsn", bioc = TRUE)
-# installReqs('apeglm', bioc = TRUE)
-# installReqs('org.Hs.eg.db', bioc = TRUE)
-# installReqs('org.Mm.eg.db', bioc = TRUE)
-# installReqs('EnhancedVolcano', bioc = TRUE)
-# installReqs('gridExtra', bioc = FALSE)
-# installReqs('ggpubr', bioc = FALSE)
-# installReqs('shinyjqui', bioc = FALSE)
-# installReqs('scales', bioc = FALSE)
-# installReqs('RColorBrewer', bioc = FALSE)
-# installReqs('pheatmap', bioc = FALSE)
-# installReqs('colourpicker', bioc = FALSE)
-
 ## load required libraries
 library("shiny")
 library("shinydashboard")
@@ -88,7 +55,7 @@ library("shinyWidgets")
 library("BiocManager")
 library("colourpicker")
 library("data.table")
-library("devtools") # to install from github
+#library("devtools") # to install from github
 library("DT")
 library("ggplot2")
 library("ggpubr")
@@ -490,7 +457,7 @@ ui <- dashboardPage(
                                   materialSwitch("heatmap_pickTopGenes", label = tags$b("Show top genes instead"), value = FALSE, status = "primary"),
                                   numericInput("heatmap_numGenes", label = "Number of top genes to show", value = 50),
                                   selectInput("heatmap_showGeneNames", label = "Gene names",
-                                              choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL", "Hide" = "Hide"))
+                                              choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL"))
 
                          )
                          ),
@@ -1005,7 +972,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("PCAplot_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1044,7 +1011,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("sampleClustering_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1083,7 +1050,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("ReadCount_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1122,7 +1089,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("Heatmap_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1161,7 +1128,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
 
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("Volcanoplot_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1200,7 +1167,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("enrichmentplot_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1239,7 +1206,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("enrichmentmap_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1290,7 +1257,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("gseamap_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
@@ -1329,7 +1296,7 @@ ui <- dashboardPage(
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
         
         # download buttons
-        dropdown(label = "Save plot",
+        dropdown(label = "Save Plot",
                  selectInput("gseaplot_dpi", label = "Output dpi", width = "100",
                              choices = list("24 dpi" = 24, "48 dpi" = 48, "96 dpi" = 96, "192 dpi" = 192),
                              selected = 48),
