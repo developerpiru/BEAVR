@@ -8,9 +8,9 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 # Table of contents
 
 + [Installation & Requirements](https://github.com/developerpiru/BEAVR#installation--requirements)
-	+ [Use the Docker container](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
-	+ [Setup a new R environment with the automated installer](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
-	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
+	+ [Use the Docker container](https://github.com/developerpiru/BEAVR#Use-the-Docker-container)
+	+ [Setup a new R environment with the automated installer](https://github.com/developerpiru/BEAVR#Setup-a-new-R-environment-with-the-automated-installer)
+	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#Run-in- your-existing-R-installation)
 
 + [Usage](https://github.com/developerpiru/BEAVR#usage)
 
@@ -50,16 +50,20 @@ The easiet way to install and use BEAVR - especially for those who have no R, pr
 
 3. Retrieve our Docker container:
 	- On Windows, double click "Run-BEAVR.bat"
-	- On Mac, double clock "Run-BEAVR.sh"
+	- On Mac, double click "Run-BEAVR.sh"
 	- On Linux, enter ```bash Run-BEAVR.sh``` in a terminal.
 
 4. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
 
----
 
 Once the Docker container is donwloaded to your computer, you can also access it from tje Docker Dashboard (only on Windows and Mac OS). 
 
-You can use this interface to start, stop, or open a browser to ```localhost:3838``` without use Run-BEAVR.bat or Run-BEAVR.sh as above. However, keep in mind that this only runs the currently downloaded version already have on your computer. To get the most up-to-date version, follow step 3.
+You can use this interface to start, stop, or open a browser to ```localhost:3838``` without use Run-BEAVR.bat or Run-BEAVR.sh as above. 
+
+![Image of Docker Dashboard](images/Dockdashboard-win.jpg)
+Click the play button the start the container
+
+However, keep in mind that this only runs the currently downloaded version already have on your computer. To get the most up-to-date version, follow step 3.
 
 ## Setup a new R environment with the automated installer
 
