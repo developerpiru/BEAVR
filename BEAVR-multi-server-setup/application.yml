@@ -1,0 +1,41 @@
+proxy:
+  title: Open Analytics Shiny Proxy
+  logo-url: http://www.openanalytics.eu/sites/www.openanalytics.eu/themes/oa/logo.png
+  landing-page: /
+  heartbeat-rate: 10000
+  heartbeat-timeout: 60000
+  port: 8080
+  # change to ldap for ldap. See ShinyProxy documentation 
+  authentication: simple
+  admin-groups: scientists
+  # Example: 'simple' authentication configuration
+  users:
+  - name: johndoe
+    password: password
+    groups: scientists
+  - name: janedoe
+    password: password
+    groups: mathematicians
+  # Example: 'ldap' authentication configuration
+  ldap:
+    url: ldap://ldap.forumsys.com:389/dc=example,dc=com
+    user-dn-pattern: uid={0}
+    group-search-base:
+    group-search-filter: (uniqueMember={0})
+    manager-dn: cn=read-only-admin,dc=example,dc=com
+    manager-password: password
+  # Docker configuration
+  docker:
+    cert-path: /home/none
+    url: http://localhost:2375
+    port-range-start: 20000
+  specs:
+  - id: BEAVR-v1.0.7
+    display-name: BEAVR v1.0.7
+    description: A Browser-based tool for the Exploration And Visualization of RNAseq data
+    container-image: pirunthan/beavr:v1-0-7
+    access-groups: [scientists, mathematicians]
+
+logging:
+  file:
+    shinyproxy.log
