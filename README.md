@@ -10,7 +10,7 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 + [Installation & Requirements](https://github.com/developerpiru/BEAVR#installation--requirements)
 	+ [Use the Docker container](https://github.com/developerpiru/BEAVR#Use-the-Docker-container)
 	+ [Setup a new R environment with the automated installer](https://github.com/developerpiru/BEAVR#Setup-a-new-R-environment-with-the-automated-installer)
-	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#Run-in- your-existing-R-installation)
+	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#Run-in-your-existing-R-installation)
 
 + [Usage](https://github.com/developerpiru/BEAVR#usage)
 
@@ -69,7 +69,7 @@ However, keep in mind that this only runs the currently downloaded version alrea
 
 ## Run in your existing R installation
 
-## Manually run BEAVR
+## Run in your existing R installation
 
 ## Preparing the read count table file
 The **minimum requirements** for running BEAVR are:
