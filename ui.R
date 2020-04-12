@@ -3,7 +3,7 @@
 # input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
 # See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.7"
+app_version = "1.0.8"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -39,8 +39,27 @@ app_version = "1.0.7"
 # fix variance transformations for small nsubs (small sample sets)
 # volcano plot colors
 # enter gene names for heatmap
+# fixed color selection for boxplot and jitter plots
+# calculate statistics in read count plots
+# fixed statistics placements on read count plots
+# updated count matrix heatmap function to use ComplexHeatmap
+# fixed annoations for count matrix heatmap
+# ability to customize colors of count matrix heatmap annotations
+# full customization of count matrix heatmap now working
+# improve dynamic colorbox rendering
+# global num_conditions and num_replicates values added
+# fixed heatmap annotation customizations and fonts
+# div tags for all plot areas showing plot area boundary
+# save all plots as png, jpg, svg, tiff or pdf
+# select dpi setting for svg and pdf formats
+# cleaned up ui
+# pathway enrichment analysis using ReactomePA and enrichplot packages (overenrichment analysis and GSEA maps and plots)
+# full customization of pathway and gsea plots/maps
+# added results tables for pathway enrichment results and GSEA results
+# added shiny.port option to use port 3838
 # start info bar containing basic steps
 # help tab for basic help/tips info
+# fixed heatmap name bug
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
