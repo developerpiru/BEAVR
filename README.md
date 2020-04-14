@@ -31,43 +31,47 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 
 # Installation & Requirements
 
+We provide three ways to install and use BEAVR. They vary in ease and speed to get BEAVR running on your computer:
+	1. [Use a Docker container]() - the easiest and fastest method
+	2. [Setup a new R environment with the automated installer]() - for those who don't want to install Docker
+	3. [Run in your existing R installation]() - for those who already have R installed
+
 ## Use the Docker container
 
 The easiet way to install and use BEAVR - especially for those who have no R, programming, or command line experence - is to use our Docker container. Follow these instructions to get started:
 
-1. Download our BEAVR-Docker-setup package for your operating system:
-	- [Windows]()
-	- [Mac OS]()
-	- [Linux]()
+1. Download our BEAVR-Docker setup package for your operating system:
+	- [Windows](https://github.com/developerpiru/BEAVR/raw/master/Docker%20Setup/BEAVR-Docker-Win.zip)
+	- [Mac OS](https://github.com/developerpiru/BEAVR/raw/master/Docker%20Setup/BEAVR-Docker-Mac.zip)
+	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Docker%20Setup/BEAVR-Docker-Linux.tar.gz)
 	
 2. Install Docker for your operating system:
+	On Windows and Mac OS, you can download the latest installer from Docker and use their installation wizard:
 	- [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/)
 	- [Docker Desktop for Mac OS](https://docs.docker.com/docker-for-mac/install)
-	- For Linux, use our automated installer in the BEAVR-Docker-setup package you downloaded above (called Docker-setup-ubuntu.sh)
+	
+	- For Linux, you can use our automated installer in the BEAVR-Docker-Linux package you downloaded above (called Docker-setup-ubuntu.sh). You will need to open a terminal and enter this command to execute it:
 		```
 		bash Docker-setup-ubuntu.sh
 		```
 
-3. Retrieve our Docker container:
-	- On Windows, double click "Run-BEAVR.bat"
-	- On Mac, double click "Run-BEAVR.sh"
+3. Run (pull) our Docker container:
+	- On Windows, double click "Run-BEAVR.bat" in the BEAVR-Docker setup package you downloaded above
+	- On Mac, double click "Run-BEAVR.sh" in the BEAVR-Docker-Mac package you downloaded above
 	- On Linux, enter ```bash Run-BEAVR.sh``` in a terminal.
 
 4. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
 
 
-Once the Docker container is donwloaded to your computer, you can also access it from tje Docker Dashboard (only on Windows and Mac OS). 
+Once the Docker container is donwloaded to your computer, you can also access it from the Docker Dashboard  as shown below (only on Windows and Mac OS):
 
-You can use this interface to start, stop, or open a browser to ```localhost:3838``` without use Run-BEAVR.bat or Run-BEAVR.sh as above. 
+![Image of Docker Dashboard](images/Dockerdashboard.jpg)
 
-![Image of Docker Dashboard](images/Dockdashboard-win.jpg)
-Click the play button the start the container
+You can use this interface to start, stop, or open a browser to ```localhost:3838``` (circled in red) without using Run-BEAVR.bat or Run-BEAVR.sh executable scripts as explained in step 3 above. 
 
-However, keep in mind that this only runs the currently downloaded version already have on your computer. To get the most up-to-date version, follow step 3.
+However, keep in mind that this only runs your current locally downloaded version of BEAVR. To get the most up-to-date version, follow step 3 to update your local copy.
 
 ## Setup a new R environment with the automated installer
-
-## Run in your existing R installation
 
 ## Run in your existing R installation
 
