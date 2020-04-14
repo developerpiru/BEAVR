@@ -11,6 +11,7 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 	+ [Use the Docker container](https://github.com/developerpiru/BEAVR#Use-the-Docker-container)
 	+ [Setup a new R environment with the automated installer](https://github.com/developerpiru/BEAVR#Setup-a-new-R-environment-with-the-automated-installer)
 	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#Run-in-your-existing-R-installation)
+	+ [Installing BEAVR on a server with multi-user support]()
 
 + [Usage](https://github.com/developerpiru/BEAVR#usage)
 
@@ -188,8 +189,37 @@ If you already have a working installation of R on your computer (version 3.5+),
 	
 3. To start BEAVR, double click **Run-BEAVR.sh**
 
+## Installing BEAVR on a server with multi-user support
 
+If you wish to have BEAVR running on a centralized server for your research group, you or your system administrator can follow the instructions below. We implement this using Docker and ShinyProxy which allows each user to be sandboxed in a unique Docker instance. These instructions are provided for Linux/Ubuntu servers (for now)
 
+1. Download and extract the **BEAVR-multi-server-setup.tar.gz** setup package from [here](https://github.com/developerpiru/BEAVR/raw/master/BEAVR-multi-server-setup.tar.gz)
+
+2. If you already have Docker installed on your Ubuntu server, continue to step 3. Otherwise, in the setup package you just downloaded, run the Docker installer by entering this command in a terminal (this will remove any previous version of Docker!):
+	```
+	bash Docker-setup-ubuntu.sh
+	```
+3. If you already have Java 8 runtime environment installed on your Ubuntu server, skip to step 4. Otherwise, in the setup package you just downloaded, run the OpenJDK installer by entering this command in a terminal (you can use another distribution of JDK like Oracle as well):
+	```
+	bash OpenJDK-setup.sh
+	```
+4. Finally, run the script **ShinyProxy-setup.sh** to configure Docker and setup ShinyProxy:
+	```
+	bash ShinyProxy-setup.sh
+	```
+	This will download ShinyProxy 2.3.0 (shinyproxy-2.3.0.jar) and configure the Docker daemon to communicate on port 2375.
+	
+5. Configure ShinyProxy settings for user access:
+	If you look in the setup package you downloaded in step 1, you will see a file named **application.yml**
+	
+	The bottom part of this file is pre-configured for BEAVR already.
+	
+	In the top portion of the file, you will find the configuration line for the port (default 8080) and for user access control:
+		- You can keep the default "simple" authentication method and specify user names and passwords in this file (note this file is not encrypted!)
+		- You can also LDAP authentication or social authentication
+		- You can set this to "none" to have no authentication so anyone with the address can access the server
+		- See the [ShinyProxy documentation](https://www.shinyproxy.io/configuration/) for more information regarding authentication
+	
 # Usage
 
 BEAVR requires two file inputs:
