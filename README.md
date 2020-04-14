@@ -120,7 +120,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 ## Run in your existing R installation
 
 If you already have a working installation of R on your computer (version 3.5+), then you can follow these steps to install the required R packages to run BEAVR on any operating system.
-	
+
 	Note, the required packages are as follows:
 	```
 	#CRAN packages
@@ -196,7 +196,7 @@ BEAVR requires two file inputs:
 1. [Read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
 2. [Sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
 
-See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Examples) folder for examples of these two files prepared for the [Sehrawat *et al.* (2018)](https://pubmed.ncbi.nlm.nih.gov/29581250-lsd1-activates-a-lethal-prostate-cancer-gene-network-independently-of-its-demethylase-function/) dataset. 
+See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Examples) folder for examples of these two files prepared for the [Sehrawat *et al.* (2018)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5939079/) dataset. 
 
 ## Preparing the read count table file
 
