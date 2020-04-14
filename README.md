@@ -219,7 +219,12 @@ If you wish to have BEAVR running on a centralized server for your research grou
 		- You can also LDAP authentication or social authentication
 		- You can set this to "none" to have no authentication so anyone with the address can access the server
 		- See the [ShinyProxy documentation](https://www.shinyproxy.io/configuration/) for more information regarding authentication
-	
+
+6. To start the ShinyProxy server, enter this command in the terminal:
+		```
+		java -jar shinyproxy-2.3.0.jar
+		```
+
 # Usage
 
 BEAVR requires two file inputs:
