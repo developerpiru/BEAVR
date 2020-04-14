@@ -51,7 +51,7 @@ The easiet way to install and use BEAVR - especially for those who have no R, pr
 	
 	- [Docker Desktop for Mac OS](https://docs.docker.com/docker-for-mac/install)
 	
-	- For Linux, you can use our automated installer in the BEAVR-Docker-Linux package you downloaded above (called **Docker-setup-ubuntu.sh**). You will need to open a terminal and enter this command to execute it:
+	- On Linux, you can use our automated installer in the BEAVR-Docker-Linux package you downloaded above (called **Docker-setup-ubuntu.sh**). You will need to open a terminal and enter this command to execute it:
 		```
 		bash Docker-setup-ubuntu.sh
 		```
@@ -78,84 +78,117 @@ However, keep in mind that this only runs your current locally downloaded versio
 
 If you prefer not to install Docker and **you do not already have R installed** on your computer, you can follow these steps to easily install and configure R for BEAVR.
 
-1. Download and extract the setup files for your operating system:
+### Windows and Mac OS
+
+1. Download and extract the BEAVR-base setup files for your operating system:
 	- [Windows]()
 	- [Mac OS]()
-	- [Linux]()
 
 2. Install R for your operating system:
-	- On Windows, 
+	- On Windows, download R 3.6.3 [here](https://cloud.r-project.org/bin/windows/base/R-3.6.3-win.exe)
+	
+	- On Mac OS, download R 3.6.3 for Catalina [here](https://cloud.r-project.org/bin/macosx/R-3.6.3.pkg) or for El Capitan and higher [here](https://cloud.r-project.org/bin/macosx/R-3.6.3.nn.pkg)
 
+3. Run the automated installer to install and configure required packages:
+	- On Windows, double click **Configure-BEAVR.bat** in the BEAVR-base setup package you downloaded above
+	
+	- On Mac OS, double click **Configure-BEAVR.sh** in the BEAVR-base package you downloaded above
+	
+	This will download and install the R packages required for BEAVR.
+
+4. Run BEAVR:
+	- On Windows, double click **Run-BEAVR.bat**
+	
+	- On Mac OS, double click **Run-BEAVR.sh**
+	
+### Linux
+
+1. Download and extract the BEAVR-base setup files for Linux:
+	- [Linux]()
+	
+2. Run the automated installer (called **BEAVR-setup.sh**). You will need to open a terminal and enter this command to execute it:
+	```
+	bash BEAVR-setup.sh
+	```
+	This will install the latest version of R and also download and configure all of the required R packages for BEAVR automatically.
+
+3. To run BEAVR, enter this command from a terminal:
+	```
+	bash Run-BEAVR.sh
+	```
 
 ## Run in your existing R installation
 
-## Preparing the read count table file
-The **minimum requirements** for running BEAVR are:
-- [R 3.5+](https://cran.r-project.org/)	
-- BiocManager
-- shiny
-- shinydashboard
-
-To install the **minimum** required packages, enter these commands in R:
-
-```
-install.packages("BiocManager")
-install.packages("shiny")
-install.packages("shinydashboard")
-```
-
-Then follow the steps below to [Run BEAVR](https://github.com/developerpiru/BEAVR#run-beavr). 
-
-All other required components should be installed upon first launch. **If you run into an error**, you can manually install these other components:
-
-```
-install.packages("BiocManager")
-install.packages("shiny")
-install.packages("shinydashboard")
-install.packages("plotly")
-install.packages("ggplot2")
-install.packages("ggrepel")
-install.packages("DT")
-install.packages("gridExtra")
-install.packages("ggpubr")
-install.packages("shinyjqui")
-install.packages("scales")
-install.packages("RColorBrewer")
-install.packages("pheatmap")
-install.packages("colourpicker")
-BiocManager::install("DESeq2")
-BiocManager::install("vsn")
-BiocManager::install("apeglm")
-BiocManager::install("org.Hs.eg.db")
-BiocManager::install("org.Mm.eg.db")
-BiocManager::install("EnhancedVolcano")
-```
-
-## Run BEAVR
-
-There are two ways to run BEAVR
-
-1. Automatically download and run the latest version directly from GitHub:
-
-    1. Open a new R session and enter these commands:
+If you already have a working installation of R on your computer (version 3.5+), then you can follow these steps to install the required R packages to run BEAVR on any operating system.
+	
+	Note, the required packages are as follows:
 	```
-	library(shiny)
-	library(shinydashboard)
-	runGitHub("BEAVR", "developerpiru")
+	#CRAN packages
+	BiocManager
+	colourpicker
+	data.table
+	devtools
+	DT
+	ggplot2
+	ggpubr
+	ggrepel
+	ggraph
+	gridExtra
+	pheatmap
+	RColorBrewer
+	scales
+	shiny
+	shinydashboard
+	shinyWidgets
+	shiny
+	shinydashboard
+	shinyjqui
+	shinyWidgets
+	shinycssloaders
+	circlize
+
+	#Bioconductor packages
+	DESeq2
+	vsn
+	apeglm
+	org.Hs.eg.db
+	org.Mm.eg.db
+	ReactomePA
+	enrichplot
+
+	#GitHub packages
+	kevinblighe/EnhancedVolcano
+	jokergoo/ComplexHeatmap
 	```
 
-2. Download a local copy and launch from a folder
-    1. Download the latest release from [here](https://github.com/developerpiru/BEAVR/releases/latest) or by using the download button above
-    2. Extract the zip archive
-    3. Open a new R session and enter these commands:
-	```
-	library(shiny)
-	library(shinydashboard)
-	runApp("/path/to/folder/BEAVR-version")
-	```
-	Where ```/path/to/folder/``` is the directory where you extracted the zip archive ```version``` is the version number you 	downloaded, *e.g.* ``0.80.1``.
+### Windows
 
-If you are using R, a browser window should open automatically showing the app. If you are using RStudio, click "Open in browser" at the top of the popup window.
+1. Download the BEAVR-R setup package from [here]()
+
+2. Double click **Configure-BEAVR.bat** in the BEAVR-base setup package you downloaded above
+
+3. To start BEAVR, double click **Run-BEAVR.bat**
+
+### Mac OS
+
+1. Download the BEAVR-R setup package from [here]()
+
+2. Double click **Configure-BEAVR.sh** in the BEAVR-base setup package you downloaded above
+
+3. To start BEAVR, double click **Run-BEAVR.sh**
+
+### Linux
+
+1. Download the BEAVR-R setup package from [here]()
+
+2. Run the automated installer (called **installpkgs.R**) to configure the required packages. You will need to open a terminal and enter this command to execute it:
+	```
+	sudo Rscript installpkgs.R
+	```
+	
+3. To start BEAVR, double click **Run-BEAVR.sh**
+
+
 
 # Usage
 
