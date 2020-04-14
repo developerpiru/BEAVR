@@ -1,7 +1,6 @@
 # BEAVR: A Browser-based tool for the Exploration And Visualization of RNA-seq data
-# GUI to analyze RNAseq data using DESeq2
-# input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
+# Developed by Pirunthan Perampalam @ https://github.com/developerpiru/
+# See Github for documentation & ReadMe: https://github.com/developerpiru/BEAVR
 
 app_version = "1.0.8"
 
@@ -65,6 +64,9 @@ app_version = "1.0.8"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
 #### legend symbols show letter 'a' below symbol on jitter plots
 
+#set port to 3838
+options(shiny.port = 3838)
+
 ## load required libraries
 library("shiny")
 library("shinydashboard")
@@ -103,45 +105,6 @@ library("enrichplot") #from bioconductor
 # #GitHub packages
 library("EnhancedVolcano")
 library("ComplexHeatmap")
-#devtools::install_github('kevinblighe/EnhancedVolcano')
-#devtools::install_github("jokergoo/ComplexHeatmap") # install ComplexHeatmap package
-
-
-# cran_pkg_list <- c("BiocManager", "colourpicker", "data.table", "devtools", "DT", "ggplot2", "ggpubr", "ggrepel", "gridExtra",
-#                    "pheatmap", "RColorBrewer", "scales", "shiny", "shinydashboard", "shinyjqui", "shinyWidgets", "circlize",
-#                    "ggraph", "shinycssloaders")
-# 
-# bioc_pkg_list <- c("DESeq2", "vsn", "apeglm", "org.Hs.eg.db", "org.Mm.eg.db", "ReactomePA", "enrichplot")
-# 
-# for (pkg in cran_pkg_list){
-#   require(pkg)
-#   if (!require(pkg)){
-#     print(paste0("The ", pkg, " package is not installed and is required. Installing it now..."))
-#     install.packages(pkg, quiet = TRUE)
-#   }
-# }
-# 
-# for (pkg in bioc_pkg_list){
-#   require(pkg)
-#   if (!require(pkg)){
-#     print(paste0("The ", pkg, " package is not installed and is required. Installing it now..."))
-#     BiocManager::install(pkg)
-#   }
-# }
-# 
-# require("EnhancedVolcano")
-# if (!require("EnhancedVolcano")){
-#   print(paste0("The EnhancedVolcano package is not installed and is required. Installing it now..."))
-#   devtools::install_github('kevinblighe/EnhancedVolcano')
-# }
-# 
-# require("ComplexHeatmap")
-# if (!require("ComplexHeatmap")){
-#   print(paste0("The ComplexHeatmap package is not installed and is required. Installing it now..."))
-#   devtools::install_github("jokergoo/ComplexHeatmap")
-# }
-
-
 
 spinner_type = 1
 spinner_col = "#0C71CF"
@@ -385,7 +348,8 @@ ui <- dashboardPage(
                                                 selected = "right"),
                                     selectInput("sampleClustering_main_legend_dir", label = "Legend direction",
                                                 choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"),
-                                                selected = "horizontal")
+                                                selected = "horizontal"),
+                                    numericInput("sampleClustering_main_legend_size", label = "Legend size", value = 5)
                            )
                          ),
                          
@@ -585,13 +549,14 @@ ui <- dashboardPage(
                                   selectInput("heatmap_anno_legend", label = "Annotations legend position",
                                               choices = list("Left" = "left", 
                                                              "Right" = "right", "Top" = "top", "Bottom" = "bottom"),
-                                              selected = "right"),
+                                              selected = "bottom"),
                                   selectInput("heatmap_main_legend_dir", label = "Main legend direction",
                                               choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"),
                                               selected = "vertical"),
                                   selectInput("heatmap_anno_legend_dir", label = "Annotations legend direction",
                                               choices = list("Horizontal" = "horizontal", "Vertical" = "vertical"),
-                                              selected = "vertical")
+                                              selected = "vertical"),
+                                  numericInput("heatmap_main_legend_size", label = "Main legend size", value = 5)
                          )
                          ),
                          
@@ -669,7 +634,13 @@ ui <- dashboardPage(
                            tags$div('class'="borderbox",
                                     selectInput("enrPlotType", label = "Plot type", 
                                                 choices = list("Bar plot" = "bar", "Dot plot" = "dot"), 
-                                                selected = "bar"),
+                                                selected = "bar")
+                           )
+                         ),
+                         
+                         menuItem(
+                           h4("Legend"),
+                           tags$div('class'="borderbox",
                                     selectInput("enrLegendPosition", label = "Legend position", 
                                                 choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 
                                                 selected = "right"),
@@ -751,7 +722,7 @@ ui <- dashboardPage(
                          ),
                          
                          menuItem(
-                           h4("Appearance"),
+                           h4("Legend"),
                            tags$div('class'="borderbox",
                                     selectInput("gseaMapLegendPosition", label = "Legend position", 
                                                 choices = list("Top" = "top", "Bottom" = "bottom", "Left" = "left", "Right" = "right"), 

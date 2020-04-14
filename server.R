@@ -1,9 +1,8 @@
 # BEAVR: A Browser-based tool for the Exploration And Visualization of RNA-seq data
-# GUI to analyze RNAseq data using DESeq2
-# input: transcript read counts (ie. from STAR aligner or HTseq), and column data matrix file containing sample info
-# See Github for more info & ReadMe: https://github.com/developerpiru/BEAVR
+# Developed by Pirunthan Perampalam @ https://github.com/developerpiru/
+# See Github for documentation & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.7"
+app_version = "1.0.8"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -57,6 +56,9 @@ app_version = "1.0.7"
 # full customization of pathway and gsea plots/maps
 # added results tables for pathway enrichment results and GSEA results
 # added shiny.port option to use port 3838
+# start info bar containing basic steps
+# help tab for basic help/tips info
+# fixed heatmap name bug
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -554,6 +556,8 @@ shinyServer(function(input, output, session) {
                 column_names_gp = gpar(fontsize = input$sampleClustering_fontsize_colNames, col = input$sampleClustering_collabelColor),
                 #legend direction
                 heatmap_legend_param = list(direction = input$sampleClustering_main_legend_dir,
+                                            legend_height = unit(input$sampleClustering_main_legend_size, "cm"),
+                                            legend_width = unit(input$sampleClustering_main_legend_size, "cm"),
                                             labels_gp = gpar(fontsize = input$sampleClustering_fontsize_legends, col = input$sampleClustering_legendColor)),
                 #show cell values
                 cell_fun = function(j, i, x, y, width, height, fill) {
@@ -753,7 +757,7 @@ shinyServer(function(input, output, session) {
     #generate heatmap
     p = Heatmap(heatmap_data2,
                 #name
-                name = "Expression",
+                name = "Expression\n",
                 #sample annotation,
                 top_annotation = heatmap_anno,
                 #colour
@@ -796,7 +800,9 @@ shinyServer(function(input, output, session) {
                 heatmap_legend_param = list(direction = input$heatmap_main_legend_dir,
                                             title_gp = gpar(fontsize = input$heatmap_fontsize_legends, fontface = "bold"),
                                             labels_gp = gpar(fontsize = input$heatmap_fontsize_legends, 
-                                                             col = input$heatmap_legendColor)),
+                                                             col = input$heatmap_legendColor),
+                                            legend_height = unit(input$heatmap_main_legend_size, "cm"),
+                                            legend_width = unit(input$heatmap_main_legend_size, "cm")),
                 #show cell values
                 cell_fun = function(j, i, x, y, width, height, fill) {
                   if(input$heatmap_cellNums == "%.2f"){
@@ -1491,7 +1497,7 @@ shinyServer(function(input, output, session) {
                      pvalue_table = input$gseaPlotShowPvalue,
                      base_size = input$gseaPlotFontSize,
                      color = input$gseaPlotLineColor)
-    
+
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Finalizing..."))

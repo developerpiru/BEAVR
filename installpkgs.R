@@ -1,4 +1,6 @@
-#install all required R packages for BEAVR
+#This script installed all of the required R packages to run BEAVR
+#Script author: https://github.com/developerpiru/
+#See BEAVR documentation for more info: https://github.com/developerpiru/BEAVR
 
 installCran <- function(package_name){
   install.packages(package_name)
@@ -11,11 +13,6 @@ installBioc <- function(package_name){
 #may need to run this
 options(repos = "https://cloud.r-project.org")
 options(install.packages.compile.from.source="interactive")
-
-## load required libraries
-installCran("shiny")
-installCran("shinydashboard")
-installCran("shinyWidgets")
 
 #cran packages
 installCran("BiocManager")
