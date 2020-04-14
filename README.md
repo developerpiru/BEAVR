@@ -210,11 +210,11 @@ If you wish to have BEAVR running on a centralized server for your research grou
 	This will download ShinyProxy 2.3.0 (shinyproxy-2.3.0.jar) and configure the Docker daemon to communicate on port 2375.
 	
 5. Configure ShinyProxy settings for user access:
-	If you look in the setup package you downloaded in step 1, you will see a file named **application.yml**
+	- If you look in the setup package you downloaded in step 1, you will see a file named **application.yml**
 	
-	The bottom part of this file is pre-configured for BEAVR already.
+		- The bottom part of this file is pre-configured for BEAVR already.
 	
-	In the top portion of the file, you will find the configuration line for the port (default 8080) and for user access control:
+		- In the top portion of the file, you will find the configuration line for the port (default 8080) and for user access control:
 		- You can keep the default "simple" authentication method and specify user names and passwords in this file (note this file is not encrypted!)
 		- You can also LDAP authentication or social authentication
 		- You can set this to "none" to have no authentication so anyone with the address can access the server
