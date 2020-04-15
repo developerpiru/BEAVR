@@ -60,7 +60,11 @@ We provide three ways to install and use BEAVR. They vary in ease and speed to g
 
 ## Use the Docker container
 
-The **easiet and quickest way** to install and use BEAVR - **especially** for those who have no R, programming, or command line experence - is to use our Docker container. Follow these instructions to get started:
+The **easiet and quickest way** to install and use BEAVR - **especially** for those who have no R, programming, or command line experence - is to use our Docker container. 
+
+For those who are familiar with Docker, you can pull the latest version of BEAVR using ```docker pull pirunthan/beavr:latest``` and you can run the container using ```docker run -ti -p 3838:3838 pirunthan/beavr:latest```.
+
+For those who are new to Docker, follow these instructions to get started:
 
 ---
 
