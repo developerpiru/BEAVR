@@ -199,10 +199,12 @@ If you wish to have BEAVR running on a centralized server for your research grou
 	```
 	bash Docker-setup-ubuntu.sh
 	```
+	
 3. If you already have Java 8 runtime environment installed on your Ubuntu server, skip to step 4. Otherwise, in the setup package you just downloaded, run the OpenJDK installer by entering this command in a terminal (you can use another distribution of JDK like Oracle as well):
 	```
 	bash OpenJDK-setup.sh
 	```
+	
 4. Finally, run the script **ShinyProxy-setup.sh** to configure Docker and setup ShinyProxy:
 	```
 	bash ShinyProxy-setup.sh
