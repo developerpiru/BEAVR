@@ -43,6 +43,7 @@ The easiest way to get started with BEAVR is to use our Docker container! Check 
 		+ [Gene set enrichment analysis (GSEA)](https://github.com/developerpiru/BEAVR#gene-set-enrichment-analysis-gsea)
 		+ [GSEA running enrichment score plot](https://github.com/developerpiru/BEAVR#gsea-running-enrichment-score-plot)
 		+ [GSEA table](https://github.com/developerpiru/BEAVR#gsea-table)
+	+ [Customizing figures](https://github.com/developerpiru/BEAVR#customizing-figures) 
 	+ [Resizing plots and adjusting the aspect ratio](https://github.com/developerpiru/BEAVR#resizing-plots-and-adjusting-the-aspect-ratio)
   	+ [Saving figures](https://github.com/developerpiru/BEAVR#saving-figures)
 + [Troubleshooting](https://github.com/developerpiru/BEAVR#troubleshooting)
@@ -558,7 +559,7 @@ If filtering is enabled in the ```Gene Table``` tab, then only those filtered ge
 
 ---
 
-### Pathway Enrichment Plot
+### Pathway enrichment plot
 
 The ```Pathway Enrichment Plot``` tab will perform over-representation analysis using the filtered (or unfiltered) data set from the ```Gene Table``` tab. You can set the p value cutoff in the sidebar of the ```Pathway Enrichment Plot``` and also set the numnder of pathways to show.
 
@@ -568,7 +569,7 @@ You can also change an option in the sidebar to display this data as a dot plot 
 
 ---
 
-### Pathway Enrichment Map
+### Pathway enrichment map
 
 The ```Pathway Enrichment Map``` tab will perform over-representation analysis and show you all of the pathways as an interconnected map.
 
@@ -576,7 +577,7 @@ The ```Pathway Enrichment Map``` tab will perform over-representation analysis a
 
 ---
 
-### Pathway Enrichment Table
+### Pathway enrichment table
 
 The ```Pathway Enrichment Table``` tab will show you details of the enrichment results from the ```Pathway Enrichment Plot``` tab. You can use the ```Download Table``` button in the sidebar to download the table or use the controls in the sidebar to filter the results.
 
@@ -600,11 +601,21 @@ The ```GSEA plot``` tab, will perform GSEA on your data and plot the running enr
 
 ---
 
-### GSEA Table
+### GSEA table
 
 Similar to the ```Pathway Enrichment Table``` tab, the ```GSEA Table``` tab will show you the results of GSEA in tabular form. You can download the table or filter it using the sidebar controls.
 
 ![Image of GSEA Table tab](images/gseatable.jpg)
+
+---
+
+## Customizing figures
+
+For all figures, the sidebar shows contextual options and parameters that you can configure. These are dependent on the type of plot/tab you are currently viewing. These options may include a list of genes, log2 fold change cutoffs, p value cutoffs, font sizes, colors, or legend placement options. 
+
+These parameters are categories in different headings which you can click to expand and collapse.
+
+![Image of sidebar](images/sidebar.jpg)
 
 ---
 
