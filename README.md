@@ -42,7 +42,7 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 		+ [GSEA running enrichment score plot](https://github.com/developerpiru/BEAVR#gsea-running-enrichment-score-plot)
 		+ [GSEA table](https://github.com/developerpiru/BEAVR#gsea-table)
 	+ [Resizing plots and adjusting the aspect ratio](https://github.com/developerpiru/BEAVR#resizing-plots-and-adjusting-the-aspect-ratio)
-  	+ Saving figures](https://github.com/developerpiru/BEAVR#saving-figures)
+  	+ [Saving figures](https://github.com/developerpiru/BEAVR#saving-figures)
 + [Troubleshooting](https://github.com/developerpiru/BEAVR#troubleshooting)
 
 ---
