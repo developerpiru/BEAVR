@@ -200,6 +200,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 3. Look in the "Setup" folder to find the automated installer for Windows:
 	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
+
 	This will download and install the R packages required for BEAVR.
 
 4. To run BEAVR:
