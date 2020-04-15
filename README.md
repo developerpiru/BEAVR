@@ -115,6 +115,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 
 
 Do the following steps instead to use our **automated script**:
+(You only have to download this once and do steps 1-3 once)
 
 
 1. Download and extract the BEAVR-Docker setup package for Mac OS:
@@ -133,6 +134,8 @@ Do the following steps instead to use our **automated script**:
 4. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
+
+This will start BEAVR.
 		
 5. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
 
@@ -168,9 +171,11 @@ However, keep in mind that this only runs your current locally downloaded versio
 	Note, if you get permission errors, you may need to give the script executable permission
 	```
 	chmod +x Run-BEAVR.sh
+
 	```
 
         **Or**
+
 
 	You can also just enter this command:
 	```
@@ -318,12 +323,16 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 3. To run BEAVR:
 	- Double-click **Run-BEAVR-Windows.bat**
+
 	
 	**Or**
+
 	
 	You can open the **start.R** file in RStudio and click Run App button in the top right
+
 	
 	**Or**
+
 	
 	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
 	```
@@ -358,12 +367,16 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 5. To run BEAVR:
 	- Right-click **Run-BEAVR-MacOS.command**, click **Open** and then click **Open** again in the popup box.
+
 	
 	**Or**
+
 	
 	You can open the **start.R** file in RStudio and click Run App button in the top right
 	
+
 	**Or**
+
 	
 	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
 	```
@@ -388,9 +401,12 @@ If you already have a working installation of R on your computer (version 3.5+),
 3. To run BEAVR, enter this command from a terminal from the BEAVR folder:
 	```
 	bash Run-BEAVR-Linux.sh
+
 	```
 	
+
 	**Or**
+
 	
 	```
 	Rsript start.R
@@ -400,8 +416,10 @@ If you already have a working installation of R on your computer (version 3.5+),
 	```
 	chmod +x Run-BEAVR-Linux.sh
 	```
+
 	
 	**Or**
+
 	
 	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
 	```
