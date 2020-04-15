@@ -211,9 +211,6 @@ If you prefer not to install Docker and **you do not already have R installed** 
 	```
 	Where ```~/Downloads/``` is the path where you extracted BEAVR above (usually your Downloads folder or ```~/Desktop/``` if you moved it to your desktop.)
 	
-![Image of chmod in MacOS-1](images/MacOSpermissionsfix1.jpg)
-![Image of chmod in MacOS-2](images/MacOSpermissionsfix2.jpg)
-	
 4. Look in the "Setup" folder to find the automated installer for Mac OS named **Configure-BEAVR-MacOS.command**. If you double-click the **Configure-BEAVR-MacOS.command** installer, you will likely get another error because you didn't download it from the App store. 
 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
