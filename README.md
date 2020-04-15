@@ -9,8 +9,17 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 
 + [Installation & Requirements](https://github.com/developerpiru/BEAVR#installation--requirements)
 	+ [Use the Docker container](https://github.com/developerpiru/BEAVR#Use-the-Docker-container)
+		+ [Docker on Windows](https://github.com/developerpiru/BEAVR#docker-on-windows)
+		+ [Docker on Mac OS](https://github.com/developerpiru/BEAVR#docker-on-mac-os)
+		+ [Docker on Linux (Ubuntu)](https://github.com/developerpiru/BEAVR#docker-on-linux-ubuntu)
 	+ [Setup a new R environment with the automated installer](https://github.com/developerpiru/BEAVR#Setup-a-new-R-environment-with-the-automated-installer)
+		+ [Windows]()
+		+ [Mac OS]()
+		+ [Linux]()
 	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#Run-in-your-existing-R-installation)
+		+ [Windows]()
+		+ [Mac OS]()
+		+ [Linux]()
 	+ [Installing BEAVR on a server with multi-user support](https://github.com/developerpiru/BEAVR#installing-beavr-on-a-server-with-multi-user-support)
 
 + [BEAVR Tutorial](https://github.com/developerpiru/BEAVR#beavr-tutorial)
