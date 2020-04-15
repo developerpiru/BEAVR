@@ -37,7 +37,7 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
   	+ [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
   	+ [Resizing and saving images](https://github.com/developerpiru/BEAVR#resizing-and-saving-images)
   
-+ [Known bugs & error messages](https://github.com/developerpiru/BEAVR#known-bugs--error-messages)
++ [Troubleshooting](https://github.com/developerpiru/BEAVR#troubleshooting)
 
 ---
 
@@ -610,13 +610,13 @@ You can hold the Shift key to maintain the same aspect ratio; otherwise you can 
 
 You can save any figure by using the ```Save Plot``` button above each figure. 
 
-![Image of GSEA Table tab](images/resizefigures.jpg)
+![Saving figures](images/savingfigures.jpg)
 
 You can save images as JPG, PDF, PNG, SVG, or TIFF. For PDF and SVG, you must select a dpi (dots per inch) setting (the default is 48 dpi).
 
 ---
 
-# Known bugs & error messages
+# Troubleshooting
 
  Issue | Solution
 ---------|---------
