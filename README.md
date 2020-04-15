@@ -108,27 +108,29 @@ However, keep in mind that this only runs your current locally downloaded versio
 	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
 	```
 	
-Or do the following steps instead to use our automated script:
+   **Or**
+
+Do the following steps instead to use our automated script:
 
 
-1a. Download and extract the BEAVR-Docker setup package for Mac OS:
+1. Download and extract the BEAVR-Docker setup package for Mac OS:
 	- [Mac OS](https://github.com/developerpiru/BEAVR/raw/master/Docker%20Setup/BEAVR-Docker-Mac.zip)
 
-2a. Before you can execute the setup script, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
+2. Before you can execute the setup script, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
 	```
 	chmod +x ~/Downloads/BEAVR-Docker-Mac/Run-BEAVR.command
 	```
 	Where ```~/Downloads/``` is the path where you extracted the BEAVR-Docker-Mac folder above (usually your Downloads folder or ```~/Desktop/``` if you moved it to your desktop.)
 
-3a. If you double-click **Run-BEAVR.command**, you will likely get another error because you didn't download it from the App store. 
+3. If you double-click **Run-BEAVR.command**, you will likely get another error because you didn't download it from the App store. 
 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
 
-4a. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
+4. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 		
-5a. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
+5. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
 
 Once the Docker container is downloaded to your computer, you can also access it from the Docker Dashboard  as shown below (to get to the Dashboard, click the Docker whale icon in system tray in the top right of your screen and then click Dashboard):
 
