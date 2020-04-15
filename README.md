@@ -610,7 +610,7 @@ You can hold the Shift key to maintain the same aspect ratio; otherwise you can 
 
 You can save any figure by using the ```Save Plot``` button above each figure. 
 
-![Saving figures](images/savingfigures.jpg)
+![Saving figures](images/savefigures.jpg)
 
 You can save images as JPG, PDF, PNG, SVG, or TIFF. For PDF and SVG, you must select a dpi (dots per inch) setting (the default is 48 dpi).
 
