@@ -174,7 +174,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 
 	```
 
-        **Or**
+	**Or**
 
 
 	You can also just enter this command:
@@ -403,6 +403,10 @@ If you already have a working installation of R on your computer (version 3.5+),
 	bash Run-BEAVR-Linux.sh
 
 	```
+	Note, if you get permission errors, you may need to give the script executable permission
+	```
+	chmod +x Run-BEAVR-Linux.sh
+	```
 	
 
 	**Or**
@@ -411,13 +415,8 @@ If you already have a working installation of R on your computer (version 3.5+),
 	```
 	Rsript start.R
 	```
-	
-	Note, if you get permission errors, you may need to give the script executable permission
-	```
-	chmod +x Run-BEAVR-Linux.sh
-	```
 
-	
+
 	**Or**
 
 	
