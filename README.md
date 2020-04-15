@@ -171,7 +171,6 @@ However, keep in mind that this only runs your current locally downloaded versio
 	Note, if you get permission errors, you may need to give the script executable permission
 	```
 	chmod +x Run-BEAVR.sh
-
 	```
 
 	**Or**
