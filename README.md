@@ -13,13 +13,13 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 		+ [Docker on Mac OS](https://github.com/developerpiru/BEAVR#docker-on-mac-os)
 		+ [Docker on Linux (Ubuntu)](https://github.com/developerpiru/BEAVR#docker-on-linux-ubuntu)
 	+ [Setup a new R environment with the automated installer](https://github.com/developerpiru/BEAVR#Setup-a-new-R-environment-with-the-automated-installer)
-		+ [Windows]()
-		+ [Mac OS]()
-		+ [Linux]()
+		+ [A new R environment in Windows]()
+		+ [A new R environment in Mac OS]()
+		+ [A new R environment in Linux]()
 	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#Run-in-your-existing-R-installation)
-		+ [Windows]()
-		+ [Mac OS]()
-		+ [Linux]()
+		+ [Use your existing R installation in Windows]()
+		+ [Use your existing R installation in Mac OS]()
+		+ [Use your existing R installation in Linux]()
 	+ [Installing BEAVR on a server with multi-user support](https://github.com/developerpiru/BEAVR#installing-beavr-on-a-server-with-multi-user-support)
 
 + [BEAVR Tutorial](https://github.com/developerpiru/BEAVR#beavr-tutorial)
@@ -147,7 +147,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 ---
 
-### Windows
+### A new R environment in Windows
 
 1. Download and Install R for Windows using the installation wizard:
 	- On Windows, download R 3.6.3 [here](https://cloud.r-project.org/bin/windows/base/R-3.6.3-win.exe)
@@ -164,7 +164,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 	
 ---
 
-### Mac OS
+### A new R environment in Mac OS
 
 1. Download and Install R for your operating system using the installation wizard:
 	- Download R 3.6.3 for Catalina [here](https://cloud.r-project.org/bin/macosx/R-3.6.3.pkg)
@@ -197,7 +197,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 ---
 
-### Linux
+### A new R environment in Linux
 
 1. Download and extract the BEAVR setup files for Linux:
 	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-setup-Linux.tar.gz)
@@ -271,7 +271,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 ---
 
-### Windows
+### Use your existing R installation in Windows
 
 1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
@@ -299,7 +299,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 ---
 
-### Mac OS
+### Use your existing R installation in Mac OS
 
 1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
@@ -339,7 +339,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 ---
 
-### Linux
+### Use your existing R installation in Linux
 
 1. Download and extract the BEAVR setup files for Linux:
 	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-setup-Linux.tar.gz)
