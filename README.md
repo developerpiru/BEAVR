@@ -472,7 +472,7 @@ On the ```Load Data``` tab, select the files you have prepared. Make sure you se
 
 ![Image of Load Data tab](images/Loaddatatab.jpg)
 
---
+---
 
 ## Experiment settings
 
@@ -480,7 +480,7 @@ On the ```Settings``` tab, you can select a few options such as the reference or
 
 ![Image of Settings tab](images/Settingstab.jpg)
 
---
+---
 
 ## Differential gene expression analysis (DGE)
 
@@ -490,13 +490,13 @@ Click on the ```Gene Table``` tab to begin calculations. You will see a progress
 
 Once these calculations finish, you can begin to visualize your data through a series of figures and download the results.
 
---
+---
 
 ## Plots, graphs and heatmaps
 
 Each of the other tabs will provide output of plots, graphs, heatmaps and pathway figures for your data
 
---
+---
 
 ### PCA plot
 
@@ -504,7 +504,7 @@ The ``PCA`` tab will plot each sample on the same plot and show you the variance
 
 ![Image of PCA Plot tab](images/pcaplot.jpg)
 
---
+---
 
 ### Sample clustering plot
 
@@ -512,7 +512,7 @@ The ```Sample Clustering``` tab will cluster samples by rows and columns dependi
 
 ![Image of Sample Clustering tab](images/sampleclustering.jpg)
 
---
+---
 
 ### Read count plots
 
@@ -526,7 +526,7 @@ You can also chose to display the read counts in a jitter plot instead of a box 
 
 ![Image of Jitter plots](images/jitterplots.jpg)
 
---
+---
 
 ### Heatmap
 
@@ -534,7 +534,7 @@ The ```Heatmap``` tab will allow you to display the differential expression of g
 
 ![Image of Heatmap tab](images/heatmap.jpg)
 
---
+---
 
 ### Volcano plot
 
@@ -544,7 +544,7 @@ The ```Volcano Plot``` tab will plot the differentially expressed genes in a vol
 
 If filtering is enabled in the ```Gene Table``` tab, then only those filtered genes will be used to make the volcano plot. Otherwise, all the genes from the Gene Table will be used.
 
---
+---
 
 ### Pathway Enrichment Plot
 
@@ -554,7 +554,7 @@ The ```Pathway Enrichment Plot``` tab will perform over-representation analysis 
 
 You can also change an option in the sidebar to display this data as a dot plot instead of a bar plot.
 
---
+---
 
 ### Pathway Enrichment Map
 
@@ -562,7 +562,7 @@ The ```Pathway Enrichment Map``` tab will perform over-representation analysis a
 
 ![Image of Pathway Enrichment Map tab](images/pathwayenrichmentmap.jpg)
 
---
+---
 
 ### Pathway Enrichment Table
 
@@ -570,7 +570,7 @@ The ```Pathway Enrichment Table``` tab will show you details of the enrichment r
 
 ![Image of Pathway Enrichment Table tab](images/pathwayenrichmenttable.jpg)
 
---
+---
 
 ### Gene set enrichment analysis (GSEA)
 
@@ -578,7 +578,7 @@ Similar to the ```Pathway Enrichment Map``` tab, the ```GSEA Map``` tab will per
 
 ![Image of GSEA Map tab](images/gseamap.jpg)
 
---
+---
 
 ### GSEA running enrichment score plot
 
@@ -586,7 +586,7 @@ The ```GSEA plot``` tab, will perform GSEA on your data and plot the running enr
 
 ![Image of GSEA Plot tab](images/gseaplot.jpg)
 
---
+---
 
 ### GSEA Table
 
