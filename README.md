@@ -81,7 +81,7 @@ For those who are new to Docker, follow these instructions to get started:
 	- Double-click **Run-BEAVR.bat** in the BEAVR-Docker setup package you downloaded above (you may need to right-click and run as administrator)
 	
 
-	Alternatively, you can also enter this command:
+	Alternatively, you can also enter this command at in a command prompt window or in Windows Power Shell:
 	```
 	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
 	```
@@ -157,7 +157,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 	```
 		
 3. Run (pull) our Docker container:	
-	- Enter ```bash Run-BEAVR.sh``` in a terminal.
+	Enter ```bash Run-BEAVR.sh``` in a terminal.
 	
 	Note, if you get permission errors, you may need to give the script executable permission
 	```
