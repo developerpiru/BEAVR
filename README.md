@@ -132,15 +132,25 @@ If you prefer not to install Docker and **you do not already have R installed** 
 1. Download and extract the BEAVR-base setup files for Linux:
 	- [Linux]()
 	
-2. Run the automated installer (called **Configure-BEAVR-Linux.sh**). You will need to open a terminal and enter this command to execute it:
+2. Run the automated installer (named **Configure-BEAVR-Linux.sh**). You will need to open a terminal and enter this command to execute it:
 	```
 	bash Configure-BEAVR-Linux.sh
 	```
 	This will install the latest version of R and also download and configure all of the required R packages for BEAVR automatically.
+	
+	Note, if you get permission errors, you may need to give the script executable permission
+	```
+	chmod +x Configure-BEAVR-Linux.sh
+	```
 
 3. To run BEAVR, enter this command from a terminal:
 	```
 	bash Run-BEAVR-Linux.sh
+	```
+	
+	Note, if you get permission errors, you may need to give the script executable permission
+	```
+	chmod +x Run-BEAVR-Linux.sh
 	```
 
 ## Run in your existing R installation
