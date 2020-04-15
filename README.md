@@ -23,20 +23,26 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 	+ [Installing BEAVR on a server with multi-user support](https://github.com/developerpiru/BEAVR#installing-beavr-on-a-server-with-multi-user-support)
 
 + [BEAVR Tutorial](https://github.com/developerpiru/BEAVR#beavr-tutorial)
-
-	+ [Preparing the read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
-	+ [Preparing the sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
+	+ [Input files (and example files)](https://github.com/developerpiru/BEAVR#input-files-and-example-files)
+		+ [Preparing the read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
+		+ [Preparing the sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
 	+ [Loading your data into BEAVR](https://github.com/developerpiru/BEAVR#loading-your-data-into-beavr)
 	+ [Experiment settings](https://github.com/developerpiru/BEAVR#experiment-settings)
 	+ [Differential gene expression (DGE) analysis](https://github.com/developerpiru/BEAVR#differential-gene-expression-analysis-dge)
 	+ [Plots, graphs and heatmaps](https://github.com/developerpiru/BEAVR#plots-graphs-and-heatmaps)
-  	+ [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
-  	+ [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
- 	 + [Read count plot](https://github.com/developerpiru/BEAVR#read-count-plots)
- 	 + [Heatmap](https://github.com/developerpiru/BEAVR#heatmap)
-  	+ [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
-  	+ [Resizing and saving images](https://github.com/developerpiru/BEAVR#resizing-and-saving-images)
-  
+  		+ [PCA plot](https://github.com/developerpiru/BEAVR#pca-plot)
+  		+ [Sample clustering plot](https://github.com/developerpiru/BEAVR#sample-clustering-plot)
+ 	 	+ [Read count plots](https://github.com/developerpiru/BEAVR#read-count-plots)
+ 	 	+ [Heatmap](https://github.com/developerpiru/BEAVR#heatmap)
+  		+ [Volcano plot](https://github.com/developerpiru/BEAVR#volcano-plot)
+		+ [Pathway enrichment plot](https://github.com/developerpiru/BEAVR#pathway-enrichment-plot)
+		+ [Pathway enrichment map](https://github.com/developerpiru/BEAVR#pathway-enrichment-map)
+		+ [Pathway enrichment table](https://github.com/developerpiru/BEAVR#pathway-enrichment-table)
+		+ [Gene set enrichment analysis (GSEA)](https://github.com/developerpiru/BEAVR#gene-set-enrichment-analysis-gsea)
+		+ [GSEA running enrichment score plot](https://github.com/developerpiru/BEAVR#gsea-running-enrichment-score-plot)
+		+ [GSEA table](https://github.com/developerpiru/BEAVR#gsea-table)
+	+ [Resizing plots and adjusting the aspect ratio](https://github.com/developerpiru/BEAVR#resizing-plots-and-adjusting-the-aspect-ratio)
+  	+ Saving figures](https://github.com/developerpiru/BEAVR#saving-figures)
 + [Troubleshooting](https://github.com/developerpiru/BEAVR#troubleshooting)
 
 ---
@@ -614,7 +620,7 @@ You can save any figure by using the ```Save Plot``` button above each figure.
 
 ![Saving figures](images/savefigures.jpg)
 
-You can save images as JPG, PDF, PNG, SVG, or TIFF. For PDF and SVG, you must select a dpi (dots per inch) setting (the default is 48 dpi).
+You can save images as JPG, PDF, PNG, SVG, or TIFF. The Output dpi (dots per inch) setting is only used for PDF and SVG formats (the default is 48 dpi).
 
 ---
 
