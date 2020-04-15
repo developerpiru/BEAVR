@@ -3,6 +3,8 @@ A **B**rowser-based tool for the **E**xploration **A**nd **V**isualization of **
 
 BEAVR is a graphical tool to automate analysis and exploration of small and large RNAseq datasets using DESeq2.
 
+The easiest way to get started with BEAVR is to use our Docker container! Check the [Docker](https://github.com/developerpiru/BEAVR#Use-the-Docker-container) section for instructions.
+
 ---
 
 # Table of contents
