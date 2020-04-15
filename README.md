@@ -433,6 +433,8 @@ See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Exampl
 
 These examples should also be in the BEAVR setup files you downloaded. Otherwise, you can download them from [here](https://github.com/developerpiru/BEAVR/tree/master/Examples) 
 
+---
+
 ### Preparing the read count table file
 
 The **read counts table file** contains all the raw reads for all the samples in your experiment in a tab-delimited (.txt) or comma-separated (.csv) file type.
@@ -447,6 +449,8 @@ Here is what it looks like for the [Sehrawat *et al.* (2018)](https://pubmed.ncb
 The `gene_id` column contains ENSEMBL IDs for each gene. 
 The columns labelled `DMSO_24h-1, DMSO_24h-2, DMSO_24h-3, SP2509_24h-1, SP2509_24h-2, SP2509_24h-3` are the unique samples/replicates in the experiment and contain the raw, unnormalized read quantities for each gene for eacn sample.
 
+---
+
 ### Preparing the sample treatment matrix file
 
 The **sample treatment matrix file** informs BEAVR which columns in the read count file belong to which treatment groups (ie. Untreated and Treated, or Wildtype and Mutant). The file type may be tab-delimited (.txt) or comma-separated (.csv).
@@ -460,110 +464,164 @@ The table must be arranged as follows:
 Here is the sample treatment matrix file prepared for the [Sehrawat *et al.* (2018)](https://pubmed.ncbi.nlm.nih.gov/29581250-lsd1-activates-a-lethal-prostate-cancer-gene-network-independently-of-its-demethylase-function/) dataset in Microsoft Excel:
 ![Image of read count table](images/sampletreatmentmatrix.jpg)
 
+---
+
 ## Loading your data into BEAVR
 
 On the ```Load Data``` tab, select the files you have prepared. Make sure you select the correct file type format for each file. 
 
-![Load Data tab](images/Loaddatatab.jpg)
+![Image of Load Data tab](images/Loaddatatab.jpg)
+
+--
 
 ## Experiment settings
 
 On the ```Settings``` tab, you can select a few options such as the reference organism, the control condition and the treatment condition, the false discovery rate used for statistics, and the minimum read count required for each gene (genes below this value will be dropped from analysis).
 
-![Settings tab](images/Settingstab.jpg)
+![Image of Settings tab](images/Settingstab.jpg)
+
+--
 
 ## Differential gene expression analysis (DGE)
 
 Click on the ```Gene Table``` tab to begin calculations. You will see a progress bar in the bottom right-hand corner of the window. The results will be displayed in a table format which you can search, order and filter and download using the sidebar. 
 
-![Image of read count table](images/Genetabletab.jpg)
+![Image of Gene Table tab](images/Genetabletab.jpg)
 
 Once these calculations finish, you can begin to visualize your data through a series of figures and download the results.
+
+--
 
 ## Plots, graphs and heatmaps
 
 Each of the other tabs will provide output of plots, graphs, heatmaps and pathway figures for your data
 
+--
+
 ### PCA plot
 
 The ``PCA`` tab will plot each sample on the same plot and show you the variances between samples. 
 
-![Image of read count table](images/pcaplot.jpg)
+![Image of PCA Plot tab](images/pcaplot.jpg)
+
+--
 
 ### Sample clustering plot
 
 The ```Sample Clustering``` tab will cluster samples by rows and columns depending on the variance.
 
-![Image of read count table](images/sampleclustering.jpg)
+![Image of Sample Clustering tab](images/sampleclustering.jpg)
+
+--
 
 ### Read count plots
 
 The ```Read Count Plots``` tab will allow you to plot the normalized read counts for any number of genes you specify.
 
-![Image of read count table](images/readcountplots.jpg)
+![Image of Read Count Plots tab](images/readcountplots.jpg)
 
 You can enter genes in the sidebar separated by a comma (no spaces, as shown in image). You can specify a grid layout to show multiple plots. For example, specify 2 rows by 2 columns to show 4 plots in a square format. Or you can specify 4 rows by 1 column to show them in a stacked column format. You can also customize the position of the legend or not show a legend at all. To show just a single plot, set the grid to 1x1.
 
 You can also chose to display the read counts in a jitter plot instead of a box plot:
 
-![Image of read count table](images/jitterplots.jpg)
+![Image of Jitter plots](images/jitterplots.jpg)
+
+--
 
 ### Heatmap
 
 The ```Heatmap``` tab will allow you to display the differential expression of genes in a clustered heatmap. You can enter a list of genes separated by a comma to make a heatmap of genes you are interested in. Alternatively, if you want to make a heatmap of the top differentially expressed genes, select the checkbox ```Show top genes instead``` and then enter the number of top genes to show  (e.g. the top 10, 50, 100, etc.). Note: increasing the number of genes to show will increase processing time to perform clustering.
 
-![Image of heatmap](images/heatmap.jpg)
+![Image of Heatmap tab](images/heatmap.jpg)
+
+--
 
 ### Volcano plot
 
 The ```Volcano Plot``` tab will plot the differentially expressed genes in a volcano plot format which, unlike the heatmap, will also display the p value information for each gene.
 
-![Image of volcano plot](images/volcanoplot.jpg)
+![Image of Volcano Plot tab](images/volcanoplot.jpg)
 
 If filtering is enabled in the ```Gene Table``` tab, then only those filtered genes will be used to make the volcano plot. Otherwise, all the genes from the Gene Table will be used.
+
+--
 
 ### Pathway Enrichment Plot
 
 The ```Pathway Enrichment Plot``` tab will perform over-representation analysis using the filtered (or unfiltered) data set from the ```Gene Table``` tab. You can set the p value cutoff in the sidebar of the ```Pathway Enrichment Plot``` and also set the numnder of pathways to show.
 
-![Image pathway enrichment plot](images/pathwayenrichmentplot.jpg)
+![Image Pathway Enrichment Plot tab](images/pathwayenrichmentplot.jpg)
 
 You can also change an option in the sidebar to display this data as a dot plot instead of a bar plot.
+
+--
 
 ### Pathway Enrichment Map
 
 The ```Pathway Enrichment Map``` tab will perform over-representation analysis and show you all of the pathways as an interconnected map.
 
-![Image of pathway enrichment map](images/pathwayenrichmentmap.jpg)
+![Image of Pathway Enrichment Map tab](images/pathwayenrichmentmap.jpg)
+
+--
 
 ### Pathway Enrichment Table
 
 The ```Pathway Enrichment Table``` tab will show you details of the enrichment results from the ```Pathway Enrichment Plot``` tab. You can use the ```Download Table``` button in the sidebar to download the table or use the controls in the sidebar to filter the results.
 
-![Image of pathway enrichment table](images/pathwayenrichmenttable.jpg)
+![Image of Pathway Enrichment Table tab](images/pathwayenrichmenttable.jpg)
+
+--
 
 ### Gene set enrichment analysis (GSEA)
 
 Similar to the ```Pathway Enrichment Map``` tab, the ```GSEA Map``` tab will perform GSEA and show you an interconnected map of pathways.
 
+--
+
 ### GSEA running enrichment score plot
 
 The ```GSEA plot``` tab, will perform GSEA on your data and plot the running enrichment score. You can select which pathway to plot in the sidebar from a list of enriched pathways.
 
-![Image of GSEA plot](images/gseaplot.jpg)
+![Image of GSEA Plot tab](images/gseaplot.jpg)
 
-### Resizing and saving images
+--
 
-Any of the plots, graphs, and heatmaps can be resized by clicking and dragging the edges. 
-You can save them by right clicking and choosing "save image as".
+### GSEA Table
+
+Similar to the ```Pathway Enrichment Table``` tab, the ```GSEA Table``` tab will show you the results of GSEA in tabular form. You can download the table or filter it using the sidebar controls.
+
+![Image of GSEA Table tab](images/gseatable.jpg)
+
+---
+
+## Resizing plots and adjusting the aspect ratio
+
+Any of the figures in BEAVR can be resized to change their size and/or aspect ratio. 
+
+To do this, just put your mouse near the edge of the plots (near the black border). Your mouse pointer will change to indicate the area can be resized. Simply drag with your mouse to resize. 
+
+![Resizing figures](images/resizefigures.jpg)
+
+You can hold the Shift key to maintain the same aspect ratio; otherwise you can freely change the aspect ratio.
+
+---
+
+## Saving figures
+
+You can save any figure by using the ```Save Plot``` button above each figure. 
+
+![Image of GSEA Table tab](images/resizefigures.jpg)
+
+You can save images as JPG, PDF, PNG, SVG, or TIFF. For PDF and SVG, you must select a dpi (dots per inch) setting (the default is 48 dpi).
+
+---
 
 # Known bugs & error messages
 
  Issue | Solution
 ---------|---------
-**Bug:** PCA plot, gene read count plot, and volcano plot won't auto-update after changing the treatment condition. The results table will update correctly. | Edit the parameters in the sidebar for PCA/read count/volcano plots or refresh the page.
+**Bug:** PCA plot, gene read count plot, and volcano plot won't auto-update after changing the treatment condition in experiments with >2 conditions/treatments. The results table will update correctly. | Change one of the parameters in the sidebar for these plots, or just refresh the page, and reload the input files.
 **Error message:**```ncol(countData) == nrow(colData) is not TRUE``` | The samples (columns) in your read count table file do not match the samples (rows) in your sample treatment matrix file. Please check to make sure sample names match and that you've selected the correct files (and formats: .csv or .txt) to load into BEAVR.
 **Error message:**```None of the keys entered are valid keys for 'ENSEMBL'. Please use the keys method to see a listing of valid arguments``` | This means the ENSEMBL IDs contained in your read count table file cannot be mapped to the reference genome you selected in the Experiment settings tab. Please verify you have selected the correct one.
 **Error message:**```mapIds must have at least one key to match against.``` | This error typically occurs when the read count table file is not in the correct format/file type. Please save the file as "CSV (Comma delimited) (.csv)" and not "CSV UTF-8 (Comma delimited) (.csv)".
-
-
+**Error message:**```unused arguments (pointSize = input$volcanoPointSize, labSize = input$volcanoFontSize_label, legendLabels = c("Not Significant", expression(Log[2] ~ FC ~ only), "p-value only", expression(p - value ~ and ~ log[2] ~ FC)), labCol = "black")``` | This error occurs because you have the incorrect version of the ```EnhancedVolcano``` plot installed and BEAVR is loading that one instead of the correct developmental version of the package. To fix this, remove the EnhancedVolcano package by entering this in R: ```remove.packages("EnhancedVolcano")```, restart your R session. Then install the correct version of the package with: ```devtools::install_github("kevinblighe/EnhancedVolcano")```. If you don't have the ```devtools``` package, then install it with ```install.packages("devtools")```.
