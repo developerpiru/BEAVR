@@ -13,13 +13,13 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 		+ [Docker on Mac OS](https://github.com/developerpiru/BEAVR#docker-on-mac-os)
 		+ [Docker on Linux (Ubuntu)](https://github.com/developerpiru/BEAVR#docker-on-linux-ubuntu)
 	+ [Setup a new R environment with the automated installer](https://github.com/developerpiru/BEAVR#Setup-a-new-R-environment-with-the-automated-installer)
-		+ [A new R environment in Windows]()
-		+ [A new R environment in Mac OS]()
-		+ [A new R environment in Linux]()
+		+ [A new R environment in Windows](https://github.com/developerpiru/BEAVR#a-new-r-environment-in-windows)
+		+ [A new R environment in Mac OS](https://github.com/developerpiru/BEAVR#a-new-r-environment-in-mac-os)
+		+ [A new R environment in Linux](https://github.com/developerpiru/BEAVR#a-new-r-environment-in-linux)
 	+ [Run in your existing R installation](https://github.com/developerpiru/BEAVR#Run-in-your-existing-R-installation)
-		+ [Use your existing R installation in Windows]()
-		+ [Use your existing R installation in Mac OS]()
-		+ [Use your existing R installation in Linux]()
+		+ [Use your existing R installation in Windows](https://github.com/developerpiru/BEAVR#use-your-existing-r-installation-in-windows)
+		+ [Use your existing R installation in Mac OS](https://github.com/developerpiru/BEAVR#use-your-existing-r-installation-in-mac-os)
+		+ [Use your existing R installation in Linux](https://github.com/developerpiru/BEAVR#use-your-existing-r-installation-in-linux)
 	+ [Installing BEAVR on a server with multi-user support](https://github.com/developerpiru/BEAVR#installing-beavr-on-a-server-with-multi-user-support)
 
 + [BEAVR Tutorial](https://github.com/developerpiru/BEAVR#beavr-tutorial)
@@ -232,7 +232,6 @@ If you already have a working installation of R on your computer (version 3.5+),
 	Note, the required packages are as follows:
 	```
 	#CRAN packages
-	BiocManager
 	colourpicker
 	data.table
 	devtools
@@ -380,14 +379,20 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 If you wish to have BEAVR running on a centralized server for your research group, you or your system administrator can follow the instructions below. We implement this using Docker and ShinyProxy which allows each user to be sandboxed in a unique Docker instance. These instructions are provided for Linux/Ubuntu servers (for now)
 
-1. Download and extract the **BEAVR-multiuser-server-setup.tar.gz** setup package from [here]https://github.com/developerpiru/BEAVR/raw/master/BEAVR-multi-server-setup/BEAVR-multiuser-server-setup.tar.gz)
-
-2. If you already have Docker installed on your Ubuntu server, continue to step 3. Otherwise, in the setup package you just downloaded, run the Docker installer by entering this command in a terminal (this will remove any previous version of Docker!):
+1. Download and extract the **BEAVR-multiuser-server-setup.tar.gz** setup package from [here](https://github.com/developerpiru/BEAVR/raw/master/BEAVR-multi-server-setup/BEAVR-multiuser-server-setup.tar.gz)
+	
+	Note, if you get any permission errors running the automated configuration scripts, then do this:
+	```
+	chmod +x *.sh
+	```
+	From within the folder where you extracted the files.
+	
+2. If you already have Docker installed on your Ubuntu server, **skip to step 3**. Otherwise, in the setup package you just downloaded, run the Docker installer by entering this command in a terminal (this will remove any previous version of Docker!):
 	```
 	bash Docker-setup-ubuntu.sh
 	```
 	
-3. If you already have Java 8 runtime environment installed on your Ubuntu server, skip to step 4. Otherwise, in the setup package you just downloaded, run the OpenJDK installer by entering this command in a terminal (you can use another distribution of JDK like Oracle as well):
+3. If you already have Java 8 runtime environment installed on your Ubuntu server, **skip to step 4**. Otherwise, in the setup package you just downloaded, run the OpenJDK installer by entering this command in a terminal (you can use another distribution of JDK like Oracle as well):
 	```
 	bash OpenJDK-setup.sh
 	```
@@ -409,21 +414,26 @@ If you wish to have BEAVR running on a centralized server for your research grou
 		- See the [ShinyProxy documentation](https://www.shinyproxy.io/configuration/) for more information regarding authentication
 
 6. To start the ShinyProxy server, enter this command in the terminal:
-		```
-		java -jar shinyproxy-2.3.0.jar
-		```
+	```
+	java -jar shinyproxy-2.3.0.jar
+	```
 
 ---
 
 # BEAVR Tutorial
 
+## Input files (and example files)
+
 BEAVR requires two file inputs:
+
 1. [Read count table file](https://github.com/developerpiru/BEAVR#preparing-the-read-count-table-file)
 2. [Sample treatment matrix file](https://github.com/developerpiru/BEAVR#preparing-the-sample-treatment-matrix-file)
 
 See the [**Examples**](https://github.com/developerpiru/BEAVR/tree/master/Examples) folder for examples of these two files prepared for the [Sehrawat *et al.* (2018)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5939079/) dataset. 
 
-## Preparing the read count table file
+These examples should also be in the BEAVR setup files you downloaded. Otherwise, you can download them from [here](https://github.com/developerpiru/BEAVR/tree/master/Examples) 
+
+### Preparing the read count table file
 
 The **read counts table file** contains all the raw reads for all the samples in your experiment in a tab-delimited (.txt) or comma-separated (.csv) file type.
 
@@ -437,7 +447,7 @@ Here is what it looks like for the [Sehrawat *et al.* (2018)](https://pubmed.ncb
 The `gene_id` column contains ENSEMBL IDs for each gene. 
 The columns labelled `DMSO_24h-1, DMSO_24h-2, DMSO_24h-3, SP2509_24h-1, SP2509_24h-2, SP2509_24h-3` are the unique samples/replicates in the experiment and contain the raw, unnormalized read quantities for each gene for eacn sample.
 
-## Preparing the sample treatment matrix file
+### Preparing the sample treatment matrix file
 
 The **sample treatment matrix file** informs BEAVR which columns in the read count file belong to which treatment groups (ie. Untreated and Treated, or Wildtype and Mutant). The file type may be tab-delimited (.txt) or comma-separated (.csv).
 
@@ -452,26 +462,27 @@ Here is the sample treatment matrix file prepared for the [Sehrawat *et al.* (20
 
 ## Loading your data into BEAVR
 
-On the ```Load data``` tab, select the files you have prepared. Make sure you select the correct file type format for each file. 
+On the ```Load Data``` tab, select the files you have prepared. Make sure you select the correct file type format for each file. 
 
-![Image of read count table](images/loaddata.jpg)
+![Image of read count table](images/loaddatatab.jpg)
 
 ## Experiment settings
 
-On the ```Settings``` tab, you can select the reference organism, the control condition and the treatment condition, the false discovery rate used for statistics, and the minimum read count required for each gene (genes below this value will be dropped from analysis).
+On the ```Settings``` tab, you can select a few options such as the reference organism, the control condition and the treatment condition, the false discovery rate used for statistics, and the minimum read count required for each gene (genes below this value will be dropped from analysis).
+
+![Image of read count table](images/Settingstab.jpg)
 
 ## Differential gene expression analysis (DGE)
 
 Click on the ```Gene Table``` tab to begin calculations. You will see a progress bar in the bottom right-hand corner of the window. The results will be displayed in a table format which you can search, order and filter and download using the sidebar. 
 
-![Image of read count table](images/dgetable.jpg)
+![Image of read count table](images/Genetabletab.jpg)
 
-
-PCA plot, sample clustering/correlation plot, read count plots, heatmap, and volcano plot for your experiment. All graphs and plots can be saved by right clicking on the image and saving as an image.
+Once these calculations finish, you can begin to visualize your data through a series of figures and download the results.
 
 ## Plots, graphs and heatmaps
 
-Each of the other tabs will provide output of plots, graphs, and heatmaps for the data you provided.
+Each of the other tabs will provide output of plots, graphs, heatmaps and pathway figures for your data
 
 ### PCA plot
 
