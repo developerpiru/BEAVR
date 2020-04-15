@@ -84,7 +84,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 1. Download and Install R for Windows using the installation wizard:
 	- On Windows, download R 3.6.3 [here](https://cloud.r-project.org/bin/windows/base/R-3.6.3-win.exe)
 
-2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/BEAVR-v1.0.8-Windows-MacOS.zip)
+2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
 3. Look in the "Setup" folder to find the automated installer for Windows:
 	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
@@ -100,7 +100,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 	- Download R 3.6.3 for Catalina [here](https://cloud.r-project.org/bin/macosx/R-3.6.3.pkg)
 	- Download R 3.6.3 for El Capitan and higher [here](https://cloud.r-project.org/bin/macosx/R-3.6.3.nn.pkg)
 
-2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/BEAVR-v1.0.8-Windows-MacOS.zip)
+2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
 3. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
 	```
@@ -112,13 +112,11 @@ If you prefer not to install Docker and **you do not already have R installed** 
 ![Image of chmod in MacOS-1](images/MacOSpermissionsfix1.jpg)
 ![Image of chmod in MacOS-2](images/MacOSpermissionsfix2.jpg)
 	
-4. Look in the "Setup" folder to find the automated installer for Mac OS:
-
-5. If you double-click the **Configure-BEAVR-MacOS.command** installer, you will likely get another error because you didn't download it from the App store. 
+4. Look in the "Setup" folder to find the automated installer for Mac OS named **Configure-BEAVR-MacOS.command**. If you double-click the **Configure-BEAVR-MacOS.command** installer, you will likely get another error because you didn't download it from the App store. 
 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
 
-5 .To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
+5. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 	
@@ -129,8 +127,8 @@ If you prefer not to install Docker and **you do not already have R installed** 
 	
 ### Linux
 
-1. Download and extract the BEAVR-base setup files for Linux:
-	- [Linux]()
+1. Download and extract the BEAVR setup files for Linux:
+	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-setup-Linux.tar.gz)
 	
 2. Run the automated installer (named **Configure-BEAVR-Linux.sh**). You will need to open a terminal and enter this command to execute it:
 	```
@@ -199,33 +197,103 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 ### Windows
 
-1. Download the BEAVR-R setup package from [here]()
+1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
-2. Double click **Configure-BEAVR.bat** in the BEAVR-base setup package you downloaded above
+2. Look in the "Setup" folder to find the automated installer for Windows:
+	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
 
-3. To start BEAVR, double click **Run-BEAVR.bat**
+	This will download and install the R packages required for BEAVR.
+
+3. To run BEAVR:
+	- Double-click **Run-BEAVR-Windows.bat**
+	
+	or
+	
+	You can open the **start.R** file in RStudio and click Run App button in the top right
+	
+	or 
+	
+	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
+	```
+	setwd('\path\to\where\you\extracted\BEAVR\')
+	library(shiny)
+	library(shinydashboard)
+	runApp(port=3838)
+	```
 
 ### Mac OS
 
-1. Download the BEAVR-R setup package from [here]()
+1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
-2. Double click **Configure-BEAVR.sh** in the BEAVR-base setup package you downloaded above
+2. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
+	```
+	chmod +x ~/Downloads/BEAVR/Setup/Configure-BEAVR-MacOS.command
+	chmod +x ~/Downloads/BEAVR/Run-BEAVR-MacOS.command
+	```
+	Where ```~/Downloads/``` is the path where you extracted BEAVR above (usually your Downloads folder or ```~/Desktop/``` if you moved it to your desktop.)
 
-3. To start BEAVR, double click **Run-BEAVR.sh**
+3. Look in the "Setup" folder to find the automated installer for Mac OS named **Configure-BEAVR-MacOS.command**. If you double-click the **Configure-BEAVR-MacOS.command** installer, you will likely get another error because you didn't download it from the App store. 
+
+![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
+
+4. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
+	
+![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
+	
+	This will download and install the R packages required for BEAVR.
+
+5. To run BEAVR:
+	- Right-click **Run-BEAVR-MacOS.command**, click **Open** and then click **Open** again in the popup box.
+	
+	or
+	
+	You can open the **start.R** file in RStudio and click Run App button in the top right
+	
+	or 
+	
+	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
+	```
+	setwd('\path\to\where\you\extracted\BEAVR\')
+	library(shiny)
+	library(shinydashboard)
+	runApp(port=3838)
+	```
 
 ### Linux
 
-1. Download the BEAVR-R setup package from [here]()
+1. Download and extract the BEAVR setup files for Linux:
+	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-setup-Linux.tar.gz)
 
-2. Run the automated installer (called **installpkgs.R**) to configure the required packages. You will need to open a terminal and enter this command to execute it:
+2. Run the automated R script file to install all the required packages automatically (or you may install them manually; see the complete list above)
 	```
 	sudo Rscript installpkgs.R
 	```
 	
-3. To run BEAVR, enter this command from a terminal:
+3. To run BEAVR, enter this command from a terminal from the BEAVR folder:
 	```
 	bash Run-BEAVR-Linux.sh
 	```
+	
+	or
+	
+	```
+	Rsript start.R
+	```
+	
+	Note, if you get permission errors, you may need to give the script executable permission
+	```
+	chmod +x Run-BEAVR-Linux.sh
+	```
+	
+	or 
+	
+	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
+	```
+	setwd('\path\to\where\you\extracted\BEAVR\')
+	library(shiny)
+	library(shinydashboard)
+	runApp(port=3838)
+
 
 ## Installing BEAVR on a server with multi-user support
 
