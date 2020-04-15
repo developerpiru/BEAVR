@@ -106,7 +106,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 1. Install Docker from the Docker website using their setup wizard:
 	- [Docker Desktop for Mac OS](https://docs.docker.com/docker-for-mac/install)
 
-2. To download and run the BEAVR container you can either copy and paste the following command in a terminal:
+2. To download and run the BEAVR container you can either copy and paste the following command in Terminal:
 	```
 	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
 	```
@@ -118,26 +118,26 @@ Do the following steps instead to use our **automated script**:
 (You only have to download this once and do steps 1-3 once)
 
 
-1. Download and extract the BEAVR-Docker setup package for Mac OS:
+3. Download and extract the BEAVR-Docker setup package for Mac OS:
 	- [Mac OS](https://github.com/developerpiru/BEAVR/raw/master/Docker%20Setup/BEAVR-Docker-Mac.zip)
 
-2. Before you can execute the setup script, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
+4. Before you can execute the setup script, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows by copying and pasting this command into Terminal:
 	```
 	chmod +x ~/Downloads/BEAVR-Docker-Mac/Run-BEAVR.command
 	```
-	Where ```~/Downloads/``` is the path where you extracted the BEAVR-Docker-Mac folder above (usually your Downloads folder or ```~/Desktop/``` if you moved it to your desktop.)
+	Where ```~/Downloads/``` is the path where you extracted the BEAVR-Docker-Mac folder from step 3 (usually your Downloads folder or ```~/Desktop/``` if you moved it to your desktop.)
 
-3. If you double-click **Run-BEAVR.command**, you will likely get another error because you didn't download it from the App store. 
+5. If you double-click **Run-BEAVR.command**, you will likely get another error because you didn't download it from the App store. 
 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
 
-4. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
+6. To get around this, **right-click** the file and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 
-This will start BEAVR.
+This will start BEAVR in the Docker container.
 		
-5. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
+7. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
 
 Once the Docker container is downloaded to your computer, you can also access it from the Docker Dashboard  as shown below (to get to the Dashboard, click the Docker whale icon in system tray in the top right of your screen and then click Dashboard):
 
@@ -145,7 +145,7 @@ Once the Docker container is downloaded to your computer, you can also access it
 
 You can use this interface to start, stop, or open a browser to ```localhost:3838``` (circled in red) without using Run-BEAVR.bat or Run-BEAVR.sh executable scripts as explained in step 3 above. 
 
-However, keep in mind that this only runs your current locally downloaded version of BEAVR. To get the most up-to-date version, follow step 3 to update your local copy.
+However, keep in mind that this only runs your current locally downloaded version of BEAVR. To get the most up-to-date version, follow step 2 or step 6 to update your local copy.
 
 ---
 
@@ -155,7 +155,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Docker%20Setup/BEAVR-Docker-Linux.tar.gz)
 	
 2. Install Docker for your operating system:
-	Use our automated installer in the BEAVR-Docker-Linux package you extracted above (named **Docker-setup-ubuntu.sh**). You will need to open a terminal and enter this command to execute it:
+	Use our automated installer in the BEAVR-Docker-Linux package you extracted above (named **Docker-setup-ubuntu.sh**). You will need to open Terminal and enter this command to execute it:
 	```
 	bash Docker-setup-ubuntu.sh
 	```
@@ -166,7 +166,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 	```
 		
 3. Run (pull) our Docker container:	
-	Enter ```bash Run-BEAVR.sh``` in a terminal.
+	Enter ```bash Run-BEAVR.sh``` in Terminal.
 	
 	Note, if you get permission errors, you may need to give the script executable permission
 	```
@@ -216,7 +216,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
-3. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
+3. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts by copying and pasting these commands in Terminal:
 	```
 	chmod +x ~/Downloads/BEAVR/Setup/Configure-BEAVR-MacOS.command
 	chmod +x ~/Downloads/BEAVR/Run-BEAVR-MacOS.command
@@ -243,7 +243,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 1. Download and extract the BEAVR setup files for Linux:
 	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-setup-Linux.tar.gz)
 	
-2. Run the automated installer (named **Configure-BEAVR-Linux.sh**). You will need to open a terminal and enter this command to execute it:
+2. Run the automated installer (named **Configure-BEAVR-Linux.sh**). You will need to open Terminal and enter this command to execute it:
 	```
 	bash Configure-BEAVR-Linux.sh
 	```
@@ -254,7 +254,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 	chmod +x Configure-BEAVR-Linux.sh
 	```
 
-3. To run BEAVR, enter this command from a terminal:
+3. To run BEAVR, enter this command from Terminal:
 	```
 	bash Run-BEAVR-Linux.sh
 	```
@@ -347,7 +347,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
 
-2. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
+2. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts by copying and pasting these commands in Terminal:
 	```
 	chmod +x ~/Downloads/BEAVR/Setup/Configure-BEAVR-MacOS.command
 	chmod +x ~/Downloads/BEAVR/Run-BEAVR-MacOS.command
@@ -358,7 +358,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
 
-4. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
+4. To get around this, **right-click** the file and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 	
@@ -397,7 +397,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 	sudo Rscript installpkgs.R
 	```
 	
-3. To run BEAVR, enter this command from a terminal from the BEAVR folder:
+3. To run BEAVR, enter this command from Terminal from the BEAVR folder:
 	```
 	bash Run-BEAVR-Linux.sh
 
@@ -440,12 +440,12 @@ If you wish to have BEAVR running on a centralized server for your research grou
 	```
 	From within the folder where you extracted the files.
 	
-2. If you already have Docker installed on your Ubuntu server, **skip to step 3**. Otherwise, in the setup package you just downloaded, run the Docker installer by entering this command in a terminal (this will remove any previous version of Docker!):
+2. If you already have Docker installed on your Ubuntu server, **skip to step 3**. Otherwise, in the setup package you just downloaded, run the Docker installer by entering this command in Terminal (this will remove any previous version of Docker!):
 	```
 	bash Docker-setup-ubuntu.sh
 	```
 	
-3. If you already have Java 8 runtime environment installed on your Ubuntu server, **skip to step 4**. Otherwise, in the setup package you just downloaded, run the OpenJDK installer by entering this command in a terminal (you can use another distribution of JDK like Oracle as well):
+3. If you already have Java 8 runtime environment installed on your Ubuntu server, **skip to step 4**. Otherwise, in the setup package you just downloaded, run the OpenJDK installer by entering this command in Terminal (you can use another distribution of JDK like Oracle as well):
 	```
 	bash OpenJDK-setup.sh
 	```
@@ -466,7 +466,7 @@ If you wish to have BEAVR running on a centralized server for your research grou
 		- You can set this to "none" to have no authentication so anyone with the address can access the server
 		- See the [ShinyProxy documentation](https://www.shinyproxy.io/configuration/) for more information regarding authentication
 
-6. To start the ShinyProxy server, enter this command in the terminal:
+6. To start the ShinyProxy server, enter this command in Terminal:
 	```
 	java -jar shinyproxy-2.3.0.jar
 	```
