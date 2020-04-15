@@ -200,7 +200,6 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 3. Look in the "Setup" folder to find the automated installer for Windows:
 	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
-
 	This will download and install the R packages required for BEAVR.
 
 4. To run BEAVR:
@@ -230,8 +229,8 @@ If you prefer not to install Docker and **you do not already have R installed** 
 5. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
-	
-	This will download and install the R packages required for BEAVR.
+
+This will download and install the R packages required for BEAVR.
 	
 Note: You may get a popup asking for permission to install Xcode. You must agree to this install and let it finish before continuing!
 
@@ -364,7 +363,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 	
-	This will download and install the R packages required for BEAVR.
+This will download and install the R packages required for BEAVR.
 	
 Note: You may get a popup asking for permission to install Xcode. You must agree to this install and let it finish before continuing!
 	
