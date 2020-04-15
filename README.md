@@ -232,6 +232,8 @@ If you prefer not to install Docker and **you do not already have R installed** 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 	
 	This will download and install the R packages required for BEAVR.
+	
+	Note: You may get a popup asking for permission to install Xcode. You must agree to this install and let it finish before continuing!
 
 6. To run BEAVR:
 	- Right-click **Run-BEAVR-MacOS.command**, click **Open** and then click **Open** again in the popup box.
@@ -363,7 +365,9 @@ If you already have a working installation of R on your computer (version 3.5+),
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 	
 	This will download and install the R packages required for BEAVR.
-
+	
+	Note: You may get a popup asking for permission to install Xcode. You must agree to this install and let it finish before continuing!
+	
 5. To run BEAVR:
 	- Right-click **Run-BEAVR-MacOS.command**, click **Open** and then click **Open** again in the popup box.
 
