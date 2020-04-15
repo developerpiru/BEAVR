@@ -576,6 +576,8 @@ The ```Pathway Enrichment Table``` tab will show you details of the enrichment r
 
 Similar to the ```Pathway Enrichment Map``` tab, the ```GSEA Map``` tab will perform GSEA and show you an interconnected map of pathways.
 
+![Image of GSEA Map tab](images/gseamap.jpg)
+
 --
 
 ### GSEA running enrichment score plot
