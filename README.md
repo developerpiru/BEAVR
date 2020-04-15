@@ -118,7 +118,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
 
-5 .So **right-click** and go to **Open** and then click **Open** in the popup box:
+5 .To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 	
