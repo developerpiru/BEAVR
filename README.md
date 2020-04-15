@@ -80,6 +80,12 @@ For those who are new to Docker, follow these instructions to get started:
 3. Run (pull) our Docker container:
 	- Double-click **Run-BEAVR.bat** in the BEAVR-Docker setup package you downloaded above (you may need to right-click and run as administrator)
 	
+
+	Alternatively, you can also enter this command:
+	```
+	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
+	```
+
 4. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
 
 Once the Docker container is downloaded to your computer, you can also access it from the Docker Dashboard  as shown below (to get to the Dashboard, right-click the Docker whale icon in the system tray in the bottom right and then click Dashboard):
@@ -97,24 +103,32 @@ However, keep in mind that this only runs your current locally downloaded versio
 1. Install Docker from the Docker website using their setup wizard:
 	- [Docker Desktop for Mac OS](https://docs.docker.com/docker-for-mac/install)
 
-2. Download and extract the BEAVR-Docker setup package for Mac OS:
+2. To download and run the BEAVR container you can either copy and paste the following command in a terminal:
+	```
+	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
+	```
+	
+Or do the following steps instead to use our automated script:
+
+
+1a. Download and extract the BEAVR-Docker setup package for Mac OS:
 	- [Mac OS](https://github.com/developerpiru/BEAVR/raw/master/Docker%20Setup/BEAVR-Docker-Mac.zip)
 
-3. Before you can execute the setup script, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
+2a. Before you can execute the setup script, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts:
 	```
 	chmod +x ~/Downloads/BEAVR-Docker-Mac/Run-BEAVR.command
 	```
 	Where ```~/Downloads/``` is the path where you extracted the BEAVR-Docker-Mac folder above (usually your Downloads folder or ```~/Desktop/``` if you moved it to your desktop.)
 
-4. If you double-click **Run-BEAVR.command**, you will likely get another error because you didn't download it from the App store. 
+3a. If you double-click **Run-BEAVR.command**, you will likely get another error because you didn't download it from the App store. 
 
 ![Image of chmod in MacOS-2](images/MacOSsecurityerror.jpg)
 
-5. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
+4a. To get around this, **right-click** and go to **Open** and then click **Open** in the popup box:
 	
 ![Image of chmod in MacOS-2](images/MacOSsecurityerrorfix.jpg)
 		
-6. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
+5a. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
 
 Once the Docker container is downloaded to your computer, you can also access it from the Docker Dashboard  as shown below (to get to the Dashboard, click the Docker whale icon in system tray in the top right of your screen and then click Dashboard):
 
@@ -148,6 +162,11 @@ However, keep in mind that this only runs your current locally downloaded versio
 	Note, if you get permission errors, you may need to give the script executable permission
 	```
 	chmod +x Run-BEAVR.sh
+	```
+
+	Alternatively, you can also enter this command:
+	```
+	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
 	```
 
 4. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
