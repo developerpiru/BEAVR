@@ -464,13 +464,13 @@ Here is the sample treatment matrix file prepared for the [Sehrawat *et al.* (20
 
 On the ```Load Data``` tab, select the files you have prepared. Make sure you select the correct file type format for each file. 
 
-![Image of read count table](images/loaddatatab.jpg)
+![Load Data tab](images/Loaddatatab.jpg)
 
 ## Experiment settings
 
 On the ```Settings``` tab, you can select a few options such as the reference organism, the control condition and the treatment condition, the false discovery rate used for statistics, and the minimum read count required for each gene (genes below this value will be dropped from analysis).
 
-![Image of read count table](images/Settingstab.jpg)
+![Settings tab](images/Settingstab.jpg)
 
 ## Differential gene expression analysis (DGE)
 
@@ -490,23 +490,19 @@ The ``PCA`` tab will plot each sample on the same plot and show you the variance
 
 ![Image of read count table](images/pcaplot.jpg)
 
-You can customize the plot using the sidebar controls.
-
 ### Sample clustering plot
 
-The ```Sample clustering``` tab will cluster samples by rows and columns depending on the variance.
+The ```Sample Clustering``` tab will cluster samples by rows and columns depending on the variance.
 
 ![Image of read count table](images/sampleclustering.jpg)
 
-You can customize the plot using the sidebar controls, including the distance measurement method used. For example, selecting Pearson will produce a Pearson correlation plot.
-
 ### Read count plots
 
-The ```Read count plots``` tab will allow you to plot the normalized read counts for any number of genes you specify.
+The ```Read Count Plots``` tab will allow you to plot the normalized read counts for any number of genes you specify.
 
 ![Image of read count table](images/readcountplots.jpg)
 
-You can enter genes in the sidebar separated by a comma (no spaces, as shown in image). You can specify a grid layout to show multiple plots. For example, specify 2 rows by 2 columns to show 4 plots in a square format. Or you can specify 4 rows by 1 column to show them in a stacked column format. You can also customize the position of the legend or not show a legend at all.
+You can enter genes in the sidebar separated by a comma (no spaces, as shown in image). You can specify a grid layout to show multiple plots. For example, specify 2 rows by 2 columns to show 4 plots in a square format. Or you can specify 4 rows by 1 column to show them in a stacked column format. You can also customize the position of the legend or not show a legend at all. To show just a single plot, set the grid to 1x1.
 
 You can also chose to display the read counts in a jitter plot instead of a box plot:
 
@@ -514,19 +510,47 @@ You can also chose to display the read counts in a jitter plot instead of a box 
 
 ### Heatmap
 
-The ```Heatmap``` tab will allow you to display the differential expression of genes in a clustered heatmap. You can use the sidebar controls to specify the type of clustering for rows and/or columns and also customize things like the color and font sizes.
+The ```Heatmap``` tab will allow you to display the differential expression of genes in a clustered heatmap. You can enter a list of genes separated by a comma to make a heatmap of genes you are interested in. Alternatively, if you want to make a heatmap of the top differentially expressed genes, select the checkbox ```Show top genes instead``` and then enter the number of top genes to show  (e.g. the top 10, 50, 100, etc.). Note: increasing the number of genes to show will increase processing time to perform clustering.
 
-You can enter a list of genes separated by a comma to make a heatmap of genes you are interested in. Alternatively, if you want to make a heatmap of the top differentially expressed genes, select the checkbox ```Show top genes instead``` and then enter the number of top genes to show  (e.g. the top 10, 50, 100, etc.). Note: increasing the number of genes to show will increase processing time to perform clustering.
-
-![Image of read count table](images/heatmap.jpg)
+![Image of heatmap](images/heatmap.jpg)
 
 ### Volcano plot
 
-The ```Volcano plot``` tab will plot the differentially expressed genes in a volcano plot format which, unlike the heatmap, will also display the p value information for each gene. You can use the sidebar controls to specify the cutoffs for the log2 fold change (LFC) and the p value - this is to color the points that meet these cutoffs.
+The ```Volcano Plot``` tab will plot the differentially expressed genes in a volcano plot format which, unlike the heatmap, will also display the p value information for each gene.
 
-![Image of read count table](images/volcanoplot.jpg)
+![Image of volcano plot](images/volcanoplot.jpg)
 
-If filtering is enabled in the ```Gene Table``` plot, then only those filtered genes will be used to make the volcano plot. Otherwise, all the genes from the Gene Table will be used.
+If filtering is enabled in the ```Gene Table``` tab, then only those filtered genes will be used to make the volcano plot. Otherwise, all the genes from the Gene Table will be used.
+
+### Pathway Enrichment Plot
+
+The ```Pathway Enrichment Plot``` tab will perform over-representation analysis using the filtered (or unfiltered) data set from the ```Gene Table``` tab. You can set the p value cutoff in the sidebar of the ```Pathway Enrichment Plot``` and also set the numnder of pathways to show.
+
+![Image pathway enrichment plot](images/pathwayenrichmentplot.jpg)
+
+You can also change an option in the sidebar to display this data as a dot plot instead of a bar plot.
+
+### Pathway Enrichment Map
+
+The ```Pathway Enrichment Map``` tab will perform over-representation analysis and show you all of the pathways as an interconnected map.
+
+![Image of pathway enrichment map](images/pathwayenrichmentmap.jpg)
+
+### Pathway Enrichment Table
+
+The ```Pathway Enrichment Table``` tab will show you details of the enrichment results from the ```Pathway Enrichment Plot``` tab. You can use the ```Download Table``` button in the sidebar to download the table or use the controls in the sidebar to filter the results.
+
+![Image of pathway enrichment table](images/pathwayenrichmenttable.jpg)
+
+### Gene set enrichment analysis (GSEA)
+
+Similar to the ```Pathway Enrichment Map``` tab, the ```GSEA Map``` tab will perform GSEA and show you an interconnected map of pathways.
+
+### GSEA running enrichment score plot
+
+The ```GSEA plot``` tab, will perform GSEA on your data and plot the running enrichment score. You can select which pathway to plot in the sidebar from a list of enriched pathways.
+
+![Image of GSEA plot](images/gseaplot.jpg)
 
 ### Resizing and saving images
 
