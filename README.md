@@ -80,8 +80,11 @@ For those who are new to Docker, follow these instructions to get started:
 3. Run (pull) our Docker container:
 	- Double-click **Run-BEAVR.bat** in the BEAVR-Docker setup package you downloaded above (you may need to right-click and run as administrator)
 	
+        
+        **Or**
 
-	Alternatively, you can also enter this command at in a command prompt window or in Windows Power Shell:
+
+	You can also just enter this command at in a command prompt window or in Windows Power Shell:
 	```
 	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
 	```
@@ -110,7 +113,8 @@ However, keep in mind that this only runs your current locally downloaded versio
 	
    **Or**
 
-Do the following steps instead to use our automated script:
+
+Do the following steps instead to use our **automated script**:
 
 
 1. Download and extract the BEAVR-Docker setup package for Mac OS:
@@ -166,7 +170,9 @@ However, keep in mind that this only runs your current locally downloaded versio
 	chmod +x Run-BEAVR.sh
 	```
 
-	Alternatively, you can also enter this command:
+        **Or**
+
+	You can also just enter this command:
 	```
 	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
 	```
@@ -313,11 +319,11 @@ If you already have a working installation of R on your computer (version 3.5+),
 3. To run BEAVR:
 	- Double-click **Run-BEAVR-Windows.bat**
 	
-	or
+	**Or**
 	
 	You can open the **start.R** file in RStudio and click Run App button in the top right
 	
-	or 
+	**Or**
 	
 	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
 	```
@@ -353,11 +359,11 @@ If you already have a working installation of R on your computer (version 3.5+),
 5. To run BEAVR:
 	- Right-click **Run-BEAVR-MacOS.command**, click **Open** and then click **Open** again in the popup box.
 	
-	or
+	**Or**
 	
 	You can open the **start.R** file in RStudio and click Run App button in the top right
 	
-	or 
+	**Or**
 	
 	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
 	```
@@ -384,7 +390,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 	bash Run-BEAVR-Linux.sh
 	```
 	
-	or
+	**Or**
 	
 	```
 	Rsript start.R
@@ -395,7 +401,7 @@ If you already have a working installation of R on your computer (version 3.5+),
 	chmod +x Run-BEAVR-Linux.sh
 	```
 	
-	or 
+	**Or**
 	
 	You can run BEAVR from the R command prompt (after changing the working directory to where you extracted BEAVR)
 	```
@@ -412,9 +418,9 @@ If you wish to have BEAVR running on a centralized server for your research grou
 
 1. Download and extract the **BEAVR-multiuser-server-setup.tar.gz** setup package from [here](https://github.com/developerpiru/BEAVR/raw/master/BEAVR-multi-server-setup/BEAVR-multiuser-server-setup.tar.gz)
 	
-	Note, if you get any permission errors running the automated configuration scripts, then do this:
+	Note, if you get any permission errors running the automated configuration scripts, allow permissions for the scripts:
 	```
-	chmod +x *.sh
+	chmod +x Docker-setup-ubuntu.sh OpenJDK-setup.sh ShinyProxy-setup.sh
 	```
 	From within the folder where you extracted the files.
 	
