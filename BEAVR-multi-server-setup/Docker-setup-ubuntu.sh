@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# This script will install the latest verson of Docker Engine CE on Ubuntu
+# This script will install the latest version of Docker Engine CE on Ubuntu
 # Script author: https://github.com/developerpiru
 
 echo ""
 echo "=========================================================================="
-echo "This script will install the latest verson of Docker Engine CE on Ubuntu"
+echo "This script will install the latest version of Docker Engine CE on Ubuntu"
 echo "Script author: https://github.com/developerpiru"
 echo "=========================================================================="
 

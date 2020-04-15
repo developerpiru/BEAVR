@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#This script installs ShinyProxy on Ubuntu
+#This script installs ShinyProxy on Ubuntu and configures it for BEAVR
 #Script author: https://github.com/developerpiru/
 
 echo ""
 echo "=========================================================================="
-echo "This script installs ShinyProxy on Ubuntu"
+echo "This script installs ShinyProxy on Ubuntu and configures it for BEAVR"
 echo "Script author: https://github.com/developerpiru"
 echo "=========================================================================="
 
@@ -20,17 +20,20 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 
 echo ""
+echo "Downloading latest BEAVR container from Docker Hub..."
+sudo docker pull pirunthan/beavr:latest
+
+echo ""
 echo "Downloading ShinyProxy..."
 wget https://www.shinyproxy.io/downloads/shinyproxy-2.3.0.jar
 
 echo ""
 echo "=========================================================================="
-echo "ShinyProxy has been downloaded and Docker has been configured to use with" 
-echo "ShinyProxy!"
+echo "ShinyProxy and Docker have been configured to use with BEAVR"
 echo ""
-echo "Start a Docker container and then enter:"
-echo ""
+echo "Enter the following command to start the server:"
 echo "java -jar shinyproxy-2.3.0.jar"
 echo ""
-echo "to start using your ShinyProxy server"
+echo "You can access the server from a browser at IP-ADDRESS:8080"
+echo "See the application.yaml file for configuration options"
 echo "=========================================================================="

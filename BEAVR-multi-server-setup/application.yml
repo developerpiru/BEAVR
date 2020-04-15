@@ -1,14 +1,16 @@
 proxy:
-  title: Open Analytics Shiny Proxy
+  title: ShinyProxy server for BEAVR
   logo-url: http://www.openanalytics.eu/sites/www.openanalytics.eu/themes/oa/logo.png
   landing-page: /
   heartbeat-rate: 10000
   heartbeat-timeout: 60000
+  # port to access sever: e.g. address will be http://domain:8080 or http://192.168.0.12:8080
   port: 8080
-  # change to ldap for ldap. See ShinyProxy documentation 
+  # change to ldap for ldap. See ShinyProxy documentation:
   authentication: simple
+  # specify user groups that have admin access
   admin-groups: scientists
-  # Example: 'simple' authentication configuration
+  # Example of  'simple' authentication configuration:
   users:
   - name: johndoe
     password: password
@@ -30,10 +32,10 @@ proxy:
     url: http://localhost:2375
     port-range-start: 20000
   specs:
-  - id: BEAVR-v1.0.7
-    display-name: BEAVR v1.0.7
+  - id: BEAVR
+    display-name: BEAVR
     description: A Browser-based tool for the Exploration And Visualization of RNAseq data
-    container-image: pirunthan/beavr:v1-0-7
+    container-image: pirunthan/beavr:latest
     access-groups: [scientists, mathematicians]
 
 logging:
