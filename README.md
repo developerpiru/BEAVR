@@ -274,7 +274,6 @@ If you already have a working installation of R on your computer (version 3.5+),
 
 Note, the required packages are as follows:
 
-	```
 	#CRAN packages
 	colourpicker
 	data.table
@@ -310,7 +309,6 @@ Note, the required packages are as follows:
 	#GitHub packages
 	kevinblighe/EnhancedVolcano
 	jokergoo/ComplexHeatmap
-	```
 
 ---
 
