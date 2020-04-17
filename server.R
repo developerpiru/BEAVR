@@ -1630,12 +1630,12 @@ shinyServer(function(input, output, session) {
   
   #function to load html file for start info tab
   output$startinfo <- renderUI ({
-    return(includeHTML("startinfo.html"))
+    return(includeHTML("https://raw.githubusercontent.com/developerpiru/BEAVR/master/startinfo.html"))
   })
   
   #function to load html file for help info tab
   output$helpinfo <- renderUI ({
-    return(includeHTML("helpinfo.html"))
+    return(includeHTML("https://raw.githubusercontent.com/developerpiru/BEAVR/master/helpinfo.html"))
   })
   
   ### HELPER FUNCTIONS ###
