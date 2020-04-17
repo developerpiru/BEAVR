@@ -272,7 +272,7 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 
 If you already have a working installation of R on your computer (version 3.5+), then you can follow these steps to install the required R packages to run BEAVR on any operating system.
 
-	Note, the required packages are as follows:
+Note, the required packages are as follows:
 	```
 	#CRAN packages
 	colourpicker
