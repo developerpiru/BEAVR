@@ -1,4 +1,4 @@
-#This script installed all of the required R packages to run BEAVR
+#This script installs all of the required R packages to run BEAVR
 #Script author: https://github.com/developerpiru/
 #See BEAVR documentation for more info: https://github.com/developerpiru/BEAVR
 
