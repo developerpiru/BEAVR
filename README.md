@@ -86,7 +86,7 @@ For those who are new to Docker, follow these instructions to get started:
 
 	You can also just enter this command at in a command prompt window or in Windows Power Shell:
 	```
-	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
+	docker run -ti -p 3838:3838 pirunthan/beavr:latest
 	```
 
 4. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
@@ -108,7 +108,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 
 2. To download and run the BEAVR container you can either copy and paste the following command in Terminal:
 	```
-	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
+	docker run -ti -p 3838:3838 pirunthan/beavr:latest
 	```
 	
    **Or**
@@ -178,7 +178,7 @@ However, keep in mind that this only runs your current locally downloaded versio
 
 	You can also just enter this command:
 	```
-	docker run -ti -p 3838:3838 pirunthan/BEAVR:latest
+	docker run -ti -p 3838:3838 pirunthan/beavr:latest
 	```
 
 4. Open your browser and enter ```localhost:3838``` in the address bar to use BEAVR.
