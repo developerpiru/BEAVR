@@ -196,7 +196,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 1. Download and Install R for Windows using the installation wizard:
 	- On Windows, download R 3.6.3 [here](https://cloud.r-project.org/bin/windows/base/R-3.6.3-win.exe)
 
-2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
+2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
 
 3. Look in the "Setup" folder to find the automated installer for Windows:
 	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
@@ -214,7 +214,7 @@ If you prefer not to install Docker and **you do not already have R installed** 
 	- Download R 3.6.3 for Catalina [here](https://cloud.r-project.org/bin/macosx/R-3.6.3.pkg)
 	- Download R 3.6.3 for El Capitan and higher [here](https://cloud.r-project.org/bin/macosx/R-3.6.3.nn.pkg)
 
-2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
+2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
 
 3. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts by copying and pasting these commands in Terminal:
 	```
@@ -243,7 +243,7 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 ### A new R environment in Linux
 
 1. Download and extract the BEAVR setup files for Linux:
-	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-setup-Linux.tar.gz)
+	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-setup-Linux.tar.gz)
 	
 2. Run the automated installer (named **Configure-BEAVR-Linux.sh**). You will need to open Terminal and enter this command to execute it:
 	```
@@ -315,7 +315,7 @@ Note, the required packages are as follows:
 
 ### Use your existing R installation in Windows
 
-1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
+1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
 
 2. Look in the "Setup" folder to find the automated installer for Windows:
 	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
@@ -347,7 +347,7 @@ Note, the required packages are as follows:
 
 ### Use your existing R installation in Mac OS
 
-1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-Windows-MacOS.zip)
+1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
 
 2. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts by copying and pasting these commands in Terminal:
 	```
@@ -394,7 +394,7 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 ### Use your existing R installation in Linux
 
 1. Download and extract the BEAVR setup files for Linux:
-	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.8/BEAVR-v1.0.8-setup-Linux.tar.gz)
+	- [Linux](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-setup-Linux.tar.gz)
 
 2. Run the automated R script file to install all the required packages automatically (or you may install them manually; see the complete list above)
 	```
