@@ -2,7 +2,7 @@
 # Developed by Pirunthan Perampalam @ https://github.com/developerpiru/
 # See Github for documentation & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.8"
+app_version = "1.0.9"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -92,6 +92,7 @@ library("shinyjqui")
 library("shinyWidgets")
 library("shinycssloaders")
 library("circlize")
+library(shinyalert)
 
 # #Bioconductor packages
 library("DESeq2")
@@ -1152,6 +1153,8 @@ ui <- dashboardPage(
       
       #Pathway Enrichment barplot and dotplot
       tabPanel("Pathway Enrichment Plot", id = "enrichmentPlotTab", value= "enrichmentPlotTab", fluidRow(
+        
+        useShinyalert(),
         
         #layout HTML tags
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),

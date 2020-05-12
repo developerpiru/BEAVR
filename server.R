@@ -2,7 +2,7 @@
 # Developed by Pirunthan Perampalam @ https://github.com/developerpiru/
 # See Github for documentation & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.8"
+app_version = "1.0.9"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -59,6 +59,7 @@ app_version = "1.0.8"
 # start info bar containing basic steps
 # help tab for basic help/tips info
 # fixed heatmap name bug
+# fixed bug where alert was not shown if filtering was not enabled when running enrichment functions; now requires library(shinyalert)
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -1094,7 +1095,12 @@ shinyServer(function(input, output, session) {
   #generate enrichment pathway barplot or dotplot
   output$enrichmentPlot = renderPlot({
     withProgress(message = 'Generating pathway enrichment plot...', value = 1, min = 1, max = 100, {
-      do_enrichment_plot()
+      if (input$filterTableEnabled == FALSE){
+        print("Warning: you have not enabled filtering of the data table!")
+        shinyalert("Warning!", "Please enable filtering in the Gene Table tab in order to perform enrichment analysis on a subset of genes", type = "warning")
+      } else {
+        do_enrichment_plot()
+      }
     })
   })
   
@@ -1181,10 +1187,6 @@ shinyServer(function(input, output, session) {
   
   calc_enrichment_results <- reactive ({
     
-    #check if filtering is enabled for the data table
-    if (input$filterTableEnabled == FALSE){
-      print("Warning: you have not enabled filtering of the data table!")
-    }
     
     #Update progress bar
     totalSteps = 3 + 2
@@ -1193,8 +1195,9 @@ shinyServer(function(input, output, session) {
     
     #get gene input list from the filtered gene data table
     #filtered data is stored in the global variable filteredTable
-    input_data <- filteredTable
     
+    input_data <- filteredTable
+
     #Update progress bar
     currentStep = currentStep + 1
     incProgress(currentStep/totalSteps*100, detail = paste("Getting Entrez IDs..."))
@@ -1216,18 +1219,18 @@ shinyServer(function(input, output, session) {
   #generate enrichment pathway map
   output$enrichmentMap = renderPlot({
     withProgress(message = 'Generating pathway enrichment plot...', value = 1, min = 1, max = 100, {
-      do_enrichment_map()
+      if (input$filterTableEnabled == FALSE){
+        print("Warning: you have not enabled filtering of the data table!")
+        shinyalert("Warning!", "Please enable filtering in the Gene Table tab in order to perform enrichment analysis on a subset of genes", type = "warning")
+      } else {
+        do_enrichment_map()
+      }
     })
   })
   
   #function to generate enrichment pathway map
   do_enrichment_map <- reactive({
-    
-    #check if filtering is enabled for the data table
-    if (input$filterTableEnabled == FALSE){
-      print("Warning: you have not enabled filtering of the data table!")
-    }
-    
+
     #Update progress bar
     totalSteps = 6 + 2
     currentStep = 1
@@ -1302,18 +1305,18 @@ shinyServer(function(input, output, session) {
   #generate GSEA map
   output$gseaMap = renderPlot({
     withProgress(message = 'Generating pathway enrichment plot...', value = 1, min = 1, max = 100, {
-      do_gsea_map()
+      if (input$filterTableEnabled == FALSE){
+        print("Warning: you have not enabled filtering of the data table!")
+        shinyalert("Warning!", "Please enable filtering in the Gene Table tab in order to perform enrichment analysis on a subset of genes", type = "warning")
+      } else {
+        do_gsea_map()
+      }
     })
   })
   
   #function to generate GSEA map
   do_gsea_map <- reactive({
-    
-    #check if filtering is enabled for the data table
-    if (input$filterTableEnabled == FALSE){
-      print("Warning: you have not enabled filtering of the data table!")
-    }
-    
+
     #Update progress bar
     totalSteps = 4 + 2
     currentStep = 1
@@ -1372,12 +1375,7 @@ shinyServer(function(input, output, session) {
   
   #function to calculate gsea results
   calc_gsea <- reactive({
-    
-    #check if filtering is enabled for the data table
-    if (input$filterTableEnabled == FALSE){
-      print("Warning: you have not enabled filtering of the data table!")
-    }
-    
+
     #Update progress bar
     totalSteps = 3 + 2
     currentStep = 1
@@ -1419,7 +1417,12 @@ shinyServer(function(input, output, session) {
   #generate GSEA plot for a single pathway
   output$gseaPlot = renderPlot({
     withProgress(message = 'Generating pathway enrichment plot...', value = 1, min = 1, max = 100, {
-      do_gsea_plot()
+      if (input$filterTableEnabled == FALSE){
+        print("Warning: you have not enabled filtering of the data table!")
+        shinyalert("Warning!", "Please enable filtering in the Gene Table tab in order to perform enrichment analysis on a subset of genes", type = "warning")
+      } else {
+        do_gsea_plot()
+      }
     })
   })
   
@@ -1438,12 +1441,7 @@ shinyServer(function(input, output, session) {
 
   #function to generate GSEA plot for a single pathway
   do_gsea_plot <- reactive({
-    
-    #check if filtering is enabled for the data table
-    if (input$filterTableEnabled == FALSE){
-      print("Warning: you have not enabled filtering of the data table!")
-    }
-    
+
     #Update progress bar
     totalSteps = 5 + 2
     currentStep = 1
@@ -1510,51 +1508,56 @@ shinyServer(function(input, output, session) {
   output$show_gseaTable <- DT::renderDataTable({
     
     withProgress(message = 'Performing calculations...', value = 1, min = 1, max = 100, {
-      gsea_results <- as.data.frame(calc_gsea())
-      rownames(gsea_results) <- NULL
-      
-      #rename columns
-      colnames(gsea_results) <- c("ID", "Description", "setSize", "ES", "NES", "pvalue", "padj", "qvalue", "rank", "leadEdge", "coreEnrichment")
-      
-      if (input$gseaTablefilterTableEnabled == TRUE) {
-        #filter the table based on user defined settings
-        filtered_gsea_results <<- subset(gsea_results, 
-                                 ES >= input$gsea_enrichmentScore_min &
-                                  ES <= input$gsea_enrichmentScore_max &
-                                  NES >= input$gsea_nes_min &
-                                  NES <= input$gsea_nes_max &
-                                  pvalue >= input$gsea_pvalue_min &
-                                  pvalue <= input$gsea_pvalue_max &
-                                  padj >= input$gsea_padj_min &
-                                  padj <= input$gsea_padj_max &
-                                  qvalue >= input$gsea_qvalue_min &
-                                  qvalue <= input$gsea_qvalue_max &
-                                  rank >= input$gsea_rank_min &
-                                  rank <= input$gsea_rank_max
-                                )
-        
+      if (input$filterTableEnabled == FALSE){
+        print("Warning: you have not enabled filtering of the data table!")
+        shinyalert("Warning!", "Please enable filtering in the Gene Table tab in order to perform enrichment analysis on a subset of genes", type = "warning")
       } else {
-        #no filtering enabled, show all values and update filtering options
-        filtered_gsea_results <<-gsea_results
+        gsea_results <- as.data.frame(calc_gsea())
+        rownames(gsea_results) <- NULL
         
-        #update numericInputs for data filtering
-        updateNumericInput(session, "gsea_enrichmentScore_min", value = min(gsea_results$ES, na.rm=T))
-        updateNumericInput(session, "gsea_enrichmentScore_max", value = max(gsea_results$ES, na.rm=T))
-        updateNumericInput(session, "gsea_nes_min", value = min(gsea_results$NES, na.rm=T))
-        updateNumericInput(session, "gsea_nes_max", value = max(gsea_results$NES, na.rm=T))
-        updateNumericInput(session, "gsea_pvalue_min", value = min(gsea_results$pvalue, na.rm=T))
-        updateNumericInput(session, "gsea_pvalue_max", value = max(gsea_results$pvalue, na.rm=T))
-        updateNumericInput(session, "gsea_padj_min", value = min(gsea_results$padj, na.rm=T))
-        updateNumericInput(session, "gsea_padj_max", value = max(gsea_results$padj, na.rm=T))
-        updateNumericInput(session, "gsea_qvalue_min", value = min(gsea_results$qvalue, na.rm=T))
-        updateNumericInput(session, "gsea_qvalue_max", value = max(gsea_results$qvalue, na.rm=T))
-        updateNumericInput(session, "gsea_rank_min", value = min(gsea_results$rank, na.rm=T))
-        updateNumericInput(session, "gsea_rank_max", value = max(gsea_results$rank, na.rm=T))
+        #rename columns
+        colnames(gsea_results) <- c("ID", "Description", "setSize", "ES", "NES", "pvalue", "padj", "qvalue", "rank", "leadEdge", "coreEnrichment")
         
+        if (input$gseaTablefilterTableEnabled == TRUE) {
+          #filter the table based on user defined settings
+          filtered_gsea_results <<- subset(gsea_results, 
+                                   ES >= input$gsea_enrichmentScore_min &
+                                    ES <= input$gsea_enrichmentScore_max &
+                                    NES >= input$gsea_nes_min &
+                                    NES <= input$gsea_nes_max &
+                                    pvalue >= input$gsea_pvalue_min &
+                                    pvalue <= input$gsea_pvalue_max &
+                                    padj >= input$gsea_padj_min &
+                                    padj <= input$gsea_padj_max &
+                                    qvalue >= input$gsea_qvalue_min &
+                                    qvalue <= input$gsea_qvalue_max &
+                                    rank >= input$gsea_rank_min &
+                                    rank <= input$gsea_rank_max
+                                  )
+          
+        } else {
+          #no filtering enabled, show all values and update filtering options
+          filtered_gsea_results <<-gsea_results
+          
+          #update numericInputs for data filtering
+          updateNumericInput(session, "gsea_enrichmentScore_min", value = min(gsea_results$ES, na.rm=T))
+          updateNumericInput(session, "gsea_enrichmentScore_max", value = max(gsea_results$ES, na.rm=T))
+          updateNumericInput(session, "gsea_nes_min", value = min(gsea_results$NES, na.rm=T))
+          updateNumericInput(session, "gsea_nes_max", value = max(gsea_results$NES, na.rm=T))
+          updateNumericInput(session, "gsea_pvalue_min", value = min(gsea_results$pvalue, na.rm=T))
+          updateNumericInput(session, "gsea_pvalue_max", value = max(gsea_results$pvalue, na.rm=T))
+          updateNumericInput(session, "gsea_padj_min", value = min(gsea_results$padj, na.rm=T))
+          updateNumericInput(session, "gsea_padj_max", value = max(gsea_results$padj, na.rm=T))
+          updateNumericInput(session, "gsea_qvalue_min", value = min(gsea_results$qvalue, na.rm=T))
+          updateNumericInput(session, "gsea_qvalue_max", value = max(gsea_results$qvalue, na.rm=T))
+          updateNumericInput(session, "gsea_rank_min", value = min(gsea_results$rank, na.rm=T))
+          updateNumericInput(session, "gsea_rank_max", value = max(gsea_results$rank, na.rm=T))
+          
+        }
+        
+        #show table
+        filtered_gsea_results
       }
-      
-      #show table
-      filtered_gsea_results
     })
     
   })
@@ -1563,45 +1566,50 @@ shinyServer(function(input, output, session) {
   output$show_enrichmentTable <- DT::renderDataTable({
     
     withProgress(message = 'Performing calculations...', value = 1, min = 1, max = 100, {
-      enrichment_results <- as.data.frame(calc_enrichment_results())
-      rownames(enrichment_results) <- NULL
-      
-      #rename columns
-      colnames(enrichment_results) <- c("ID", "Description", "GeneRatio", "BgRatio", "pvalue", "padj", "qvalue", "GeneID", "Count")
-      #rearrange table for display
-      enrichment_results <- enrichment_results[,c(1:7,9,8)]
-      
-      if (input$enrichmentTablefilterTableEnabled == TRUE) {
-        #filter the table based on user defined settings
-        filtered_enrichment_results <<- subset(enrichment_results,
-                                          pvalue >= input$enr_pvalue_min &
-                                          pvalue <= input$enr_pvalue_max &
-                                          padj >= input$enr_padj_min &
-                                          padj <= input$enr_padj_max &
-                                          qvalue >= input$enr_qvalue_min &
-                                          qvalue <= input$enr_qvalue_max &
-                                          Count >= input$enr_count_min &
-                                          Count <= input$enr_count_max
-        )
-
+      if (input$filterTableEnabled == FALSE){
+        print("Warning: you have not enabled filtering of the data table!")
+        shinyalert("Warning!", "Please enable filtering in the Gene Table tab in order to perform enrichment analysis on a subset of genes", type = "warning")
       } else {
-        #no filtering enabled, show all values and update filtering options
-         filtered_enrichment_results <<- enrichment_results
-
-        #update numericInputs for data filtering
-        updateNumericInput(session, "enr_pvalue_min", value = min(enrichment_results$pvalue, na.rm=T))
-        updateNumericInput(session, "enr_pvalue_max", value = max(enrichment_results$pvalue, na.rm=T))
-        updateNumericInput(session, "enr_padj_min", value = min(enrichment_results$padj, na.rm=T))
-        updateNumericInput(session, "enr_padj_max", value = max(enrichment_results$padj, na.rm=T))
-        updateNumericInput(session, "enr_qvalue_min", value = min(enrichment_results$qvalue, na.rm=T))
-        updateNumericInput(session, "enr_qvalue_max", value = max(enrichment_results$qvalue, na.rm=T))
-        updateNumericInput(session, "enr_count_min", value = min(enrichment_results$Count, na.rm=T))
-        updateNumericInput(session, "enr_count_max", value = max(enrichment_results$Count, na.rm=T))
-
+        enrichment_results <- as.data.frame(calc_enrichment_results())
+        rownames(enrichment_results) <- NULL
+        
+        #rename columns
+        colnames(enrichment_results) <- c("ID", "Description", "GeneRatio", "BgRatio", "pvalue", "padj", "qvalue", "GeneID", "Count")
+        #rearrange table for display
+        enrichment_results <- enrichment_results[,c(1:7,9,8)]
+        
+        if (input$enrichmentTablefilterTableEnabled == TRUE) {
+          #filter the table based on user defined settings
+          filtered_enrichment_results <<- subset(enrichment_results,
+                                            pvalue >= input$enr_pvalue_min &
+                                            pvalue <= input$enr_pvalue_max &
+                                            padj >= input$enr_padj_min &
+                                            padj <= input$enr_padj_max &
+                                            qvalue >= input$enr_qvalue_min &
+                                            qvalue <= input$enr_qvalue_max &
+                                            Count >= input$enr_count_min &
+                                            Count <= input$enr_count_max
+          )
+  
+        } else {
+          #no filtering enabled, show all values and update filtering options
+           filtered_enrichment_results <<- enrichment_results
+  
+          #update numericInputs for data filtering
+          updateNumericInput(session, "enr_pvalue_min", value = min(enrichment_results$pvalue, na.rm=T))
+          updateNumericInput(session, "enr_pvalue_max", value = max(enrichment_results$pvalue, na.rm=T))
+          updateNumericInput(session, "enr_padj_min", value = min(enrichment_results$padj, na.rm=T))
+          updateNumericInput(session, "enr_padj_max", value = max(enrichment_results$padj, na.rm=T))
+          updateNumericInput(session, "enr_qvalue_min", value = min(enrichment_results$qvalue, na.rm=T))
+          updateNumericInput(session, "enr_qvalue_max", value = max(enrichment_results$qvalue, na.rm=T))
+          updateNumericInput(session, "enr_count_min", value = min(enrichment_results$Count, na.rm=T))
+          updateNumericInput(session, "enr_count_max", value = max(enrichment_results$Count, na.rm=T))
+  
+        }
+        
+        #show table
+        filtered_enrichment_results
       }
-      
-      #show table
-      filtered_enrichment_results
     })
     
   })
