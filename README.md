@@ -295,6 +295,7 @@ Note, the required packages are as follows:
 	shinyjqui
 	shinyWidgets
 	shinycssloaders
+	shinyalert
 	circlize
 
 	#Bioconductor packages
