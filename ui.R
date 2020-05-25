@@ -326,7 +326,7 @@ ui <- dashboardPage(
                                                              "Yellow-Orange-Brown" = "YlOrBr",
                                                              "Yellow-Orange-Red" = "YlOrRd"
                                               ), selected = "Blues"),
-                                  colourInput("sampleClustering_borderColor", "Border color", "#FFFFFF", allowTransparent = TRUE)
+                                  colourInput("sampleClustering_borderColor", "Border color", "#FFFFFF00", allowTransparent = TRUE)
                            )
                          ),
                          
@@ -371,7 +371,7 @@ ui <- dashboardPage(
                          menuItem(
                            h4("Genes"),
                            tags$div('class'="borderbox",
-                             textAreaInput("multi_gene_name", label = "Enter gene names", value = "HRAS,KRAS,NRAS", width = NULL,
+                             textAreaInput("multi_gene_name", label = "Enter gene names separated by comma", value = "HRAS,NRAS,KRAS", width = NULL,
                                            height = 100, cols = NULL, rows = NULL, placeholder = NULL,
                                            resize = NULL)
                            )
@@ -434,12 +434,11 @@ ui <- dashboardPage(
                          menuItem(
                          h4("Genes"),
                          tags$div('class'="borderbox",
-                                  
-                                  textAreaInput("heatmap_GeneNames", label = "Enter gene names", value = "HRAS,KRAS,NRAS", width = NULL,
-                                                height = 100, cols = NULL, rows = NULL, placeholder = NULL,
+                                  textAreaInput("heatmap_GeneNames", label = "Enter gene names separated by comma", value = "", 
+                                                width = NULL, height = 100, cols = NULL, rows = NULL, placeholder = NULL,
                                                 resize = NULL),
-                                  materialSwitch("heatmap_pickTopGenes", label = tags$b("Show top genes instead"), value = FALSE, status = "primary"),
-                                  numericInput("heatmap_numGenes", label = "Number of top genes to show", value = 50),
+                                  materialSwitch("heatmap_pickTopGenes", label = tags$b("Show top genes instead"), value = TRUE, status = "primary"),
+                                  numericInput("heatmap_numGenes", label = "Number of top genes to show", value = 5),
                                   selectInput("heatmap_showGeneNames", label = "Gene names",
                                               choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL"))
 
@@ -452,7 +451,7 @@ ui <- dashboardPage(
                                   selectInput("heatmap_varlogmethod", label = "Variance stabilization method",
                                               choices = list("Regularized log transformation" = "rlog",
                                                              "Variance stabilization" = "vst"),
-                                              selected = "rlog"),
+                                              selected = "vst"),
                                   selectInput("heatmap_clustMethod", label = "Clustering method",
                                               choices = list("Ward D1 (Ward 1963)" = "ward.D", 
                                                              "Ward D2 (Complete Ward's criteriom)" = "ward.D2", 
@@ -579,10 +578,13 @@ ui <- dashboardPage(
                          menuItem(
                          h4("Cutoffs"),
                          tags$div('class'="borderbox",
-                           textInput("FCcutoff", "Log2 fold change", value = 1, width = NULL,
+                           textInput("volcanoFCcutoff", "Log2 fold change", value = 1, width = NULL,
                                      placeholder = NULL),
-                           textInput("padjcutoff", "Adjusted p value", value = "0.05", width = NULL,
-                                     placeholder = NULL)
+                           selectInput("volcanopCutoffType", label = "p value cutoff type", 
+                                       choices = list("Unadjusted p value" = "pvalue", "Adjusted p value" = "padj"), 
+                                       selected = "unadj"),
+                           textInput("volcanopCutoff", "p value or padj value", value = "0.05", width = NULL,
+                                    placeholder = NULL)
                          )
                          ),
                          

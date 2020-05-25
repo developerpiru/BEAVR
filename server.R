@@ -59,17 +59,22 @@ app_version = "1.0.9"
 # start info bar containing basic steps
 # help tab for basic help/tips info
 # fixed heatmap name bug
+# removed default white border on sample clustering heatmap
 # fixed bug where alert was not shown if filtering was not enabled when running enrichment functions; now requires library(shinyalert)
+# fixed heatmap vst nsub bug: nsub now forced to nrow(dds table)
+# heatmap variance stabilization defaulted to vst instead of rlog for better performance
+# fixed colour widget ordering bug where widgets didn't match order of colour legend in PCA and read counts plots
+
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
 #### legend symbols show letter 'a' below symbol on jitter plots
 
-#set port to 3838
-options(shiny.port = 3838)
+
 
 #increase max file size to 1000MB
-options(shiny.maxRequestSize = 1000*1024^2)
+#set port to 3838
+options(shiny.maxRequestSize = 1000*1024^2, shiny.port = 3838)
 
 shinyServer(function(input, output, session) {
   
@@ -106,6 +111,9 @@ shinyServer(function(input, output, session) {
     coldata <- read.csv(input$coldatafile$datapath,
                         header = TRUE,
                         sep = input$sep2)
+    
+    #reorder alphabetically by condition name
+    #coldata <- coldata[order("condition"),]
     
     return(coldata)
     
@@ -194,16 +202,18 @@ shinyServer(function(input, output, session) {
     #prepare list of condition names
     conds_names <<- levels(temp_coldata[,2])
     
-    control_factor <- input$control_condslist
-    treatment1_factor <- input$treatment1_condslist
-    treatment2_factor <- input$treatment2_condslist
-    treatment3_factor <- input$treatment3_condslist
+    #control condition selected by the user
+    control_factor <<- input$control_condslist
+    #the following are deprecated
+    # treatment1_factor <- input$treatment1_condslist
+    # treatment2_factor <- input$treatment2_condslist
+    # treatment3_factor <- input$treatment3_condslist
     
     #construct a DESeqDataSet
     dds <- DESeqDataSetFromMatrix(countData = temp_cts, colData = temp_coldata, design = ~ condition)
     #dds
     
-    #pre-filter dds table to only keep genes that have at least min_reads_value reads set by user
+    #pre-filter dds table to only keep genes that have at least input$min_reads_value reads set by user
     keep <- rowSums(counts(dds)) > input$min_reads_value
     dds <- dds[keep,]
 
@@ -377,7 +387,7 @@ shinyServer(function(input, output, session) {
         updateNumericInput(session, "stat_min", value = min(filteredTable$stat, na.rm=T))
         updateNumericInput(session, "stat_max", value = max(filteredTable$stat, na.rm=T))
       }
-      
+
       #show table
       filteredTable
     })
@@ -422,7 +432,7 @@ shinyServer(function(input, output, session) {
       #call function to loop through and create more colour widgets for each condition in the experiment
       #widget names are pcaColorX, where X is an integer
       #selector is the target div tag container in ui
-      dynamic_colorgen(widget_name = "pcaColor", selector = "#pcaColorbox", sourcelist = "condition")
+      dynamic_colorgen(widget_name = "pcaColor", selector = "#pcaColorbox", sourcelist = "condition", heatmap = FALSE)
     }
     
     #set first run flag to false so color widgets are no longer made
@@ -437,9 +447,9 @@ shinyServer(function(input, output, session) {
     }
     
     #plot transformed data in PCA
-    pcaData <- plotPCA(vsd, intgroup=c("condition", "replicate"), returnData=TRUE)
+    pcaData <<- plotPCA(vsd, intgroup=c("condition", "replicate"), returnData=TRUE)
     percentVar <- round(100 * attr(pcaData, "percentVar"))
-    
+
     #generate the plot
     p <- ggplot(pcaData, aes(PC1, PC2, color=condition, shape=replicate)) +
       geom_point(size = input$pcaPointSize) +
@@ -615,7 +625,7 @@ shinyServer(function(input, output, session) {
     
     #transform data using variance stabilization method
     if (input$heatmap_varlogmethod == "vst")
-      transform_data <<- vst(dds, blind=FALSE)
+      transform_data <<- varianceStabilizingTransformation(dds, blind = FALSE)
     else
       transform_data <<- rlog(dds, blind=FALSE)
     
@@ -630,11 +640,7 @@ shinyServer(function(input, output, session) {
       #get the top X genes as defined by user
       #genestokeep <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:input$heatmap_numGenes]
       genestokeep <- order(rowVars(assay(transform_data)), decreasing = TRUE)[1:input$heatmap_numGenes]
-      
-      #old code from version 0.73.2
-      #genestokeep <- head(order(rowVars(assay(transform_data)), decreasing=TRUE), 50)
-      #heatmap_data <- as.data.frame(assay(transform_data)[genestokeep,])
-      
+
     } else {
       #get the list of genes entered by the user
       genestomap_HGNC <<- unlist(strsplit(toupper(input$heatmap_GeneNames), ","))
@@ -695,8 +701,8 @@ shinyServer(function(input, output, session) {
       #call function to loop through and create more colour widgets for each replicate and condition in the experiment
       #widget names are heatmap_replicateColorX and heatmap_conditionColorX, where X is an integer
       #selector is the target div tag container in ui
-      dynamic_colorgen(widget_name = "heatmap_replicateColor", selector = "#heatmap_replicateColorbox", sourcelist = "replicate")
-      dynamic_colorgen(widget_name = "heatmap_conditionColor", selector = "#heatmap_conditionColorbox", sourcelist = "condition")
+      dynamic_colorgen(widget_name = "heatmap_conditionColor", selector = "#heatmap_conditionColorbox", sourcelist = "condition", heatmap = TRUE)
+      dynamic_colorgen(widget_name = "heatmap_replicateColor", selector = "#heatmap_replicateColorbox", sourcelist = "replicate", heatmap = FALSE)
     }
     
     #set first run flag to false so color widgets are no longer made
@@ -827,7 +833,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  #make volcano plot highlight genes that have an FDR cutoff and Log2FC cutoff as determined by the user (input$padjcutoff and input$FCcutoff)
+  #make volcano plot highlight genes that have an FDR cutoff and Log2FC cutoff as determined by the user (input$volcanopCutoff and input$volcanoFCcutoff)
   output$volcanoPlot = renderPlot({
     withProgress(message = 'Generating volcano plot...', value = 1, min = 1, max = 100, {
       do_volcano_plot()
@@ -861,9 +867,9 @@ shinyServer(function(input, output, session) {
                            subtitle = "",
                            lab = RNAseqdatatoplot$GeneID,
                            x = "log2FoldChange",
-                           y = "padj",
-                           pCutoff = as.numeric(input$padjcutoff),
-                           FCcutoff = as.numeric(input$FCcutoff),
+                           y = input$volcanopCutoffType,
+                           pCutoff = as.numeric(input$volcanopCutoff),
+                           FCcutoff = as.numeric(input$volcanoFCcutoff),
                            titleLabSize = input$volcanoFontSize_plot_title,
                            axisLabSize = input$volcanoFontSize_xy_axis,
                            pointSize = input$volcanoPointSize,
@@ -886,9 +892,9 @@ shinyServer(function(input, output, session) {
                            subtitle = "",
                            lab = RNAseqdatatoplot$GeneID,
                            x = "log2FoldChange",
-                           y = "padj",
-                           pCutoff = as.numeric(input$padjcutoff),
-                           FCcutoff = as.numeric(input$FCcutoff),
+                           y = input$volcanopCutoffType,
+                           pCutoff = as.numeric(input$volcanopCutoff),
+                           FCcutoff = as.numeric(input$volcanoFCcutoff),
                            titleLabSize = input$volcanoFontSize_plot_title,
                            axisLabSize = input$volcanoFontSize_xy_axis,
                            pointSize = input$volcanoPointSize,
@@ -944,7 +950,7 @@ shinyServer(function(input, output, session) {
       #call function to loop through and create more colour widgets for each condition in the experiment
       #widget names are pcaColorX, where X is an integer
       #selector is the target div tag container in ui
-      dynamic_colorgen(widget_name = "multi_genecountColor", selector = "#multi_genecountColorbox", sourcelist = "condition")
+      dynamic_colorgen(widget_name = "multi_genecountColor", selector = "#multi_genecountColorbox", sourcelist = "condition", heatmap = FALSE)
     }
 
     #set first run flag to false so color widgets are no longer made
@@ -1210,7 +1216,7 @@ shinyServer(function(input, output, session) {
     incProgress(currentStep/totalSteps*100, detail = paste("Calculating enrichment..."))
     
     #calculate pathway enrichment
-    enrichment_data <- enrichPathway(gene = input_data$EntrezID, pvalueCutoff = input$enrPvalcutoff)#, readable=T)
+    enrichment_data <<- enrichPathway(gene = input_data$EntrezID, pvalueCutoff = input$enrPvalcutoff)#, readable=T)
     
     #return the data
     return(enrichment_data)
@@ -1648,27 +1654,63 @@ shinyServer(function(input, output, session) {
   
   ### HELPER FUNCTIONS ###
   #function to get unique condition/treatment names
-  get_unique_conds <- function(target_col)({
+  get_unique_conds <- function(target_col, heatmap)({
     
     #use a random plot table sample
     temp <- plotCounts(dds, gene=listofgenes[1,2], intgroup=c("condition", "replicate"), returnData=TRUE)
-
-    #empty vector to hold unique conditions
-    newlist <- NULL
     
-    newtemp <- as.matrix(temp)
-    
-    newlist[1] <- newtemp[1,target_col]
-    
-    counter = 2
-    for (i in 2:nrow(newtemp)){
+    #old method - retianed for proper ordering of replicate colours for count matrix heatmap
+    if (heatmap == TRUE){
+      #empty vector to hold unique conditions
+      newlist <- NULL
       
-      prev = newtemp[i-1,target_col]
-      curr = newtemp[i,target_col]
+      newtemp <- as.matrix(temp)
       
-      if (curr != prev){
-        newlist[counter] <- curr
-        counter = counter+1
+      newlist[1] <- newtemp[1,target_col]
+      
+      counter = 2
+      for (i in 2:nrow(newtemp)){
+        
+        prev = newtemp[i-1,target_col]
+        curr = newtemp[i,target_col]
+        
+        if (curr != prev){
+          newlist[counter] <- curr
+          counter = counter+1
+        }
+      }
+      
+    } else {
+      #new method - assembles list of conditions in proper order for PCA plot and read count plots
+      if (target_col == "condition"){
+        #get unique conditions and sort alphabetically
+        templist <- sort(levels(temp$condition))
+        #move the control condition to the first in the list
+        #required because ggplot moves the control condition to the top in legend of plots
+        #so if control is not first, the colour choices in sidebar won't match colours in plots
+        
+        #loop through templist and search for the index number of the control condition
+        control_index = 0
+        for (i in 1:length(templist)){
+          if (templist[i] == control_factor){
+            control_index = i
+            break
+          }
+        }
+        
+        #add control condition in templist to the first item in newlist at newlist[1]
+        newlist = NULL
+        newlist[1] = templist[control_index]
+        
+        #remove control condition from templist; set it to NULL
+        templist = templist[-c(control_index)]
+        
+        #add the remaining templist conditions to newlist, which will now contain the control condition, followed the remaining conditions in alphabetical order
+        for (i in 1:length(templist)){  newlist[i+1] = templist[i]  }
+      
+        # for replicates, just return the list of replicates  
+      } else {
+        newlist = levels(temp$replicate)
       }
     }
     
@@ -1677,10 +1719,10 @@ shinyServer(function(input, output, session) {
   })  
   
   #function to dynamically draw colorboxes for n number of replicates
-  dynamic_colorgen <- function(widget_name, selector, sourcelist)({
+  dynamic_colorgen <- function(widget_name, selector, sourcelist, heatmap)({
     
     #get list of unique condition names
-    unique_IDs <- get_unique_conds(target_col = sourcelist)
+    unique_IDs <- get_unique_conds(target_col = sourcelist, heatmap = heatmap)
     
     #initialize vector to hold dynamically generated names for color widgets
     colorwidget_names <- NULL
