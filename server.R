@@ -2,7 +2,7 @@
 # Developed by Pirunthan Perampalam @ https://github.com/developerpiru/
 # See Github for documentation & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.9"
+app_version = "1.0.10"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
