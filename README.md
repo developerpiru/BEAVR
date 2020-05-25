@@ -6,7 +6,6 @@ BEAVR is a graphical tool to automate analysis and exploration of small and larg
 The easiest way to get started with BEAVR is to use our Docker container! 
 
 Enter:
-
 	```
 	docker run -ti -p 3838:3838 pirunthan/beavr:latest
 	```
