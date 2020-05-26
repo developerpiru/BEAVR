@@ -16,6 +16,9 @@ Check the [Docker](https://github.com/developerpiru/BEAVR#Use-the-Docker-contain
 
 ---
 
+Please note: results from the latest version of BEAVR (1.0.10) may differ slightly from those of the initial publication version (version 1.0.8). This is not due to changes in BEAVR itself, but a result of updates to dependencies required by BEAVR, such as the DESeq2 package or packages used to generate plots.
+
+---
 # Table of contents
 
 + [Installation & Requirements](https://github.com/developerpiru/BEAVR#installation--requirements)
