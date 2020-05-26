@@ -14,6 +14,7 @@ Then open your browser and enter ```localhost:3838``` in the address bar to star
 
 Check the [Docker](https://github.com/developerpiru/BEAVR#Use-the-Docker-container) section for more detailed instructions for using Docker on Windows, Mac OS, and Linux.
 
+[Click here for the feature-rich version of the documentation](https://developerpiru.github.io/BEAVR/)
 ---
 
 # Table of contents
