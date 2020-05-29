@@ -2,7 +2,7 @@
 # Developed by Pirunthan Perampalam @ https://github.com/developerpiru/
 # See Github for documentation & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.10"
+app_version = "1.0.11"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -64,6 +64,7 @@ app_version = "1.0.10"
 # fixed heatmap vst nsub bug: nsub now forced to nrow(dds table)
 # heatmap variance stabilization defaulted to vst instead of rlog for better performance
 # fixed colour widget ordering bug where widgets didn't match order of colour legend in PCA and read counts plots
+# added ability to turn on/off labels for heatmap row and column names
 
 
 # bugs"
@@ -543,6 +544,10 @@ shinyServer(function(input, output, session) {
                 clustering_distance_rows = input$sampleClustering_method,
                 #column distance method
                 clustering_distance_columns = input$sampleClustering_method,
+                #show row labels
+                show_row_names = input$sampleClusterin_rowlabels,
+                #show column labels
+                show_column_names = input$sampleClusterin_columnlabels,
                 #position of gene names
                 row_names_side = input$sampleClusterin_rowlabel_position,
                 #position of sample names
@@ -674,7 +679,7 @@ shinyServer(function(input, output, session) {
     show_geneNames = TRUE
     
     #check which option is set for rownames in the heatmap by the user
-    if (input$heatmap_showGeneNames == "HGNC"){
+    if (input$heatmap_GeneNameType == "HGNC"){
       
       #drop any rows that don't have HGNC symbols (have NA instead)
       heatmap_data <- na.omit(heatmap_data, cols = c("GeneID"))
@@ -783,6 +788,10 @@ shinyServer(function(input, output, session) {
                 clustering_method_columns = input$heatmap_clustMethod,
                 #position of gene names
                 row_names_side = input$heatmap_genelabel_position,
+                #show or hide gene (row) labels
+                show_row_names = input$heatmap_show_genelabels,
+                #show or hide sample (column) labels
+                show_column_names = input$heatmap_show_samplelabels,
                 #position of sample names
                 column_names_side = input$heatmap_samplelabel_position,
                 #rotate row names
@@ -1646,7 +1655,7 @@ shinyServer(function(input, output, session) {
   output$startinfo <- renderUI ({
     return(includeHTML("https://raw.githubusercontent.com/developerpiru/BEAVR/master/startinfo.html"))
   })
-  
+
   #function to load html file for help info tab
   output$helpinfo <- renderUI ({
     return(includeHTML("https://raw.githubusercontent.com/developerpiru/BEAVR/master/helpinfo.html"))

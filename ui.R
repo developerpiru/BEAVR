@@ -2,7 +2,7 @@
 # Developed by Pirunthan Perampalam @ https://github.com/developerpiru/
 # See Github for documentation & ReadMe: https://github.com/developerpiru/BEAVR
 
-app_version = "1.0.10"
+app_version = "1.0.11"
 
 # added:
 # +1 to all reads; avoid 0 read count errors
@@ -59,6 +59,13 @@ app_version = "1.0.10"
 # start info bar containing basic steps
 # help tab for basic help/tips info
 # fixed heatmap name bug
+# removed default white border on sample clustering heatmap
+# fixed bug where alert was not shown if filtering was not enabled when running enrichment functions; now requires library(shinyalert)
+# fixed heatmap vst nsub bug: nsub now forced to nrow(dds table)
+# heatmap variance stabilization defaulted to vst instead of rlog for better performance
+# fixed colour widget ordering bug where widgets didn't match order of colour legend in PCA and read counts plots
+# added ability to turn on/off labels for heatmap row and column names
+
 
 # bugs"
 #### PCA, gene count, volcano plots don't auto-update to new dds dataset after changing treatment condition factor level
@@ -292,6 +299,8 @@ ui <- dashboardPage(
                                   selectInput("sampleClusterin_col_dend_position", label = "Column dendrogram position",
                                               choices = list("Top" = "top", "Bottom" = "bottom"),
                                               selected = "top"),
+                                  checkboxInput("sampleClusterin_rowlabels", label = "Show row labels", value = TRUE),
+                                  checkboxInput("sampleClusterin_columnlabels", label = "Show column labels", value = TRUE),
                                   selectInput("sampleClusterin_rowlabel_position", label = "Row label position",
                                               choices = list("Left" = "left", "Right" = "right"),
                                               selected = "right"),
@@ -438,10 +447,7 @@ ui <- dashboardPage(
                                                 width = NULL, height = 100, cols = NULL, rows = NULL, placeholder = NULL,
                                                 resize = NULL),
                                   materialSwitch("heatmap_pickTopGenes", label = tags$b("Show top genes instead"), value = TRUE, status = "primary"),
-                                  numericInput("heatmap_numGenes", label = "Number of top genes to show", value = 5),
-                                  selectInput("heatmap_showGeneNames", label = "Gene names",
-                                              choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL"))
-
+                                  numericInput("heatmap_numGenes", label = "Number of top genes to show", value = 5)
                          )
                          ),
                          
@@ -494,6 +500,10 @@ ui <- dashboardPage(
                                     selectInput("heatmap_col_dend_position", label = "Column dendrogram position",
                                                 choices = list("Top" = "top", "Bottom" = "bottom"),
                                                 selected = "top"),
+                                    checkboxInput("heatmap_show_genelabels", label = "Show gene labels", value = TRUE),
+                                    checkboxInput("heatmap_show_samplelabels", label = "Show sample labels", value = TRUE),
+                                    selectInput("heatmap_GeneNameType", label = "Gene label type",
+                                                choices = list("HGNC symbols" = "HGNC", "ENSEMBL IDs" = "ENSEMBL")),
                                     selectInput("heatmap_genelabel_position", label = "Gene label position",
                                                 choices = list("Left" = "left", "Right" = "right"),
                                                 selected = "right"),
@@ -1345,8 +1355,18 @@ ui <- dashboardPage(
         
         #layout HTML tags
         HTML('<div style="padding:10px 10px 10px 10px;"><p>'),
-
-        #output box to show GSEA pvalues
+        
+        #show title
+        HTML('<div style="background-color:#FFFFFF;clear:both;display:block;font:16px bold Arial, Helvetica, sans-serif;"><p>'),
+        HTML('<b>BEAVR: B</b>rowser-based tool for the <b>E</b>xploration <b>A</b>nd <b>V</b>isualization of <b>R</b>NA-seq data'),
+        HTML('</p></div>'),
+        
+        #show current version
+        HTML('<div style="background-color:#FFFFFF;clear:both;display:block;font:12px bold Arial, Helvetica, sans-serif;"><p>'),
+        paste("You are using version ", app_version),
+        HTML('</p></div>'),
+        
+        #outout to show latest available BEAVR version and help info text
         HTML('<div style="background-color:#FFFFFF;clear:both;display:block;font:12px bold Arial, Helvetica, sans-serif;"><p>'),
         htmlOutput("helpinfo"),
         HTML('</p></div>'),
