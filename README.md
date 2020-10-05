@@ -362,7 +362,7 @@ Note: R has been tested to work on R 3.6+
 
 2. If you don't have RTools installed already, download and install RTools for Windows using the installation wizard:
 	- If you R 4.0.x installed, download RTools [here](https://cloud.r-project.org/bin/windows/Rtools/)
-	- If you have an older version of R installed, download the appropriate version of RTools [here](https://cran.r-project.org/bin/windows/Rtools/history.html/)
+	- If you have an older version of R installed, download the appropriate version of RTools [here](https://cran.r-project.org/bin/windows/Rtools/history.html)
 
 3. Look in the "Setup" folder to find the automated installer for Windows:
 	- Right click on the file named **Configure-BEAVR-Windows.bat** and click run as administrator (agree to any warnings/prompts to run it)
