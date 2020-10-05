@@ -227,13 +227,18 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 4. Look in the "Setup" folder to find the automated installer for Windows:
 	- Right click on the file named **Configure-BEAVR-Windows.bat** and click run as administrator (agree to any warnings/prompts to run it)
+	
+	This will open a command prompt window.
 
+5. You will be prompted to "enter the path to your Rscript.exe:"
+	- ```Rscript.exe``` is located in a folder called ```bin``` within the path where you installed R (in step 1). Depending on the version, R is installed in a subdirectory within ```C:\Program Files\R```. E.g. For R version 4.0.2, the subdirectory will be called ```R-4.0.2```. Inside that folder, there will be another subdirectory called ```bin``` which contains the file ```Rscript.exe```. You can manually enter the full path to this file, or you can drag the file into the command prompt window and press enter.
+	
 	This will download and install the R packages required for BEAVR.
 
-5. To run BEAVR:
+6. To run BEAVR:
 	- Double-click **Run-BEAVR-Windows.bat**
 
-6. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+7. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
@@ -352,13 +357,18 @@ Note, the required packages are as follows:
 
 2. If you don't have RTools installed already, download and install RTools for Windows using the installation wizard:
 	- Download the latest version of RTools [here](https://cloud.r-project.org/bin/windows/Rtools/)
-	
+
 3. Look in the "Setup" folder to find the automated installer for Windows:
 	- Right click on the file named **Configure-BEAVR-Windows.bat** and click run as administrator (agree to any warnings/prompts to run it)
+	
+	This will open a command prompt window.
 
+4. You will be prompted to "enter the path to your Rscript.exe:"
+	- ```Rscript.exe``` is located in a folder called ```bin``` within the path where you installed R (in step 1). Depending on the version, R is installed in a subdirectory within ```C:\Program Files\R```. E.g. For R version 4.0.2, the subdirectory will be called ```R-4.0.2```. Inside that folder, there will be another subdirectory called ```bin``` which contains the file ```Rscript.exe```. You can manually enter the full path to this file, or you can drag the file into the command prompt window and press enter.
+	
 	This will download and install the R packages required for BEAVR.
 
-4. To run BEAVR:
+5. To run BEAVR:
 	- Double-click **Run-BEAVR-Windows.bat**
 
 	
@@ -379,7 +389,7 @@ Note, the required packages are as follows:
 	runApp(port=3838)
 	```
 
-5. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+6. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
