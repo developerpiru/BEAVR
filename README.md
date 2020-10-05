@@ -267,7 +267,7 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 6. To run BEAVR:
 	- Right-click **Run-BEAVR-MacOS.command**, click **Open** and then click **Open** again in the popup box.
 
-7. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+7. Open your browser and go to ```localhost:3838``` or ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
@@ -297,7 +297,7 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 	chmod +x Run-BEAVR-Linux.sh
 	```
 
-4. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+4. Open your browser and go to ```localhost:3838``` or ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
@@ -427,7 +427,7 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 	runApp(port=3838)
 	```
 
-6. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+6. Open your browser and go to ```localhost:3838``` or ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
@@ -470,7 +470,7 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 	library(shinydashboard)
 	runApp(port=3838)
 
-4. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+4. Open your browser and go to ```localhost:3838``` or ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
