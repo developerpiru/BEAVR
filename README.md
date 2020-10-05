@@ -404,7 +404,7 @@ Note: R has been tested to work on R 3.6+
 
 ### Use your existing R installation in Mac OS
 
-1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.10/BEAVR-v1.0.10-MacOS.zip)
+1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
 
 2. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts by copying and pasting these commands in Terminal:
 	```
