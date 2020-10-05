@@ -356,10 +356,13 @@ Note, the required packages are as follows:
 
 ### Use your existing R installation in Windows
 
+Note: R has been tested to work on R 3.6+
+
 1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.10/BEAVR-v1.0.10-Windows.zip)
 
 2. If you don't have RTools installed already, download and install RTools for Windows using the installation wizard:
-	- Download the latest version of RTools [here](https://cloud.r-project.org/bin/windows/Rtools/)
+	- If you R 4.0.x installed, download RTools [here](https://cloud.r-project.org/bin/windows/Rtools/)
+	- If you have an older version of R installed, download the appropriate version of RTools [here](https://cran.r-project.org/bin/windows/Rtools/history.html/)
 
 3. Look in the "Setup" folder to find the automated installer for Windows:
 	- Right click on the file named **Configure-BEAVR-Windows.bat** and click run as administrator (agree to any warnings/prompts to run it)
