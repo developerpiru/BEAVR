@@ -10,7 +10,7 @@ Enter:
 	docker run -ti -p 3838:3838 pirunthan/beavr:latest
 	```
 
-Then open your browser and enter ```localhost:3838``` in the address bar to start using BEAVR.
+Then open your browser and enter ```localhost:3838``` or ```127.0.0.1:3838``` in the address bar to start using BEAVR.
 
 Check the [Docker](https://github.com/developerpiru/BEAVR#Use-the-Docker-container) section for more detailed instructions for using Docker on Windows, Mac OS, and Linux.
 
@@ -217,19 +217,24 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 ### A new R environment in Windows
 
-1. Download and Install R for Windows using the installation wizard:
-	- On Windows, download R 3.6.3 [here](https://cloud.r-project.org/bin/windows/base/R-3.6.3-win.exe)
+1. Download and install R for Windows using the installation wizard:
+	- Download the latest version of R [here](https://cloud.r-project.org/bin/windows/base/)
 
-2. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
+2. Download and install RTools for Windows using the installation wizard:
+	- Download the latest version of RTools [here](https://cloud.r-project.org/bin/windows/Rtools/)
 
-3. Look in the "Setup" folder to find the automated installer for Windows:
-	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
+3. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.10/BEAVR-v1.0.10-Windows.zip)
+
+4. Look in the "Setup" folder to find the automated installer for Windows:
+	- Right click on the file named **Configure-BEAVR-Windows.bat** and click run as administrator (agree to any warnings/prompts to run it)
 
 	This will download and install the R packages required for BEAVR.
 
-4. To run BEAVR:
+5. To run BEAVR:
 	- Double-click **Run-BEAVR-Windows.bat**
-	
+
+6. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+
 ---
 
 ### A new R environment in Mac OS
@@ -262,6 +267,8 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 6. To run BEAVR:
 	- Right-click **Run-BEAVR-MacOS.command**, click **Open** and then click **Open** again in the popup box.
 
+7. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+
 ---
 
 ### A new R environment in Linux
@@ -289,6 +296,8 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 	```
 	chmod +x Run-BEAVR-Linux.sh
 	```
+
+4. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
@@ -339,14 +348,17 @@ Note, the required packages are as follows:
 
 ### Use your existing R installation in Windows
 
-1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
+1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.10/BEAVR-v1.0.10-Windows.zip)
 
-2. Look in the "Setup" folder to find the automated installer for Windows:
-	- Double-click **Configure-BEAVR-Windows.bat** (you may need to right click and run as administrator)
+2. If you don't have RTools installed already, download and install RTools for Windows using the installation wizard:
+	- Download the latest version of RTools [here](https://cloud.r-project.org/bin/windows/Rtools/)
+	
+3. Look in the "Setup" folder to find the automated installer for Windows:
+	- Right click on the file named **Configure-BEAVR-Windows.bat** and click run as administrator (agree to any warnings/prompts to run it)
 
 	This will download and install the R packages required for BEAVR.
 
-3. To run BEAVR:
+4. To run BEAVR:
 	- Double-click **Run-BEAVR-Windows.bat**
 
 	
@@ -367,11 +379,13 @@ Note, the required packages are as follows:
 	runApp(port=3838)
 	```
 
+5. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+
 ---
 
 ### Use your existing R installation in Mac OS
 
-1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.9/BEAVR-v1.0.9-Windows-MacOS.zip)
+1. Download and extract the BEAVR setup files from [here](https://github.com/developerpiru/BEAVR/raw/master/Releases/1.0.10/BEAVR-v1.0.10-MacOS.zip)
 
 2. Before you can execute the install scripts, you will likely have to allow execute permissions or Mac OS will give you an error. You can do this as follows for both configuration scripts by copying and pasting these commands in Terminal:
 	```
@@ -413,6 +427,8 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 	runApp(port=3838)
 	```
 
+6. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
+
 ---
 
 ### Use your existing R installation in Linux
@@ -453,6 +469,8 @@ Note: You may get a popup asking for permission to install Xcode. You must agree
 	library(shiny)
 	library(shinydashboard)
 	runApp(port=3838)
+
+4. Open your browser and go to ```127.0.0.1:3838``` to start using BEAVR.
 
 ---
 
