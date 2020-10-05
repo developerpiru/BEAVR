@@ -232,9 +232,9 @@ If you prefer not to install Docker and **you do not already have R installed** 
 
 5. You will be prompted to "enter the path to your Rscript.exe:"
 	- ```Rscript.exe``` is located in a folder named ```bin``` within the path where you installed R (in step 1). 
-	E.g. ```C:\Program Files\R\R-VERSION\bin\Rscript.exe```, where ```VERSION``` is the version of R you have installed.
-	For example, for R version 4.0.2, this will be ```C:\Program Files\R\R-4.0.2\bin\Rscript.exe```.
-	You can manually enter the path at the prompt, or look for the file in Windows Explorer and drag the ```Rscript.exe``` file into the command prompt and press enter.
+	-E.g. ```C:\Program Files\R\R-VERSION\bin\Rscript.exe```, where ```VERSION``` is the version of R you have installed.
+	-For example, for R version 4.0.2, this will be ```C:\Program Files\R\R-4.0.2\bin\Rscript.exe```.
+	-You can manually enter the path at the prompt, or look for the file in Windows Explorer and drag the ```Rscript.exe``` file into the command prompt and press enter.
 	
 	This will download and install the R packages required for BEAVR.
 
