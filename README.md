@@ -14,6 +14,8 @@ Then open your browser and enter ```localhost:3838``` or ```127.0.0.1:3838``` in
 
 Check the [Docker](https://github.com/developerpiru/BEAVR#Use-the-Docker-container) section for more detailed instructions for using Docker on Windows, Mac OS, and Linux.
 
+Check the [Troubleshooting](https://github.com/developerpiru/BEAVR#troubleshooting) section for some common issues and solutions.
+
 ---
 
 **Please note:** results from the latest version of BEAVR (1.0.10) may differ slightly from those of the initial publication version (version 1.0.8). This is not due to changes in BEAVR itself, but a result of updates to dependencies required by BEAVR, such as the DESeq2 package or packages used to generate plots.
@@ -759,3 +761,5 @@ You can save images as JPG, PDF, PNG, SVG, or TIFF. The Output dpi (dots per inc
 **Error message:**```None of the keys entered are valid keys for 'ENSEMBL'. Please use the keys method to see a listing of valid arguments``` | This means the ENSEMBL IDs contained in your read count table file cannot be mapped to the reference genome you selected in the Experiment settings tab. Please verify you have selected the correct one.
 **Error message:**```mapIds must have at least one key to match against.``` | This error typically occurs when the read count table file is not in the correct format/file type. Please save the file as "CSV (Comma delimited) (.csv)" and not "CSV UTF-8 (Comma delimited) (.csv)".
 **Error message:**```unused arguments (pointSize = input$volcanoPointSize, labSize = input$volcanoFontSize_label, legendLabels = c("Not Significant", expression(Log[2] ~ FC ~ only), "p-value only", expression(p - value ~ and ~ log[2] ~ FC)), labCol = "black")``` | This error occurs because you have the incorrect version of the ```EnhancedVolcano``` plot installed and BEAVR is loading that one instead of the correct developmental version of the package. To fix this, remove the EnhancedVolcano package by entering this in R: ```remove.packages("EnhancedVolcano")```, restart your R session. Then install the correct version of the package with: ```devtools::install_github("kevinblighe/EnhancedVolcano")```. If you don't have the ```devtools``` package, then install it with ```install.packages("devtools")```.
+**Error message:**```lfcShrink: coef %in% resultsNamesDDS is not TRUE``` | The condition names you entered in your sample treatment matrix file contain characters other than letters, numbers, underscores, or periods. Spaces or special characters are not permitted.
+
