@@ -33,6 +33,7 @@ installCran("shinydashboard")
 installCran("shinyjqui")
 installCran("shinyWidgets")
 installCran("shinycssloaders")
+installCran("shinyalert")
 installCran("circlize")
 
 # #Bioconductor packages
